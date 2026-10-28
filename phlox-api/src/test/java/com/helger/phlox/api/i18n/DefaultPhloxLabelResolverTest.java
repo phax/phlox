@@ -59,6 +59,19 @@ public final class DefaultPhloxLabelResolverTest
   }
 
   @Test
+  public void testSpanishLabel ()
+  {
+    final Locale aSpanish = Locale.forLanguageTag ("es");
+    assertEquals ("Factura", DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice", aSpanish));
+    // Non-ASCII on purpose: the bundle is read as UTF-8, like the German one
+    assertEquals ("N\u00FAmero de factura", DefaultPhloxLabelResolver.INSTANCE.getLabel ("BT-1", aSpanish));
+    // A region of Spanish finds the same bundle
+    assertEquals ("Factura",
+                  DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice",
+                                                               Locale.forLanguageTag ("es-ES")));
+  }
+
+  @Test
   public void testMissingKeyFallsBackToKey ()
   {
     final String sKey = "no.such.key.in.bundle";

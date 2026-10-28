@@ -60,7 +60,7 @@ public final class HtmlInvoiceWriterTest
       {
         final PhloxInvoice aModel = aReader.read (aIS, new ErrorList ());
         assertNotNull ("Failed to parse " + aRes.getPath (), aModel);
-        for (final Locale aLocale : new Locale [] { Locale.ENGLISH, Locale.GERMAN })
+        for (final Locale aLocale : new Locale [] { Locale.ENGLISH, Locale.GERMAN, Locale.forLanguageTag ("es") })
         {
           final HtmlRenderContext aCtx = new HtmlRenderContext ().setLocale (aLocale)
                                                                  .setUserWatermark (WatermarkSpec.text ("DRAFT"));

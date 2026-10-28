@@ -139,7 +139,7 @@ public class PhloxCli implements Callable <Integer>
   String m_sEnVersion;
 
   @Option (names = { "-l", "--lang" },
-           description = "Output language code (e.g. 'en', 'de'). Default: the language of the theme or en.")
+           description = "Output language code (e.g. 'en', 'de', 'es'). Default: the language of the theme or en.")
   String m_sLang;
 
   @Option (names = { "-t", "--template" },
