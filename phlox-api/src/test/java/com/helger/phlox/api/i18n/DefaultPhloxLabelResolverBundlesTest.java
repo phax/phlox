@@ -29,15 +29,18 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 /**
- * Test the contents of the resource bundles behind {@link DefaultPhloxLabelResolver}: the English,
- * the German and the Spanish label bundle must contain the same BG/BT keys, and the business terms
- * and groups introduced by EN 16931:2026 must be present in all of them.
+ * Test the contents of the resource bundles behind {@link DefaultPhloxLabelResolver}: the Dutch,
+ * the English, the French, the German and the Spanish label bundle must contain the same BG/BT keys,
+ * and the business terms and groups introduced by EN 16931:2026 must be present in all of them.
  *
  * @author Philip Helger
  */
 public final class DefaultPhloxLabelResolverBundlesTest
 {
   private static final Pattern BG_BT_KEY = Pattern.compile ("(?:BG|BT)-\\d+(?:-\\d+)?");
+
+  /** There is no constant for Dutch in {@link Locale} */
+  private static final Locale DUTCH = Locale.forLanguageTag ("nl");
 
   /** There is no constant for Spanish in {@link Locale} */
   private static final Locale SPANISH = Locale.forLanguageTag ("es");
@@ -138,14 +141,36 @@ public final class DefaultPhloxLabelResolverBundlesTest
   }
 
   @Test
-  public void testNew2026IDsArePresentInAllLanguages ()
+  public void testEnglishAndDutchHaveTheSameIDs ()
   {
     final Set <String> aEnglish = _getIDs (Locale.ENGLISH);
+    final Set <String> aDutch = _getIDs (DUTCH);
+    assertFalse (aEnglish.isEmpty ());
+    assertEquals (aEnglish, aDutch);
+  }
+
+  @Test
+  public void testEnglishAndFrenchHaveTheSameIDs ()
+  {
+    final Set <String> aEnglish = _getIDs (Locale.ENGLISH);
+    final Set <String> aFrench = _getIDs (Locale.FRENCH);
+    assertFalse (aEnglish.isEmpty ());
+    assertEquals (aEnglish, aFrench);
+  }
+
+  @Test
+  public void testNew2026IDsArePresentInAllLanguages ()
+  {
+    final Set <String> aDutch = _getIDs (DUTCH);
+    final Set <String> aEnglish = _getIDs (Locale.ENGLISH);
+    final Set <String> aFrench = _getIDs (Locale.FRENCH);
     final Set <String> aGerman = _getIDs (Locale.GERMAN);
     final Set <String> aSpanish = _getIDs (SPANISH);
     for (final String sID : NEW_2026_IDS)
     {
+      assertTrue ("Missing Dutch label for " + sID, aDutch.contains (sID));
       assertTrue ("Missing English label for " + sID, aEnglish.contains (sID));
+      assertTrue ("Missing French label for " + sID, aFrench.contains (sID));
       assertTrue ("Missing German label for " + sID, aGerman.contains (sID));
       assertTrue ("Missing Spanish label for " + sID, aSpanish.contains (sID));
     }
@@ -154,7 +179,7 @@ public final class DefaultPhloxLabelResolverBundlesTest
   @Test
   public void testNoEmptyLabels ()
   {
-    for (final Locale aLocale : new Locale [] { Locale.ENGLISH, Locale.GERMAN, SPANISH })
+    for (final Locale aLocale : new Locale [] { DUTCH, Locale.ENGLISH, Locale.FRENCH, Locale.GERMAN, SPANISH })
     {
       final ResourceBundle aBundle = ResourceBundle.getBundle (DefaultPhloxLabelResolver.BUNDLE_LABELS, aLocale);
       for (final String sID : _getIDs (aLocale))
