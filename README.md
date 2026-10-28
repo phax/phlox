@@ -96,6 +96,34 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `--embed-attachments` | Embed the attached documents of the invoice (BG-24) into the PDF (PDF/A-3, `3b` unless `--pdfa` is given) |
 | `--zugferd` | Create a ZUGFeRD / Factur-X hybrid invoice from a CII invoice of EN 16931:2017 (PDF/A-3); `--zugferd-profile` overrides the profile derived from BT-24 |
 
+## Where to find things
+
+The default template, its model and the stylesheet:
+
+| What | Location |
+|------|----------|
+| Default template | [`default.ptpl`](phlox-template/src/main/resources/templates/default.ptpl) |
+| Names usable in the template (BTs and BGs) | [`PhloxModelRegistry`](phlox-template/src/main/java/com/helger/phlox/template/adapter/PhloxModelRegistry.java) |
+| Default HTML stylesheet (CSS template, class prefix `{p}`) | [`phlox-default.tcss`](phlox-html/src/main/resources/phlox-default.tcss) |
+
+The reference files (golden masters) show the current output for each example invoice in English and German.
+`HtmlMastersTest`, `PdfMastersTest` and `TextMastersTest` compare the output with them:
+
+| Output | Reference files | Test |
+|--------|-----------------|------|
+| HTML | [`phlox-html/src/test/resources/masters`](phlox-html/src/test/resources/masters) | [`HtmlMastersTest`](phlox-html/src/test/java/com/helger/phlox/html/HtmlMastersTest.java) |
+| PDF (layout description `.txt` plus `.pdf`) | [`phlox-pdf/src/test/resources/masters`](phlox-pdf/src/test/resources/masters) | [`PdfMastersTest`](phlox-pdf/src/test/java/com/helger/phlox/pdf/PdfMastersTest.java) |
+| Plain text | [`phlox-text/src/test/resources/masters`](phlox-text/src/test/resources/masters) | [`TextMastersTest`](phlox-text/src/test/java/com/helger/phlox/text/TextMastersTest.java) |
+
+The example invoices are in [`phlox-testfiles/src/main/resources/external/en16931`](phlox-testfiles/src/main/resources/external/en16931) (`2017`, `2026` and `synthetic`); the selection used for the reference files is in [`MockPhloxTestFiles`](phlox-testfiles/src/main/java/com/helger/phlox/testfiles/MockPhloxTestFiles.java).
+After an intended change of the output, write the reference files again with `-Dphlox.updateMasters=true` and review the `git diff`:
+
+```bash
+mvn -pl phlox-html test -Dtest=HtmlMastersTest -Dphlox.updateMasters=true
+mvn -pl phlox-pdf test -Dtest=PdfMastersTest -Dphlox.updateMasters=true
+mvn -pl phlox-text test -Dtest=TextMastersTest -Dphlox.updateMasters=true
+```
+
 ## Documentation
 
 See the [wiki](https://github.com/phax/phlox/wiki/Home) for the full documentation, including the [domain model](https://github.com/phax/phlox/wiki/Domain-Model), the [template language](https://github.com/phax/phlox/wiki/Template-Language), [themes](https://github.com/phax/phlox/wiki/Themes), [PDF/A and ZUGFeRD](https://github.com/phax/phlox/wiki/PDF-A), the [maven module structure](https://github.com/phax/phlox/wiki/Maven-Module-Structure), the [roadmap](https://github.com/phax/phlox/wiki/Roadmap) and the [news and noteworthy](https://github.com/phax/phlox/wiki/News-and-noteworthy).
