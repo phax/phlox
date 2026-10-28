@@ -11,7 +11,7 @@
 
 Visualizer for EN 16931 electronic invoices.
 
-Reads invoices in **UBL** or **CII** syntax, lifts them into a syntax-neutral intermediate model, and renders the result to **HTML**, **PDF** (optionally as **PDF/A**, **PDF/UA** or **ZUGFeRD / Factur-X** hybrid invoice) or **plain text** in English or German.
+Reads invoices in **UBL** or **CII** syntax, lifts them into a syntax-neutral intermediate model, and renders the result to **HTML**, **PDF** (optionally as **PDF/A**, **PDF/UA** or **ZUGFeRD / Factur-X** hybrid invoice) or **plain text** in English, German or Spanish.
 
 ```
 ┌────────────────┐     ┌──────────────────┐     ┌────────────────┐
@@ -84,7 +84,7 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `-f`, `--format` | `HTML` (default), `PDF` or `TEXT` |
 | `-s`, `--syntax` | `AUTO` (default), `UBL` or `CII` |
 | `--en-version` | `auto` (default), `2017` or `2026` |
-| `-l`, `--lang` | Output language, `en` or `de` |
+| `-l`, `--lang` | Output language, `en`, `de` or `es` |
 | `-t`, `--template` | `default`, `classpath:<path>` or the path of a `.ptpl` file |
 | `--theme` | JSON theme file |
 | `--logo` | Logo image (PNG, JPEG or GIF) |

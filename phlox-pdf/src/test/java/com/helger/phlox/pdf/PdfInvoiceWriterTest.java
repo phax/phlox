@@ -58,7 +58,7 @@ public final class PdfInvoiceWriterTest
       {
         final PhloxInvoice aModel = aReader.read (aIS, new ErrorList ());
         assertNotNull ("Failed to parse " + aRes.getPath (), aModel);
-        for (final Locale aLocale : new Locale [] { Locale.ENGLISH, Locale.GERMAN })
+        for (final Locale aLocale : new Locale [] { Locale.ENGLISH, Locale.GERMAN, Locale.forLanguageTag ("es") })
         {
           final PdfRenderContext aCtx = new PdfRenderContext ().setLocale (aLocale)
                                                                .setUserWatermark (WatermarkSpec.text ("DRAFT"));
