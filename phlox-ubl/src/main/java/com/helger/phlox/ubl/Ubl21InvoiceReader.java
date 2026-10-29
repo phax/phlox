@@ -486,8 +486,7 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
   {
     final PhloxSupportingDocument aOut = new PhloxSupportingDocument ();
     aOut.setReference (str (aRef.getIDValue ()));
-    aOut.setDescription (str (aRef.getDocumentDescriptionAtIndex (0) != null ? aRef.getDocumentDescriptionAtIndex (0)
-                                                                                    .getValue () : null));
+    aOut.setDescription (firstText (aRef.getDocumentDescription ()));
     if (aRef.getAttachment () != null)
     {
       final AttachmentType aAtt = aRef.getAttachment ();

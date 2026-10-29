@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
+import com.helger.cache.regex.RegExHelper;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931Edition;
@@ -48,6 +49,7 @@ import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.model.PhloxInvoiceLine;
 import com.helger.phlox.api.model.PhloxItemAttribute;
 import com.helger.phlox.api.model.PhloxPaymentTerms;
+import com.helger.phlox.api.model.PhloxSupportingDocument;
 import com.helger.phlox.testfiles.MockPhloxTestFiles;
 
 /**
@@ -69,6 +71,28 @@ public final class UblInvoiceReaderTest
     {
       final ErrorList aErrors = new ErrorList ();
       final PhloxInvoice aModel = aReader.read (aIS, aErrors);
+      assertNotNull ("Failed to parse " + sPath + " — errors: " + aErrors, aModel);
+      assertFalse ("Parsed " + sPath + " but produced errors: " + aErrors, aErrors.containsAtLeastOneError ());
+      return aModel;
+    }
+    catch (final IOException ex)
+    {
+      throw new IllegalStateException ("Failed to open " + sPath, ex);
+    }
+  }
+
+  @NonNull
+  private static PhloxInvoice _readWithoutDocumentDescription (final UblInvoiceReader aReader, final String sPath)
+  {
+    try (final InputStream aIS = new ClassPathResource (sPath).getInputStream ())
+    {
+      // BT-123 is optional
+      final String sXml = RegExHelper.stringReplacePattern ("<cbc:DocumentDescription>[^<]*</cbc:DocumentDescription>",
+                                                            new String (aIS.readAllBytes (), StandardCharsets.UTF_8),
+                                                            "");
+      final ErrorList aErrors = new ErrorList ();
+      final PhloxInvoice aModel = aReader.read (new NonBlockingByteArrayInputStream (sXml.getBytes (StandardCharsets.UTF_8)),
+                                                aErrors);
       assertNotNull ("Failed to parse " + sPath + " — errors: " + aErrors, aModel);
       assertFalse ("Parsed " + sPath + " but produced errors: " + aErrors, aErrors.containsAtLeastOneError ());
       return aModel;
@@ -410,5 +434,27 @@ public final class UblInvoiceReaderTest
     // The SEPA creditor identifier is BT-90 and not one of the seller identifiers BT-29
     for (final PhloxIdentifier aID : aModel.getSeller ().identifiers ())
       assertFalse ("SEPA".equals (aID.getSchemeID ()));
+  }
+
+  @Test
+  public void testSupportingDocumentWithoutDescription ()
+  {
+    // Issue #5: BG-24 with an attachment but without BT-123
+    final PhloxInvoice aModel21 = _readWithoutDocumentDescription (UblInvoiceReader.fromUbl21 (),
+                                                                   MockPhloxTestFiles.BASE_PATH +
+                                                                                                  "2017/ubl/invoice/ubl-tc434-example2.xml");
+    assertEquals (2, aModel21.supportingDocuments ().size ());
+    for (final PhloxSupportingDocument aDoc : aModel21.supportingDocuments ())
+      assertNull (aDoc.getDescription ());
+    assertEquals ("http://www.suppliersite.eu/sheet001.html",
+                  aModel21.supportingDocuments ().get (0).getExternalLocation ());
+    assertNotNull (aModel21.supportingDocuments ().get (1).getAttachment ());
+    assertEquals ("test.pdf", aModel21.supportingDocuments ().get (1).getAttachment ().getFilename ());
+
+    final PhloxInvoice aModel25 = _readWithoutDocumentDescription (UblInvoiceReader.fromUbl25 (),
+                                                                   BASE + "d25a-full-invoice-ubl.xml");
+    assertEquals (1, aModel25.supportingDocuments ().size ());
+    assertNull (aModel25.supportingDocuments ().get (0).getDescription ());
+    assertEquals ("https://example.org/doc", aModel25.supportingDocuments ().get (0).getExternalLocation ());
   }
 }
