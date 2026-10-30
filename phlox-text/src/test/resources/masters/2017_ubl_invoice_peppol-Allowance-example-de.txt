@@ -117,8 +117,15 @@ Nr.  Grund                Basisbetrag       %   Betrag
   3  (Cleaning) Charge       100,00 €  1,00 %  +1,00 €
 
   Positionsnummer 1 — Positionshinweis: Testing note on line level
+  Positionsnummer 1 — Buchungsreferenz Position: Konteringsstreng
   Positionsnummer 2 — Positionshinweis: Testing note on line level
+  Positionsnummer 2 — Positionszeitraum: 1. Dezember 2017 — 5. Dezember 2017
+  Positionsnummer 2 — Bestellpositionsreferenz der Rechnungsposition: 124
+  Positionsnummer 2 — Buchungsreferenz Position: Konteringsstreng
   Positionsnummer 3 — Positionshinweis: Testing note on line level
+  Positionsnummer 3 — Positionszeitraum: 1. Dezember 2017 — 5. Dezember 2017
+  Positionsnummer 3 — Bestellpositionsreferenz der Rechnungsposition: 124
+  Positionsnummer 3 — Buchungsreferenz Position: Konteringsstreng
 
 Nachlässe und Gebühren
 ----------------------

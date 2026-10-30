@@ -35,6 +35,8 @@ public class PhloxTemplateException extends PhloxRuntimeException
    */
   public enum EStage
   {
+    /** Loading the template, before any invoice is involved. */
+    LOAD,
     /** Mustache substitution of the invoice into the template. */
     SUBSTITUTE,
     /** CommonMark parsing of the substituted text. */

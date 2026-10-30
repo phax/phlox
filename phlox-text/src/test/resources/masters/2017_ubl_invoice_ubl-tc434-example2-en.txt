@@ -131,7 +131,22 @@ Invoice line charges and taxes
 1  Testing                  +NOK 12.00
 
   Invoice line identifier 1 — Invoice line note: Scratch on box
+  Invoice line identifier 1 — Invoice line period: June 1, 2013 — June 30, 2013
+  Invoice line identifier 1 — Invoice line purchase order line reference: 1
+  Invoice line identifier 1 — Invoice line buyer accounting reference:
+  BookingCode001
   Invoice line identifier 2 — Invoice line note: Cover is slightly damaged.
+  Invoice line identifier 2 — Invoice line purchase order line reference: 5
+  Invoice line identifier 2 — Invoice line buyer accounting reference:
+  BookingCode002
+  Invoice line identifier 3 — Invoice line purchase order line reference: 3
+  Invoice line identifier 3 — Invoice line buyer accounting reference:
+  BookingCode003
+  Invoice line identifier 4 — Invoice line purchase order line reference: 2
+  Invoice line identifier 4 — Invoice line buyer accounting reference:
+  BookingCode004
+  Invoice line identifier 5 — Invoice line buyer accounting reference:
+  BookingCode005
 
 Allowances and charges
 ----------------------

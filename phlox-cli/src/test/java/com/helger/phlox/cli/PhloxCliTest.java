@@ -169,6 +169,43 @@ public final class PhloxCliTest
   }
 
   @Test
+  public void testTemplateCoverage () throws IOException
+  {
+    final Path aTemplate = _tempFile (".ptpl");
+    Files.writeString (aTemplate, "# {{BT-1}}", StandardCharsets.UTF_8);
+    final Path aOut = _tempFile (".html");
+    final String sInvoice = _copyInvoice ().toString ();
+
+    // WARN is the default
+    assertEquals (0, _run ("-i", sInvoice, "-o", aOut.toString (), "-t", aTemplate.toString ()));
+    assertEquals (2,
+                  _run ("-i",
+                        sInvoice,
+                        "-o",
+                        aOut.toString (),
+                        "-t",
+                        aTemplate.toString (),
+                        "--template-coverage",
+                        "REJECT"));
+    assertEquals (0, _run ("-i", sInvoice, "-o", aOut.toString (), "--template-coverage", "REJECT"));
+
+    // Also for the template of a theme
+    final Path aTheme = _tempFile (".json");
+    Files.writeString (aTheme,
+                       "{\"common\": {\"template\": \"" + aTemplate.toString ().replace ("\\", "/") + "\"}}",
+                       StandardCharsets.UTF_8);
+    assertEquals (2,
+                  _run ("-i",
+                        sInvoice,
+                        "-o",
+                        aOut.toString (),
+                        "--theme",
+                        aTheme.toString (),
+                        "--template-coverage",
+                        "REJECT"));
+  }
+
+  @Test
   public void testTheme () throws IOException
   {
     final Path aTheme = _tempFile (".json");

@@ -188,207 +188,207 @@ G p2 S
 G p2 SC 0.50 0.50 0.50
 G p2 w 2.00
 G p2 m 57.69 499.06
-G p2 l 57.69 483.16
+G p2 l 57.69 447.46
 G p2 S
 G p2 sc 0.40 0.44 0.52
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 443.22
-G p2 l 184.00 443.22
+G p2 m 56.69 407.52
+G p2 l 184.00 407.52
 G p2 S
-G p2 m 184.00 443.22
-G p2 l 263.59 443.22
+G p2 m 184.00 407.52
+G p2 l 263.59 407.52
 G p2 S
-G p2 m 263.59 443.22
-G p2 l 321.50 443.22
+G p2 m 263.59 407.52
+G p2 l 321.50 407.52
 G p2 S
-G p2 m 321.50 443.22
-G p2 l 390.61 443.22
+G p2 m 321.50 407.52
+G p2 l 390.61 407.52
 G p2 S
-G p2 m 390.61 443.22
-G p2 l 475.07 443.22
+G p2 m 390.61 407.52
+G p2 l 475.07 407.52
 G p2 S
-G p2 m 475.07 443.22
-G p2 l 538.58 443.22
+G p2 m 475.07 407.52
+G p2 l 538.58 407.52
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 413.35
-G p2 l 184.00 413.35
+G p2 m 56.69 377.65
+G p2 l 184.00 377.65
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 184.00 413.35
-G p2 l 263.59 413.35
+G p2 m 184.00 377.65
+G p2 l 263.59 377.65
 G p2 S
-G p2 m 263.59 413.35
-G p2 l 321.50 413.35
+G p2 m 263.59 377.65
+G p2 l 321.50 377.65
 G p2 S
-G p2 m 321.50 413.35
-G p2 l 390.61 413.35
+G p2 m 321.50 377.65
+G p2 l 390.61 377.65
 G p2 S
-G p2 m 390.61 413.35
-G p2 l 475.07 413.35
+G p2 m 390.61 377.65
+G p2 l 475.07 377.65
 G p2 S
-G p2 m 475.07 413.35
-G p2 l 538.58 413.35
+G p2 m 475.07 377.65
+G p2 l 538.58 377.65
 G p2 S
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 397.67
-G p2 l 180.38 397.67
+G p2 m 56.69 361.97
+G p2 l 180.38 361.97
 G p2 S
 G p2 sc 0.40 0.44 0.52
-G p2 m 180.38 397.67
-G p2 l 264.37 397.67
+G p2 m 180.38 361.97
+G p2 l 264.37 361.97
 G p2 S
-G p2 m 264.37 397.67
-G p2 l 303.49 397.67
+G p2 m 264.37 361.97
+G p2 l 303.49 361.97
 G p2 S
-G p2 m 303.49 397.67
-G p2 l 381.80 397.67
+G p2 m 303.49 361.97
+G p2 l 381.80 361.97
 G p2 S
-G p2 m 381.80 397.67
-G p2 l 471.46 397.67
+G p2 m 381.80 361.97
+G p2 l 471.46 361.97
 G p2 S
-G p2 m 471.46 397.67
-G p2 l 538.58 397.67
-G p2 S
-G p2 SC 0.89 0.91 0.93
-G p2 w 0.50
-G p2 m 56.69 379.36
-G p2 l 180.38 379.36
-G p2 S
-G p2 sc 0.00 0.00 0.00
-G p2 m 180.38 379.36
-G p2 l 264.37 379.36
-G p2 S
-G p2 m 264.37 379.36
-G p2 l 303.49 379.36
-G p2 S
-G p2 m 303.49 379.36
-G p2 l 381.80 379.36
-G p2 S
-G p2 m 381.80 379.36
-G p2 l 471.46 379.36
-G p2 S
-G p2 m 471.46 379.36
-G p2 l 538.58 379.36
-G p2 S
-G p2 sc 0.40 0.44 0.52
-G p2 SC 0.11 0.14 0.20
-G p2 w 1.00
-G p2 m 56.69 334.24
-G p2 l 146.09 334.24
-G p2 S
-G p2 m 146.09 334.24
-G p2 l 213.52 334.24
-G p2 S
-G p2 m 213.52 334.24
-G p2 l 264.53 334.24
-G p2 S
-G p2 m 264.53 334.24
-G p2 l 322.19 334.24
+G p2 m 471.46 361.97
+G p2 l 538.58 361.97
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 315.93
-G p2 l 146.09 315.93
+G p2 m 56.69 343.66
+G p2 l 180.38 343.66
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 146.09 315.93
-G p2 l 213.52 315.93
+G p2 m 180.38 343.66
+G p2 l 264.37 343.66
 G p2 S
-G p2 m 213.52 315.93
-G p2 l 264.53 315.93
+G p2 m 264.37 343.66
+G p2 l 303.49 343.66
 G p2 S
-G p2 m 264.53 315.93
-G p2 l 322.19 315.93
+G p2 m 303.49 343.66
+G p2 l 381.80 343.66
 G p2 S
-G p2 m 56.69 274.75
-G p2 l 146.09 274.75
+G p2 m 381.80 343.66
+G p2 l 471.46 343.66
 G p2 S
-G p2 m 146.09 274.75
-G p2 l 213.52 274.75
-G p2 S
-G p2 m 213.52 274.75
-G p2 l 264.53 274.75
-G p2 S
-G p2 m 264.53 274.75
-G p2 l 322.19 274.75
-G p2 S
-G p2 SC 0.50 0.50 0.50
-G p2 w 2.00
-G p2 m 57.69 274.50
-G p2 l 57.69 258.94
-G p2 S
-G p2 sc 0.96 0.97 0.98
-G p2 re 336.19 137.03 202.39 242.08
-G p2 f
-G p2 SC 0.89 0.91 0.93
-G p2 w 0.50
-G p2 m 344.19 341.74
-G p2 l 465.33 341.74
-G p2 S
-G p2 sc 0.00 0.00 0.00
-G p2 m 465.33 341.74
-G p2 l 530.58 341.74
-G p2 S
-G p2 m 344.19 312.12
-G p2 l 465.33 312.12
-G p2 S
-G p2 m 465.33 312.12
-G p2 l 530.58 312.12
-G p2 S
-G p2 m 344.19 282.50
-G p2 l 465.33 282.50
-G p2 S
-G p2 m 465.33 282.50
-G p2 l 530.58 282.50
-G p2 S
-G p2 m 344.19 252.88
-G p2 l 465.33 252.88
-G p2 S
-G p2 m 465.33 252.88
-G p2 l 530.58 252.88
-G p2 S
-G p2 m 344.19 234.82
-G p2 l 465.33 234.82
-G p2 S
-G p2 m 465.33 234.82
-G p2 l 530.58 234.82
-G p2 S
-G p2 m 344.19 193.64
-G p2 l 465.33 193.64
-G p2 S
-G p2 m 465.33 193.64
-G p2 l 530.58 193.64
-G p2 S
-G p2 m 344.19 163.34
-G p2 l 465.33 163.34
-G p2 S
-G p2 m 465.33 163.34
-G p2 l 530.58 163.34
-G p2 S
-G p2 m 344.19 145.28
-G p2 l 465.33 145.28
-G p2 S
-G p2 m 465.33 145.28
-G p2 l 530.58 145.28
-G p2 S
-G p2 sc 0.14 0.36 0.39
-G p2 re 336.19 98.97 202.39 34.06
-G p2 f
-G p2 m 344.19 107.22
-G p2 l 434.29 107.22
-G p2 S
-G p2 sc 1.00 1.00 1.00
-G p2 m 434.29 107.22
-G p2 l 530.58 107.22
+G p2 m 471.46 343.66
+G p2 l 538.58 343.66
 G p2 S
 G p2 sc 0.83 0.83 0.83
 page 3 595.3x841.9
+G p3 sc 0.40 0.44 0.52
+G p3 SC 0.11 0.14 0.20
+G p3 w 1.00
+G p3 m 56.69 740.33
+G p3 l 146.09 740.33
+G p3 S
+G p3 m 146.09 740.33
+G p3 l 213.52 740.33
+G p3 S
+G p3 m 213.52 740.33
+G p3 l 264.53 740.33
+G p3 S
+G p3 m 264.53 740.33
+G p3 l 322.19 740.33
+G p3 S
+G p3 SC 0.89 0.91 0.93
+G p3 w 0.50
+G p3 m 56.69 722.02
+G p3 l 146.09 722.02
+G p3 S
+G p3 sc 0.00 0.00 0.00
+G p3 m 146.09 722.02
+G p3 l 213.52 722.02
+G p3 S
+G p3 m 213.52 722.02
+G p3 l 264.53 722.02
+G p3 S
+G p3 m 264.53 722.02
+G p3 l 322.19 722.02
+G p3 S
+G p3 m 56.69 680.84
+G p3 l 146.09 680.84
+G p3 S
+G p3 m 146.09 680.84
+G p3 l 213.52 680.84
+G p3 S
+G p3 m 213.52 680.84
+G p3 l 264.53 680.84
+G p3 S
+G p3 m 264.53 680.84
+G p3 l 322.19 680.84
+G p3 S
+G p3 SC 0.50 0.50 0.50
+G p3 w 2.00
+G p3 m 57.69 680.59
+G p3 l 57.69 665.03
+G p3 S
+G p3 sc 0.96 0.97 0.98
+G p3 re 336.19 543.12 202.39 242.08
+G p3 f
+G p3 SC 0.89 0.91 0.93
+G p3 w 0.50
+G p3 m 344.19 747.83
+G p3 l 465.33 747.83
+G p3 S
+G p3 sc 0.00 0.00 0.00
+G p3 m 465.33 747.83
+G p3 l 530.58 747.83
+G p3 S
+G p3 m 344.19 718.21
+G p3 l 465.33 718.21
+G p3 S
+G p3 m 465.33 718.21
+G p3 l 530.58 718.21
+G p3 S
+G p3 m 344.19 688.59
+G p3 l 465.33 688.59
+G p3 S
+G p3 m 465.33 688.59
+G p3 l 530.58 688.59
+G p3 S
+G p3 m 344.19 658.97
+G p3 l 465.33 658.97
+G p3 S
+G p3 m 465.33 658.97
+G p3 l 530.58 658.97
+G p3 S
+G p3 m 344.19 640.91
+G p3 l 465.33 640.91
+G p3 S
+G p3 m 465.33 640.91
+G p3 l 530.58 640.91
+G p3 S
+G p3 m 344.19 599.73
+G p3 l 465.33 599.73
+G p3 S
+G p3 m 465.33 599.73
+G p3 l 530.58 599.73
+G p3 S
+G p3 m 344.19 569.43
+G p3 l 465.33 569.43
+G p3 S
+G p3 m 465.33 569.43
+G p3 l 530.58 569.43
+G p3 S
+G p3 m 344.19 551.37
+G p3 l 465.33 551.37
+G p3 S
+G p3 m 465.33 551.37
+G p3 l 530.58 551.37
+G p3 S
+G p3 sc 0.14 0.36 0.39
+G p3 re 336.19 505.06 202.39 34.06
+G p3 f
+G p3 m 344.19 513.31
+G p3 l 434.29 513.31
+G p3 S
+G p3 sc 1.00 1.00 1.00
+G p3 m 434.29 513.31
+G p3 l 530.58 513.31
+G p3 S
 G p3 sc 0.91 0.95 0.95
-G p3 re 56.69 680.09 481.89 105.11
+G p3 re 56.69 391.95 481.89 105.11
 G p3 f
 G p3 sc 0.40 0.44 0.52
 G p3 sc 0.00 0.00 0.00
@@ -529,85 +529,88 @@ T p2 112.5 339.3 10.0 Helvetica-Oblique (Freight service) Line freight
 T p2 351.8 339.3 10.0 Helvetica € 100.00
 T p2 496.4 339.3 10.0 Helvetica +€ 10.00
 T p2 64.7 354.7 10.0 Helvetica-Bold Invoice line identifier 1 — Invoice line note: Line one note
-T p2 56.7 380.2 8.0 Helvetica-Bold ALLOWANCES AND CHARGES
-T p2 59.7 395.2 7.0 Helvetica-Bold REASON
-T p2 204.8 395.2 7.0 Helvetica-Bold BASE AMOUNT
-T p2 311.8 395.2 7.0 Helvetica-Bold %
-T p2 354.7 395.2 7.0 Helvetica-Bold AMOUNT
-T p2 393.6 395.2 7.0 Helvetica-Bold VAT CATEGORY
-T p2 498.1 395.2 7.0 Helvetica-Bold VAT RATE
-T p2 59.7 413.7 10.0 Helvetica Volume discount 
-T p2 59.7 425.3 10.0 Helvetica-Oblique (Discount)
-T p2 221.7 413.7 10.0 Helvetica € 100.00
-T p2 290.1 413.7 10.0 Helvetica 5.00%
-T p2 356.5 413.7 10.0 Helvetica -€ 5.00
-T p2 393.6 413.7 10.0 Helvetica Standard rate
-T p2 501.7 413.7 10.0 Helvetica 20.00%
-T p2 59.7 440.7 7.0 Helvetica-Bold REASON
-T p2 205.5 440.7 7.0 Helvetica-Bold BASE AMOUNT
-T p2 293.8 440.7 7.0 Helvetica-Bold %
-T p2 345.9 440.7 7.0 Helvetica-Bold AMOUNT
-T p2 384.8 440.7 7.0 Helvetica-Bold VAT CATEGORY
-T p2 498.1 440.7 7.0 Helvetica-Bold VAT RATE
-T p2 59.7 459.3 10.0 Helvetica Freight (Freight service)
-T p2 222.4 459.3 10.0 Helvetica € 100.00
-T p2 339.6 459.3 10.0 Helvetica +€ 15.00
-T p2 384.8 459.3 10.0 Helvetica Standard rate
-T p2 501.7 459.3 10.0 Helvetica 20.00%
-T p2 56.7 480.3 8.0 Helvetica-Bold VAT BREAKDOWN
-T p2 59.7 495.2 7.0 Helvetica-Bold VAT CATEGORY
-T p2 175.1 495.2 7.0 Helvetica-Bold TAXABLE
-T p2 177.6 504.1 7.0 Helvetica-Bold AMOUNT
-T p2 224.0 495.2 7.0 Helvetica-Bold VAT RATE
-T p2 269.2 495.2 7.0 Helvetica-Bold VAT AMOUNT
-T p2 59.7 522.7 10.0 Helvetica Standard rate
-T p2 171.6 522.7 10.0 Helvetica € 100.00
-T p2 227.6 522.7 10.0 Helvetica 20.00%
-T p2 285.8 522.7 10.0 Helvetica € 20.00
-T p2 59.7 540.8 10.0 Helvetica VAT Reverse
-T p2 59.7 552.3 10.0 Helvetica charge (Reverse
-T p2 59.7 563.9 10.0 Helvetica-Oblique charge)
-T p2 177.2 540.8 10.0 Helvetica € 50.00
-T p2 233.2 540.8 10.0 Helvetica 0.00%
-T p2 291.4 540.8 10.0 Helvetica € 0.00
-T p2 64.7 578.9 10.0 Helvetica VAT category code AE: Reverse charge
-T p2 347.2 485.3 10.0 Helvetica Sum of invoice line net
-T p2 347.2 496.9 10.0 Helvetica amounts
-T p2 488.7 485.3 10.0 Helvetica € 100.00
-T p2 347.2 515.0 10.0 Helvetica Sum of allowances on
-T p2 347.2 526.5 10.0 Helvetica document level
-T p2 496.5 515.0 10.0 Helvetica -€ 5.00
-T p2 347.2 544.6 10.0 Helvetica Sum of charges and
-T p2 347.2 556.1 10.0 Helvetica taxes on document level
-T p2 488.4 544.6 10.0 Helvetica +€ 15.00
-T p2 347.2 574.2 10.0 Helvetica Invoice total amount
-T p2 347.2 585.8 10.0 Helvetica without VAT
-T p2 488.7 574.2 10.0 Helvetica € 110.00
-T p2 347.2 603.8 10.0 Helvetica Invoice total VAT amount
-T p2 494.2 603.8 10.0 Helvetica € 22.00
-T p2 347.2 621.9 10.0 Helvetica Invoice total VAT amount
-T p2 347.2 633.4 10.0 Helvetica in VAT accounting
-T p2 347.2 645.0 10.0 Helvetica currency
-T p2 494.2 621.9 10.0 Helvetica $ 24.20
-T p2 347.2 663.4 10.0 Helvetica-Bold Invoice total amount
-T p2 347.2 675.3 10.0 Helvetica-Bold with VAT
-T p2 488.7 663.4 10.0 Helvetica-Bold € 132.00
-T p2 347.2 693.4 10.0 Helvetica Paid amount
-T p2 490.9 693.4 10.0 Helvetica -€ 32.00
-T p2 347.2 731.4 10.0 Helvetica Amount due
-T p2 488.7 731.4 10.0 Helvetica € 100.00
+T p2 64.7 366.6 10.0 Helvetica-Bold Invoice line identifier 1 — Invoice line object identifier: AVE:OBJ-1
+T p2 64.7 378.5 10.0 Helvetica-Bold Invoice line identifier 1 — Invoice line period: January 1, 2026 — January 31, 2026
+T p2 64.7 390.4 10.0 Helvetica-Bold Invoice line identifier 1 — Invoice line buyer accounting reference: LINE-COST-CENTRE
+T p2 56.7 415.9 8.0 Helvetica-Bold ALLOWANCES AND CHARGES
+T p2 59.7 430.9 7.0 Helvetica-Bold REASON
+T p2 204.8 430.9 7.0 Helvetica-Bold BASE AMOUNT
+T p2 311.8 430.9 7.0 Helvetica-Bold %
+T p2 354.7 430.9 7.0 Helvetica-Bold AMOUNT
+T p2 393.6 430.9 7.0 Helvetica-Bold VAT CATEGORY
+T p2 498.1 430.9 7.0 Helvetica-Bold VAT RATE
+T p2 59.7 449.4 10.0 Helvetica Volume discount 
+T p2 59.7 461.0 10.0 Helvetica-Oblique (Discount)
+T p2 221.7 449.4 10.0 Helvetica € 100.00
+T p2 290.1 449.4 10.0 Helvetica 5.00%
+T p2 356.5 449.4 10.0 Helvetica -€ 5.00
+T p2 393.6 449.4 10.0 Helvetica Standard rate
+T p2 501.7 449.4 10.0 Helvetica 20.00%
+T p2 59.7 476.4 7.0 Helvetica-Bold REASON
+T p2 205.5 476.4 7.0 Helvetica-Bold BASE AMOUNT
+T p2 293.8 476.4 7.0 Helvetica-Bold %
+T p2 345.9 476.4 7.0 Helvetica-Bold AMOUNT
+T p2 384.8 476.4 7.0 Helvetica-Bold VAT CATEGORY
+T p2 498.1 476.4 7.0 Helvetica-Bold VAT RATE
+T p2 59.7 495.0 10.0 Helvetica Freight (Freight service)
+T p2 222.4 495.0 10.0 Helvetica € 100.00
+T p2 339.6 495.0 10.0 Helvetica +€ 15.00
+T p2 384.8 495.0 10.0 Helvetica Standard rate
+T p2 501.7 495.0 10.0 Helvetica 20.00%
 T p2 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
-T p3 66.7 75.6 7.0 Helvetica-Bold Payment
-T p3 66.7 91.5 10.0 Helvetica-Bold Payment means type code: SEPA credit transfer
-T p3 66.7 103.4 10.0 Helvetica SEPA credit transfer
-T p3 66.7 115.3 10.0 Helvetica-Oblique Remittance information: REMIT-1
-T p3 66.7 128.2 7.0 Helvetica-Bold Credit transfer
-T p3 66.7 143.8 10.0 Helvetica •
-T p3 76.7 143.8 10.0 Helvetica Seller Account — AT611904300234573201 (BIC GIBAATWWXXX)
-T p3 56.7 183.3 8.0 Helvetica-Bold PAYMENT TERMS
-T p3 56.7 197.9 10.0 Helvetica Net 30 days
-T p3 56.7 219.4 8.0 Helvetica-Bold SUPPORTING DOCUMENTS
-T p3 56.7 234.0 10.0 Helvetica •
-T p3 66.7 234.3 10.0 Helvetica-Bold DOC-916 — Supporting document (https://example.org/doc)
-T p3 56.7 251.0 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2026 · Business process type: urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
+T p3 56.7 74.2 8.0 Helvetica-Bold VAT BREAKDOWN
+T p3 59.7 89.1 7.0 Helvetica-Bold VAT CATEGORY
+T p3 175.1 89.1 7.0 Helvetica-Bold TAXABLE
+T p3 177.6 98.1 7.0 Helvetica-Bold AMOUNT
+T p3 224.0 89.1 7.0 Helvetica-Bold VAT RATE
+T p3 269.2 89.1 7.0 Helvetica-Bold VAT AMOUNT
+T p3 59.7 116.6 10.0 Helvetica Standard rate
+T p3 171.6 116.6 10.0 Helvetica € 100.00
+T p3 227.6 116.6 10.0 Helvetica 20.00%
+T p3 285.8 116.6 10.0 Helvetica € 20.00
+T p3 59.7 134.7 10.0 Helvetica VAT Reverse
+T p3 59.7 146.2 10.0 Helvetica charge (Reverse
+T p3 59.7 157.8 10.0 Helvetica-Oblique charge)
+T p3 177.2 134.7 10.0 Helvetica € 50.00
+T p3 233.2 134.7 10.0 Helvetica 0.00%
+T p3 291.4 134.7 10.0 Helvetica € 0.00
+T p3 64.7 172.9 10.0 Helvetica VAT category code AE: Reverse charge
+T p3 347.2 79.3 10.0 Helvetica Sum of invoice line net
+T p3 347.2 90.8 10.0 Helvetica amounts
+T p3 488.7 79.3 10.0 Helvetica € 100.00
+T p3 347.2 108.9 10.0 Helvetica Sum of allowances on
+T p3 347.2 120.4 10.0 Helvetica document level
+T p3 496.5 108.9 10.0 Helvetica -€ 5.00
+T p3 347.2 138.5 10.0 Helvetica Sum of charges and
+T p3 347.2 150.1 10.0 Helvetica taxes on document level
+T p3 488.4 138.5 10.0 Helvetica +€ 15.00
+T p3 347.2 168.1 10.0 Helvetica Invoice total amount
+T p3 347.2 179.7 10.0 Helvetica without VAT
+T p3 488.7 168.1 10.0 Helvetica € 110.00
+T p3 347.2 197.7 10.0 Helvetica Invoice total VAT amount
+T p3 494.2 197.7 10.0 Helvetica € 22.00
+T p3 347.2 215.8 10.0 Helvetica Invoice total VAT amount
+T p3 347.2 227.4 10.0 Helvetica in VAT accounting
+T p3 347.2 238.9 10.0 Helvetica currency
+T p3 494.2 215.8 10.0 Helvetica $ 24.20
+T p3 347.2 257.3 10.0 Helvetica-Bold Invoice total amount
+T p3 347.2 269.2 10.0 Helvetica-Bold with VAT
+T p3 488.7 257.3 10.0 Helvetica-Bold € 132.00
+T p3 347.2 287.3 10.0 Helvetica Paid amount
+T p3 490.9 287.3 10.0 Helvetica -€ 32.00
+T p3 347.2 325.3 10.0 Helvetica Amount due
+T p3 488.7 325.3 10.0 Helvetica € 100.00
+T p3 66.7 363.8 7.0 Helvetica-Bold Payment
+T p3 66.7 379.7 10.0 Helvetica-Bold Payment means type code: SEPA credit transfer
+T p3 66.7 391.6 10.0 Helvetica SEPA credit transfer
+T p3 66.7 403.5 10.0 Helvetica-Oblique Remittance information: REMIT-1
+T p3 66.7 416.4 7.0 Helvetica-Bold Credit transfer
+T p3 66.7 431.9 10.0 Helvetica •
+T p3 76.7 431.9 10.0 Helvetica Seller Account — AT611904300234573201 (BIC GIBAATWWXXX)
+T p3 56.7 471.5 8.0 Helvetica-Bold PAYMENT TERMS
+T p3 56.7 486.0 10.0 Helvetica Net 30 days
+T p3 56.7 507.5 8.0 Helvetica-Bold SUPPORTING DOCUMENTS
+T p3 56.7 522.1 10.0 Helvetica •
+T p3 66.7 522.4 10.0 Helvetica-Bold DOC-916 — Supporting document (https://example.org/doc)
+T p3 56.7 539.1 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2026 · Business process type: urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
 T p3 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox

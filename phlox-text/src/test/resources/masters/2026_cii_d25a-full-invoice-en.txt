@@ -121,6 +121,11 @@ Invoice line charges and taxes
 1  (Freight service) Line freight     € 100.00     +€ 10.00
 
   Invoice line identifier 1 — Invoice line note: Line one note
+  Invoice line identifier 1 — Invoice line object identifier: AVE:OBJ-1
+  Invoice line identifier 1 — Invoice line period: January 1, 2026 — January 31,
+  2026
+  Invoice line identifier 1 — Invoice line buyer accounting reference:
+  LINE-COST-CENTRE
 
 Allowances and charges
 ----------------------

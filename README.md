@@ -86,6 +86,7 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `--en-version` | `auto` (default), `2017` or `2026` |
 | `-l`, `--lang` | Output language, `en`, `de`, `es`, `fr` or `nl` |
 | `-t`, `--template` | `default`, `classpath:<path>` or the path of a `.ptpl` file |
+| `--template-coverage` | `WARN` (default) logs the BTs a template does not show, `REJECT` refuses such a template |
 | `--theme` | JSON theme file |
 | `--logo` | Logo image (PNG, JPEG or GIF) |
 | `--font` | Regular font file (TTF or OTF) for HTML and PDF; also `--font-bold`, `--font-italic` and `--font-bold-italic` |

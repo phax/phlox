@@ -71,7 +71,7 @@
 
 {{?BG-4.BT-29}}{{label:BT-29}}: {{BG-4.BT-29}}
 {{/BG-4.BT-29}}{{?BG-4.BT-31}}{{label:BT-31}}: {{BG-4.BT-31}}
-{{/BG-4.BT-31}}{{?BG-4.BT-32}}{{label:BT-32}}: {{BG-4.BT-32}}
+{{/BG-4.BT-31}}{{?BG-4.BT-32}}{{label:BT-32}}: {{BG-4.BT-32}}{{?BG-4.BT-32-1}} ({{BG-4.BT-32-1}}){{/BG-4.BT-32-1}}
 {{/BG-4.BT-32}}{{?BG-4.BT-30}}{{label:BT-30}}: {{BG-4.BT-30}}
 {{/BG-4.BT-30}}{{?BG-4.BT-34}}{{label:BT-34}}: {{BG-4.BT-34}}
 {{/BG-4.BT-34}}{{?BG-4.BG-6.BT-41}}{{BG-4.BG-6.BT-41}}{{?BG-4.BG-6.BT-42}} · {{BG-4.BG-6.BT-42}}{{/BG-4.BG-6.BT-42}}{{?BG-4.BG-6.BT-43}} · [{{BG-4.BG-6.BT-43}}](mailto:{{BG-4.BG-6.BT-43}}){{/BG-4.BG-6.BT-43}}
@@ -292,13 +292,19 @@
 
 | {{label:section.lines.column.number}} | {{label:section.table.column.reason}} | {{label:section.table.column.base}} | {{label:section.table.column.percentage}} | {{label:section.table.column.amount}} |
 |---:|---|---:|---:|---:|
-{{#BG-25}}{{#BG-28}}| {{..BT-126}} | {{?BT-145}}*({{BT-145 | code:chargereason}})* {{/BT-145}}{{BT-144}}{{?BT-193}} ({{label:BT-193}}: {{BT-193}}){{/BT-193}} | {{BT-142 | amount}} | {{BT-143 | percent}} | +{{BT-141 | amount}} |
+{{#BG-25}}{{#BG-28}}| {{..BT-126}} | {{?BT-145}}*({{BT-145 | code:chargereason}})* {{/BT-145}}{{BT-144}}{{?BT-193}} ({{label:BT-193}}: {{BT-193}}{{?BT-193-1}}, {{BT-193-1}}{{/BT-193-1}}){{/BT-193}} | {{BT-142 | amount}} | {{BT-143 | percent}} | +{{BT-141 | amount}} |
 {{/BG-28}}{{/BG-25}}
 {{/line_charges_present}}
 
 {{!
   Line-level extras — only emitted when at least one line has them
   BT-127  Invoice line note                   (0..1, per line)
+  BT-128  Invoice line object identifier      (0..1, per line)
+  BG-26   Invoice line period                 (0..1, per line)
+    BT-134 Period start date                  (0..1)
+    BT-135 Period end date                    (0..1)
+  BT-132  Purchase order line reference       (0..1, per line)
+  BT-133  Buyer accounting reference          (0..1, per line)
   BG-27   Invoice line allowance              (0..n, per line)
     BT-136 Allowance amount                   (1..1)
     BT-139 Allowance reason                   (0..1)
@@ -327,6 +333,18 @@
 {{?BT-127}}
 > **{{label:BT-126}} {{BT-126}} — {{label:BT-127}}:** {{BT-127}}
 {{/BT-127}}
+{{?BT-128}}
+> **{{label:BT-126}} {{BT-126}} — {{label:BT-128}}:** {{BT-128}}
+{{/BT-128}}
+{{?BG-26}}
+> **{{label:BT-126}} {{BT-126}} — {{label:BG-26}}:** {{BG-26.BT-134 | date:long}} — {{BG-26.BT-135 | date:long}}
+{{/BG-26}}
+{{?BT-132}}
+> **{{label:BT-126}} {{BT-126}} — {{label:BT-132}}:** {{BT-132}}
+{{/BT-132}}
+{{?BT-133}}
+> **{{label:BT-126}} {{BT-126}} — {{label:BT-133}}:** {{BT-133}}
+{{/BT-133}}
 {{?BT-188}}
 > **{{label:BT-126}} {{BT-126}} — {{label:BT-188}}:** {{BT-188}}
 {{/BT-188}}

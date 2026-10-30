@@ -43,6 +43,8 @@ Invoice lines
 1  Test item, category Z                              10 each    £ 120.00  Exempt from tax 0.00%  £ 1,200.00
    Item standard identifier: 0160:192387129837129873
 
+  Invoice line identifier 1 — Invoice line purchase order line reference: 1
+
 VAT breakdown
 -------------
 

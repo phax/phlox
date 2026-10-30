@@ -117,8 +117,20 @@ Invoice line charges and taxes
 3  (Cleaning) Charge       € 100.00  1.00%  +€ 1.00
 
   Invoice line identifier 1 — Invoice line note: Testing note on line level
+  Invoice line identifier 1 — Invoice line buyer accounting reference:
+  Konteringsstreng
   Invoice line identifier 2 — Invoice line note: Testing note on line level
+  Invoice line identifier 2 — Invoice line period: December 1, 2017 — December
+  5, 2017
+  Invoice line identifier 2 — Invoice line purchase order line reference: 124
+  Invoice line identifier 2 — Invoice line buyer accounting reference:
+  Konteringsstreng
   Invoice line identifier 3 — Invoice line note: Testing note on line level
+  Invoice line identifier 3 — Invoice line period: December 1, 2017 — December
+  5, 2017
+  Invoice line identifier 3 — Invoice line purchase order line reference: 124
+  Invoice line identifier 3 — Invoice line buyer accounting reference:
+  Konteringsstreng
 
 Allowances and charges
 ----------------------

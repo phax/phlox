@@ -121,6 +121,9 @@ Nr.  Grund                           Basisbetrag  %    Betrag
   1  (Freight service) Line freight     100,00 €     +10,00 €
 
   Positionsnummer 1 — Positionshinweis: Line one note
+  Positionsnummer 1 — Positions-Referenzobjekt-Kennung: AVE:OBJ-1
+  Positionsnummer 1 — Positionszeitraum: 1. Januar 2026 — 31. Januar 2026
+  Positionsnummer 1 — Buchungsreferenz Position: LINE-COST-CENTRE
 
 Nachlässe und Gebühren
 ----------------------

@@ -17,8 +17,10 @@
 package com.helger.phlox.template;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -368,5 +370,50 @@ public final class PhloxTemplateTest
     final PhloxLocalizedTemplate aLocalized = aTpl.localize (aCtx);
     assertTrue ("locale-baked source must not contain any {{label:...}} markers",
                 !aLocalized.getLocaleBakedSource ().contains ("{{label:"));
+  }
+
+  @Test
+  public void testDefaultTemplateShowsAllBTs ()
+  {
+    assertEquals ("[]", PhloxTemplate.getDefault ().getMissingBTs ().toString ());
+    // Passes in the strict mode as well
+    PhloxTemplate.getDefault ().checkCoverage (EPhloxTemplateCoverageMode.REJECT);
+  }
+
+  @Test
+  public void testCoverageWarnKeepsTemplate ()
+  {
+    final PhloxTemplate aTemplate = PhloxTemplate.fromString ("# {{BT-1}}");
+    assertTrue (aTemplate.getMissingBTs ().contains ("BT-2"));
+    assertFalse (aTemplate.getMissingBTs ().contains ("BT-1"));
+  }
+
+  @Test
+  public void testCoverageReject ()
+  {
+    final PhloxTemplateException ex = assertThrows (PhloxTemplateException.class,
+                                                    () -> PhloxTemplate.fromString ("# {{BT-1}}",
+                                                                                    EPhloxTemplateCoverageMode.REJECT));
+    assertEquals (PhloxTemplateException.EStage.LOAD, ex.getStage ());
+    assertTrue (ex.getMessage (), ex.getMessage ().contains ("BT-2,"));
+
+    // A complete template is accepted, also from the classpath
+    assertNotNull (PhloxTemplate.fromClasspath (PhloxTemplate.DEFAULT_CLASSPATH_PATH,
+                                                EPhloxTemplateCoverageMode.REJECT));
+  }
+
+  @Test
+  public void testLineExtrasShowLineOnlyTerms ()
+  {
+    final PhloxInvoice aInvoice = _buildMinimalInvoice ();
+    final PhloxInvoiceLine aLine = aInvoice.lines ().get (0);
+    aLine.setObjectIdentifier (new PhloxIdentifier ("OBJ-1", "AWV"));
+    aLine.setPurchaseOrderLineRef ("POL-7");
+    aLine.setAccountingCost ("COST-3");
+
+    final String sOut = PhloxTemplate.getDefault ().renderSubstituted (aInvoice, new TestCtx ());
+    assertTrue (sOut, sOut.contains ("AWV:OBJ-1"));
+    assertTrue (sOut, sOut.contains ("POL-7"));
+    assertTrue (sOut, sOut.contains ("COST-3"));
   }
 }

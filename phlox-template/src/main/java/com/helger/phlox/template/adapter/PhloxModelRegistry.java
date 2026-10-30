@@ -17,13 +17,20 @@
 package com.helger.phlox.template.adapter;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.style.ReturnsMutableCopy;
 import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxBuyer;
@@ -77,6 +84,8 @@ import com.helger.phlox.api.model.PhloxVatBreakdown;
 public final class PhloxModelRegistry
 {
   private static final ICommonsMap <Class <?>, ICommonsMap <String, Function <Object, Object>>> REG = new CommonsHashMap <> ();
+  // A real business term, unlike the derived names such as "BT-149-if-not-one"
+  private static final Pattern BT_NAME = Pattern.compile ("BT-\\d+(?:-\\d+)?");
 
   private PhloxModelRegistry ()
   {}
@@ -534,6 +543,34 @@ public final class PhloxModelRegistry
     if (aGetter == null)
       return null;
     return aGetter.apply (aCtx);
+  }
+
+  /**
+   * @return The sort key of a BT name, so that BT-9 comes before BT-10 and BT-32-1 after BT-32.
+   */
+  private static int _getBTSortKey (@NonNull final String sBT)
+  {
+    final List <String> aParts = StringHelper.getExploded ('-', sBT);
+    final int nMain = Integer.parseInt (aParts.get (1));
+    return nMain * 100 + (aParts.size () > 2 ? Integer.parseInt (aParts.get (2)) : 0);
+  }
+
+  /**
+   * Get all registered business terms, which is what a template has to show to cover the model.
+   * Derived names and the business groups, which are only containers, are not part of it.
+   *
+   * @return The names of all BTs in numerical order. Never {@code null}.
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public static ICommonsList <String> getAllBTs ()
+  {
+    final TreeSet <String> aBTs = new TreeSet <> (Comparator.comparingInt (PhloxModelRegistry::_getBTSortKey));
+    for (final ICommonsMap <String, Function <Object, Object>> aMap : REG.values ())
+      for (final String sName : aMap.keySet ())
+        if (BT_NAME.matcher (sName).matches ())
+          aBTs.add (sName);
+    return new CommonsArrayList <> (aBTs);
   }
 
   /**

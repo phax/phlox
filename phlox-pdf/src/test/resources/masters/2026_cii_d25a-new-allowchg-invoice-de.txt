@@ -188,91 +188,91 @@ G p2 S
 G p2 SC 0.50 0.50 0.50
 G p2 w 2.00
 G p2 m 57.69 478.24
-G p2 l 57.69 462.34
+G p2 l 57.69 426.64
 G p2 S
 G p2 sc 0.40 0.44 0.52
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 422.39
-G p2 l 193.20 422.39
+G p2 m 56.69 386.69
+G p2 l 193.20 386.69
 G p2 S
-G p2 m 193.20 422.39
-G p2 l 263.85 422.39
+G p2 m 193.20 386.69
+G p2 l 263.85 386.69
 G p2 S
-G p2 m 263.85 422.39
-G p2 l 315.46 422.39
+G p2 m 263.85 386.69
+G p2 l 315.46 386.69
 G p2 S
-G p2 m 315.46 422.39
-G p2 l 372.68 422.39
+G p2 m 315.46 386.69
+G p2 l 372.68 386.69
 G p2 S
-G p2 m 372.68 422.39
-G p2 l 481.37 422.39
+G p2 m 372.68 386.69
+G p2 l 481.37 386.69
 G p2 S
-G p2 m 481.37 422.39
-G p2 l 538.58 422.39
+G p2 m 481.37 386.69
+G p2 l 538.58 386.69
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 380.96
-G p2 l 193.20 380.96
+G p2 m 56.69 345.26
+G p2 l 193.20 345.26
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 193.20 380.96
-G p2 l 263.85 380.96
+G p2 m 193.20 345.26
+G p2 l 263.85 345.26
 G p2 S
-G p2 m 263.85 380.96
-G p2 l 315.46 380.96
+G p2 m 263.85 345.26
+G p2 l 315.46 345.26
 G p2 S
-G p2 m 315.46 380.96
-G p2 l 372.68 380.96
+G p2 m 315.46 345.26
+G p2 l 372.68 345.26
 G p2 S
-G p2 m 372.68 380.96
-G p2 l 481.37 380.96
+G p2 m 372.68 345.26
+G p2 l 481.37 345.26
 G p2 S
-G p2 m 481.37 380.96
-G p2 l 538.58 380.96
+G p2 m 481.37 345.26
+G p2 l 538.58 345.26
 G p2 S
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 365.29
-G p2 l 221.99 365.29
+G p2 m 56.69 329.59
+G p2 l 221.99 329.59
 G p2 S
 G p2 sc 0.40 0.44 0.52
-G p2 m 221.99 365.29
-G p2 l 291.30 365.29
+G p2 m 221.99 329.59
+G p2 l 291.30 329.59
 G p2 S
-G p2 m 291.30 365.29
-G p2 l 313.83 365.29
+G p2 m 291.30 329.59
+G p2 l 313.83 329.59
 G p2 S
-G p2 m 313.83 365.29
-G p2 l 375.57 365.29
+G p2 m 313.83 329.59
+G p2 l 375.57 329.59
 G p2 S
-G p2 m 375.57 365.29
-G p2 l 482.45 365.29
+G p2 m 375.57 329.59
+G p2 l 482.45 329.59
 G p2 S
-G p2 m 482.45 365.29
-G p2 l 538.58 365.29
+G p2 m 482.45 329.59
+G p2 l 538.58 329.59
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 300.74
-G p2 l 221.99 300.74
+G p2 m 56.69 265.04
+G p2 l 221.99 265.04
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 221.99 300.74
-G p2 l 291.30 300.74
+G p2 m 221.99 265.04
+G p2 l 291.30 265.04
 G p2 S
-G p2 m 291.30 300.74
-G p2 l 313.83 300.74
+G p2 m 291.30 265.04
+G p2 l 313.83 265.04
 G p2 S
-G p2 m 313.83 300.74
-G p2 l 375.57 300.74
+G p2 m 313.83 265.04
+G p2 l 375.57 265.04
 G p2 S
-G p2 m 375.57 300.74
-G p2 l 482.45 300.74
+G p2 m 375.57 265.04
+G p2 l 482.45 265.04
 G p2 S
-G p2 m 482.45 300.74
-G p2 l 538.58 300.74
+G p2 m 482.45 265.04
+G p2 l 538.58 265.04
 G p2 S
 G p2 sc 0.83 0.83 0.83
 page 3 595.3x841.9
@@ -538,36 +538,39 @@ T p2 116.6 360.2 10.0 Helvetica-Oblique (Freight service) Line freight
 T p2 354.8 360.2 10.0 Helvetica 100,00 €
 T p2 496.4 360.2 10.0 Helvetica +10,00 €
 T p2 64.7 375.6 10.0 Helvetica-Bold Positionsnummer 1 — Positionshinweis: Line one note
-T p2 56.7 401.1 8.0 Helvetica-Bold NACHLÄSSE UND GEBÜHREN
-T p2 59.7 416.0 7.0 Helvetica-Bold GRUND
-T p2 206.3 416.0 7.0 Helvetica-Bold BASISBETRAG
-T p2 305.8 416.0 7.0 Helvetica-Bold %
-T p2 338.0 416.0 7.0 Helvetica-Bold BETRAG
-T p2 375.7 416.0 7.0 Helvetica-Bold UST-KATEGORIE
-T p2 498.5 416.0 7.0 Helvetica-Bold UST-SATZ
-T p2 59.7 434.6 10.0 Helvetica Volume discount (Discount)
-T p2 59.7 446.1 10.0 Helvetica  — Intra-community supply
-T p2 59.7 457.7 10.0 Helvetica (VATEX-EU-IC) [SUPPLY-A]
-T p2 221.9 434.6 10.0 Helvetica 100,00 €
-T p2 281.3 434.6 10.0 Helvetica 5,00 %
-T p2 338.5 434.6 10.0 Helvetica -5,00 €
-T p2 375.7 434.6 10.0 Helvetica Regelsteuersatz
-T p2 498.9 434.6 10.0 Helvetica 20,00 %
-T p2 59.7 473.1 7.0 Helvetica-Bold GRUND
-T p2 233.7 473.1 7.0 Helvetica-Bold BASISBETRAG
-T p2 304.2 473.1 7.0 Helvetica-Bold %
-T p2 340.9 473.1 7.0 Helvetica-Bold BETRAG
-T p2 378.6 473.1 7.0 Helvetica-Bold UST-KATEGORIE
-T p2 498.5 473.1 7.0 Helvetica-Bold UST-SATZ
-T p2 59.7 491.7 10.0 Helvetica Environmental tax — Not subject
-T p2 59.7 503.2 10.0 Helvetica to VAT (VATEX-EU-O) (Nicht
-T p2 59.7 514.8 10.0 Helvetica umsatzsteuerbezogener Code auf
-T p2 59.7 526.3 10.0 Helvetica Dokumentenebene: ENV, 5153)
-T p2 59.7 537.9 10.0 Helvetica [SUPPLY-B]
-T p2 249.4 491.7 10.0 Helvetica 100,00 €
-T p2 333.4 491.7 10.0 Helvetica +15,00 €
-T p2 378.6 491.7 10.0 Helvetica Regelsteuersatz
-T p2 498.9 491.7 10.0 Helvetica 20,00 %
+T p2 64.7 387.5 10.0 Helvetica-Bold Positionsnummer 1 — Positions-Referenzobjekt-Kennung: AVE:OBJ-1
+T p2 64.7 399.4 10.0 Helvetica-Bold Positionsnummer 1 — Positionszeitraum: 1. Januar 2026 — 31. Januar 2026
+T p2 64.7 411.3 10.0 Helvetica-Bold Positionsnummer 1 — Buchungsreferenz Position: LINE-COST-CENTRE
+T p2 56.7 436.8 8.0 Helvetica-Bold NACHLÄSSE UND GEBÜHREN
+T p2 59.7 451.7 7.0 Helvetica-Bold GRUND
+T p2 206.3 451.7 7.0 Helvetica-Bold BASISBETRAG
+T p2 305.8 451.7 7.0 Helvetica-Bold %
+T p2 338.0 451.7 7.0 Helvetica-Bold BETRAG
+T p2 375.7 451.7 7.0 Helvetica-Bold UST-KATEGORIE
+T p2 498.5 451.7 7.0 Helvetica-Bold UST-SATZ
+T p2 59.7 470.3 10.0 Helvetica Volume discount (Discount)
+T p2 59.7 481.8 10.0 Helvetica  — Intra-community supply
+T p2 59.7 493.4 10.0 Helvetica (VATEX-EU-IC) [SUPPLY-A]
+T p2 221.9 470.3 10.0 Helvetica 100,00 €
+T p2 281.3 470.3 10.0 Helvetica 5,00 %
+T p2 338.5 470.3 10.0 Helvetica -5,00 €
+T p2 375.7 470.3 10.0 Helvetica Regelsteuersatz
+T p2 498.9 470.3 10.0 Helvetica 20,00 %
+T p2 59.7 508.8 7.0 Helvetica-Bold GRUND
+T p2 233.7 508.8 7.0 Helvetica-Bold BASISBETRAG
+T p2 304.2 508.8 7.0 Helvetica-Bold %
+T p2 340.9 508.8 7.0 Helvetica-Bold BETRAG
+T p2 378.6 508.8 7.0 Helvetica-Bold UST-KATEGORIE
+T p2 498.5 508.8 7.0 Helvetica-Bold UST-SATZ
+T p2 59.7 527.4 10.0 Helvetica Environmental tax — Not subject
+T p2 59.7 538.9 10.0 Helvetica to VAT (VATEX-EU-O) (Nicht
+T p2 59.7 550.5 10.0 Helvetica umsatzsteuerbezogener Code auf
+T p2 59.7 562.0 10.0 Helvetica Dokumentenebene: ENV, 5153)
+T p2 59.7 573.6 10.0 Helvetica [SUPPLY-B]
+T p2 249.4 527.4 10.0 Helvetica 100,00 €
+T p2 333.4 527.4 10.0 Helvetica +15,00 €
+T p2 378.6 527.4 10.0 Helvetica Regelsteuersatz
+T p2 498.9 527.4 10.0 Helvetica 20,00 %
 T p2 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
 T p3 56.7 74.2 8.0 Helvetica-Bold STEUERAUFSCHLÜSSELUNG
 T p3 59.7 89.1 7.0 Helvetica-Bold UST-KATEGORIE

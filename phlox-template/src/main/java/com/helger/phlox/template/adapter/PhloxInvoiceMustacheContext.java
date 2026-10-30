@@ -163,7 +163,7 @@ public final class PhloxInvoiceMustacheContext
   {}
 
   @NonNull
-  private static String _stripComments (@NonNull final String sSource)
+  static String stripComments (@NonNull final String sSource)
   {
     final String sNoBlock = BLOCK_COMMENT.matcher (sSource).replaceAll ("");
     return INLINE_COMMENT.matcher (sNoBlock).replaceAll ("");
@@ -210,7 +210,7 @@ public final class PhloxInvoiceMustacheContext
 
         final String sInside = sSource.substring (i + 2, nEnd).trim ();
 
-        // Comments should already have been stripped by _stripComments before we get here;
+        // Comments should already have been stripped by stripComments before we get here;
         // if any survive (e.g. a one-line `{{! foo }}`), emit verbatim and let JMustache
         // discard them.
         if (sInside.startsWith ("!"))
@@ -551,7 +551,13 @@ public final class PhloxInvoiceMustacheContext
   {
     for (final PhloxInvoiceLine aLine : aInv.lines ())
     {
-      if (StringHelper.isNotEmpty (aLine.getNote ()))
+      if (StringHelper.isNotEmpty (aLine.getNote ()) ||
+          StringHelper.isNotEmpty (aLine.getPurchaseOrderLineRef ()) ||
+          StringHelper.isNotEmpty (aLine.getAccountingCost ()) ||
+          aLine.getPeriod () != null)
+        return true;
+      final PhloxIdentifier aObj = aLine.getObjectIdentifier ();
+      if (aObj != null && StringHelper.isNotEmpty (aObj.getValue ()))
         return true;
       if (StringHelper.isNotEmpty (aLine.getPurchaseOrderReference ()) ||
           StringHelper.isNotEmpty (aLine.getSalesOrderReference ()) ||
@@ -688,7 +694,7 @@ public final class PhloxInvoiceMustacheContext
                                    @NonNull final Locale aLocale,
                                    @NonNull final IPhloxLabelResolver aResolver)
   {
-    final String sNoComments = _stripComments (sSource);
+    final String sNoComments = stripComments (sSource);
     final String sLabelBaked = _bakeLabels (sNoComments, aLocale, aResolver);
     return _encodePresenceChecks (sLabelBaked);
   }

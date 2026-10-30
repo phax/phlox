@@ -84,76 +84,81 @@ G p1 S
 G p1 m 460.17 447.04
 G p1 l 538.58 447.04
 G p1 S
+G p1 SC 0.50 0.50 0.50
+G p1 w 2.00
+G p1 m 57.69 446.79
+G p1 l 57.69 430.89
+G p1 S
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.11 0.14 0.20
 G p1 w 1.00
-G p1 m 56.69 401.92
-G p1 l 168.70 401.92
+G p1 m 56.69 382.02
+G p1 l 168.70 382.02
 G p1 S
-G p1 m 168.70 401.92
-G p1 l 237.74 401.92
+G p1 m 168.70 382.02
+G p1 l 237.74 382.02
 G p1 S
-G p1 m 237.74 401.92
-G p1 l 276.99 401.92
+G p1 m 237.74 382.02
+G p1 l 276.99 382.02
 G p1 S
-G p1 m 276.99 401.92
-G p1 l 322.19 401.92
+G p1 m 276.99 382.02
+G p1 l 322.19 382.02
 G p1 S
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
-G p1 m 56.69 348.93
-G p1 l 168.70 348.93
+G p1 m 56.69 329.03
+G p1 l 168.70 329.03
 G p1 S
 G p1 sc 0.00 0.00 0.00
-G p1 m 168.70 348.93
-G p1 l 237.74 348.93
+G p1 m 168.70 329.03
+G p1 l 237.74 329.03
 G p1 S
-G p1 m 237.74 348.93
-G p1 l 276.99 348.93
+G p1 m 237.74 329.03
+G p1 l 276.99 329.03
 G p1 S
-G p1 m 276.99 348.93
-G p1 l 322.19 348.93
+G p1 m 276.99 329.03
+G p1 l 322.19 329.03
 G p1 S
 G p1 sc 0.96 0.97 0.98
-G p1 re 336.19 311.63 202.39 135.16
+G p1 re 336.19 291.73 202.39 135.16
 G p1 f
-G p1 m 344.19 409.42
-G p1 l 449.08 409.42
+G p1 m 344.19 389.52
+G p1 l 449.08 389.52
 G p1 S
 G p1 sc 0.00 0.00 0.00
-G p1 m 449.08 409.42
-G p1 l 530.58 409.42
+G p1 m 449.08 389.52
+G p1 l 530.58 389.52
 G p1 S
-G p1 m 344.19 379.80
-G p1 l 449.08 379.80
+G p1 m 344.19 359.90
+G p1 l 449.08 359.90
 G p1 S
-G p1 m 449.08 379.80
-G p1 l 530.58 379.80
+G p1 m 449.08 359.90
+G p1 l 530.58 359.90
 G p1 S
-G p1 m 344.19 350.18
-G p1 l 449.08 350.18
+G p1 m 344.19 330.28
+G p1 l 449.08 330.28
 G p1 S
-G p1 m 449.08 350.18
-G p1 l 530.58 350.18
+G p1 m 449.08 330.28
+G p1 l 530.58 330.28
 G p1 S
-G p1 m 344.19 319.88
-G p1 l 449.08 319.88
+G p1 m 344.19 299.98
+G p1 l 449.08 299.98
 G p1 S
-G p1 m 449.08 319.88
-G p1 l 530.58 319.88
+G p1 m 449.08 299.98
+G p1 l 530.58 299.98
 G p1 S
 G p1 sc 0.14 0.36 0.39
-G p1 re 336.19 273.57 202.39 34.06
+G p1 re 336.19 253.67 202.39 34.06
 G p1 f
-G p1 m 344.19 281.82
-G p1 l 426.30 281.82
+G p1 m 344.19 261.92
+G p1 l 426.30 261.92
 G p1 S
 G p1 sc 1.00 1.00 1.00
-G p1 m 426.30 281.82
-G p1 l 530.58 281.82
+G p1 m 426.30 261.92
+G p1 l 530.58 261.92
 G p1 S
 G p1 sc 0.91 0.95 0.95
-G p1 re 56.69 184.26 481.89 81.31
+G p1 re 56.69 164.36 481.89 81.31
 G p1 f
 G p1 sc 0.40 0.44 0.52
 G p1 sc 0.00 0.00 0.00
@@ -205,42 +210,43 @@ T p1 346.4 367.5 10.0 Helvetica £ 120.00
 T p1 400.5 367.5 10.0 Helvetica Exempt from
 T p1 412.7 379.0 10.0 Helvetica tax 0.00%
 T p1 488.3 367.5 10.0 Helvetica £ 1,200.00
-T p1 56.7 412.6 8.0 Helvetica-Bold VAT BREAKDOWN
-T p1 59.7 427.5 7.0 Helvetica-Bold VAT CATEGORY
-T p1 199.3 427.5 7.0 Helvetica-Bold TAXABLE
-T p1 201.8 436.5 7.0 Helvetica-Bold AMOUNT
-T p1 259.0 427.5 7.0 Helvetica-Bold VAT
-T p1 253.6 436.5 7.0 Helvetica-Bold RATE
-T p1 304.2 427.5 7.0 Helvetica-Bold VAT
-T p1 286.3 436.5 7.0 Helvetica-Bold AMOUNT
-T p1 59.7 455.0 10.0 Helvetica Exempt from tax 
-T p1 59.7 466.6 10.0 Helvetica-Oblique (Intra-Community
-T p1 59.7 478.1 10.0 Helvetica-Oblique acquisition of second
-T p1 59.7 489.7 10.0 Helvetica-Oblique hand goods)
-T p1 187.5 455.0 10.0 Helvetica £ 1,200.00
-T p1 245.6 455.0 10.0 Helvetica 0.00%
-T p1 291.4 455.0 10.0 Helvetica £ 0.00
-T p1 347.2 417.7 10.0 Helvetica Sum of invoice line
-T p1 347.2 429.2 10.0 Helvetica net amounts
-T p1 480.3 417.7 10.0 Helvetica £ 1,200.00
-T p1 347.2 447.3 10.0 Helvetica Invoice total amount
-T p1 347.2 458.8 10.0 Helvetica without VAT
-T p1 480.3 447.3 10.0 Helvetica £ 1,200.00
-T p1 347.2 476.9 10.0 Helvetica Invoice total VAT
-T p1 347.2 488.5 10.0 Helvetica amount
-T p1 499.8 476.9 10.0 Helvetica £ 0.00
-T p1 347.2 506.9 10.0 Helvetica-Bold Invoice total
-T p1 347.2 518.8 10.0 Helvetica-Bold amount with VAT
-T p1 480.3 506.9 10.0 Helvetica-Bold £ 1,200.00
-T p1 347.2 556.8 10.0 Helvetica Amount due
-T p1 480.3 556.8 10.0 Helvetica £ 1,200.00
-T p1 66.7 595.2 7.0 Helvetica-Bold Payment
-T p1 66.7 611.1 10.0 Helvetica-Bold Payment means type code: Credit transfer
-T p1 66.7 624.1 7.0 Helvetica-Bold Credit transfer
-T p1 66.7 639.6 10.0 Helvetica •
-T p1 76.7 639.6 10.0 Courier SE1212341234123412 (BIC SEXDABCD)
-T p1 56.7 679.1 8.0 Helvetica-Bold PAYMENT TERMS
-T p1 56.7 693.7 10.0 Helvetica Payment within 30 days
-T p1 56.7 706.4 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0 · Business process type:
-T p1 56.7 715.0 7.0 Helvetica urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
+T p1 64.7 407.0 10.0 Helvetica-Bold Invoice line identifier 1 — Invoice line purchase order line reference: 1
+T p1 56.7 432.5 8.0 Helvetica-Bold VAT BREAKDOWN
+T p1 59.7 447.4 7.0 Helvetica-Bold VAT CATEGORY
+T p1 199.3 447.4 7.0 Helvetica-Bold TAXABLE
+T p1 201.8 456.4 7.0 Helvetica-Bold AMOUNT
+T p1 259.0 447.4 7.0 Helvetica-Bold VAT
+T p1 253.6 456.4 7.0 Helvetica-Bold RATE
+T p1 304.2 447.4 7.0 Helvetica-Bold VAT
+T p1 286.3 456.4 7.0 Helvetica-Bold AMOUNT
+T p1 59.7 474.9 10.0 Helvetica Exempt from tax 
+T p1 59.7 486.5 10.0 Helvetica-Oblique (Intra-Community
+T p1 59.7 498.0 10.0 Helvetica-Oblique acquisition of second
+T p1 59.7 509.6 10.0 Helvetica-Oblique hand goods)
+T p1 187.5 474.9 10.0 Helvetica £ 1,200.00
+T p1 245.6 474.9 10.0 Helvetica 0.00%
+T p1 291.4 474.9 10.0 Helvetica £ 0.00
+T p1 347.2 437.6 10.0 Helvetica Sum of invoice line
+T p1 347.2 449.1 10.0 Helvetica net amounts
+T p1 480.3 437.6 10.0 Helvetica £ 1,200.00
+T p1 347.2 467.2 10.0 Helvetica Invoice total amount
+T p1 347.2 478.7 10.0 Helvetica without VAT
+T p1 480.3 467.2 10.0 Helvetica £ 1,200.00
+T p1 347.2 496.8 10.0 Helvetica Invoice total VAT
+T p1 347.2 508.4 10.0 Helvetica amount
+T p1 499.8 496.8 10.0 Helvetica £ 0.00
+T p1 347.2 526.8 10.0 Helvetica-Bold Invoice total
+T p1 347.2 538.7 10.0 Helvetica-Bold amount with VAT
+T p1 480.3 526.8 10.0 Helvetica-Bold £ 1,200.00
+T p1 347.2 576.7 10.0 Helvetica Amount due
+T p1 480.3 576.7 10.0 Helvetica £ 1,200.00
+T p1 66.7 615.1 7.0 Helvetica-Bold Payment
+T p1 66.7 631.0 10.0 Helvetica-Bold Payment means type code: Credit transfer
+T p1 66.7 644.0 7.0 Helvetica-Bold Credit transfer
+T p1 66.7 659.5 10.0 Helvetica •
+T p1 76.7 659.5 10.0 Courier SE1212341234123412 (BIC SEXDABCD)
+T p1 56.7 699.0 8.0 Helvetica-Bold PAYMENT TERMS
+T p1 56.7 713.6 10.0 Helvetica Payment within 30 days
+T p1 56.7 726.3 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0 · Business process type:
+T p1 56.7 734.9 7.0 Helvetica urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
 T p1 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox

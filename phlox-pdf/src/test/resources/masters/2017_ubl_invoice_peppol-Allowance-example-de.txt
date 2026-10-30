@@ -258,91 +258,91 @@ G p2 S
 G p2 SC 0.50 0.50 0.50
 G p2 w 2.00
 G p2 m 57.69 310.12
-G p2 l 57.69 270.42
+G p2 l 57.69 187.12
 G p2 S
 G p2 sc 0.40 0.44 0.52
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 230.47
-G p2 l 159.82 230.47
+G p2 m 56.69 147.17
+G p2 l 159.82 147.17
 G p2 S
-G p2 m 159.82 230.47
-G p2 l 240.88 230.47
+G p2 m 159.82 147.17
+G p2 l 240.88 147.17
 G p2 S
-G p2 m 240.88 230.47
-G p2 l 273.02 230.47
+G p2 m 240.88 147.17
+G p2 l 273.02 147.17
 G p2 S
-G p2 m 273.02 230.47
-G p2 l 349.95 230.47
+G p2 m 273.02 147.17
+G p2 l 349.95 147.17
 G p2 S
-G p2 m 349.95 230.47
-G p2 l 472.85 230.47
+G p2 m 349.95 147.17
+G p2 l 472.85 147.17
 G p2 S
-G p2 m 472.85 230.47
-G p2 l 538.58 230.47
+G p2 m 472.85 147.17
+G p2 l 538.58 147.17
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 212.16
-G p2 l 159.82 212.16
+G p2 m 56.69 128.86
+G p2 l 159.82 128.86
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 159.82 212.16
-G p2 l 240.88 212.16
+G p2 m 159.82 128.86
+G p2 l 240.88 128.86
 G p2 S
-G p2 m 240.88 212.16
-G p2 l 273.02 212.16
+G p2 m 240.88 128.86
+G p2 l 273.02 128.86
 G p2 S
-G p2 m 273.02 212.16
-G p2 l 349.95 212.16
+G p2 m 273.02 128.86
+G p2 l 349.95 128.86
 G p2 S
-G p2 m 349.95 212.16
-G p2 l 472.85 212.16
+G p2 m 349.95 128.86
+G p2 l 472.85 128.86
 G p2 S
-G p2 m 472.85 212.16
-G p2 l 538.58 212.16
+G p2 m 472.85 128.86
+G p2 l 538.58 128.86
 G p2 S
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 196.49
-G p2 l 149.48 196.49
+G p2 m 56.69 113.19
+G p2 l 149.48 113.19
 G p2 S
 G p2 sc 0.40 0.44 0.52
-G p2 m 149.48 196.49
-G p2 l 230.15 196.49
+G p2 m 149.48 113.19
+G p2 l 230.15 113.19
 G p2 S
-G p2 m 230.15 196.49
-G p2 l 290.98 196.49
+G p2 m 230.15 113.19
+G p2 l 290.98 113.19
 G p2 S
-G p2 m 290.98 196.49
-G p2 l 363.02 196.49
+G p2 m 290.98 113.19
+G p2 l 363.02 113.19
 G p2 S
-G p2 m 363.02 196.49
-G p2 l 477.75 196.49
+G p2 m 363.02 113.19
+G p2 l 477.75 113.19
 G p2 S
-G p2 m 477.75 196.49
-G p2 l 538.58 196.49
+G p2 m 477.75 113.19
+G p2 l 538.58 113.19
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 166.62
-G p2 l 149.48 166.62
+G p2 m 56.69 83.32
+G p2 l 149.48 83.32
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 149.48 166.62
-G p2 l 230.15 166.62
+G p2 m 149.48 83.32
+G p2 l 230.15 83.32
 G p2 S
-G p2 m 230.15 166.62
-G p2 l 290.98 166.62
+G p2 m 230.15 83.32
+G p2 l 290.98 83.32
 G p2 S
-G p2 m 290.98 166.62
-G p2 l 363.02 166.62
+G p2 m 290.98 83.32
+G p2 l 363.02 83.32
 G p2 S
-G p2 m 363.02 166.62
-G p2 l 477.75 166.62
+G p2 m 363.02 83.32
+G p2 l 477.75 83.32
 G p2 S
-G p2 m 477.75 166.62
-G p2 l 538.58 166.62
+G p2 m 477.75 83.32
+G p2 l 538.58 83.32
 G p2 S
 G p2 sc 0.83 0.83 0.83
 page 3 595.3x841.9
@@ -614,32 +614,39 @@ T p2 328.4 528.3 10.0 Helvetica 100,00 €
 T p2 417.5 528.3 10.0 Helvetica 1,00 %
 T p2 501.9 528.3 10.0 Helvetica +1,00 €
 T p2 64.7 543.7 10.0 Helvetica-Bold Positionsnummer 1 — Positionshinweis: Testing note on line level
-T p2 64.7 555.6 10.0 Helvetica-Bold Positionsnummer 2 — Positionshinweis: Testing note on line level
-T p2 64.7 567.5 10.0 Helvetica-Bold Positionsnummer 3 — Positionshinweis: Testing note on line level
-T p2 56.7 593.0 8.0 Helvetica-Bold NACHLÄSSE UND GEBÜHREN
-T p2 59.7 607.9 7.0 Helvetica-Bold GRUND
-T p2 183.3 607.9 7.0 Helvetica-Bold BASISBETRAG
-T p2 263.3 607.9 7.0 Helvetica-Bold %
-T p2 315.3 607.9 7.0 Helvetica-Bold BETRAG
-T p2 353.0 607.9 7.0 Helvetica-Bold UST-KATEGORIE
-T p2 498.5 607.9 7.0 Helvetica-Bold UST-SATZ
-T p2 59.7 626.5 10.0 Helvetica Discount (Discount)
-T p2 304.7 626.5 10.0 Helvetica -200,00 €
-T p2 353.0 626.5 10.0 Helvetica Regelsteuersatz
-T p2 498.9 626.5 10.0 Helvetica 25,00 %
-T p2 59.7 641.9 7.0 Helvetica-Bold GRUND
-T p2 172.6 641.9 7.0 Helvetica-Bold BASISBETRAG
-T p2 281.3 641.9 7.0 Helvetica-Bold %
-T p2 328.4 641.9 7.0 Helvetica-Bold BETRAG
-T p2 366.0 641.9 7.0 Helvetica-Bold UST-KATEGORIE
-T p2 498.5 641.9 7.0 Helvetica-Bold UST-SATZ
-T p2 59.7 660.5 10.0 Helvetica Cleaning 
-T p2 59.7 672.0 10.0 Helvetica-Oblique (Cleaning)
-T p2 179.9 660.5 10.0 Helvetica 1.000,00 €
-T p2 251.3 660.5 10.0 Helvetica 20,00 %
-T p2 315.3 660.5 10.0 Helvetica +200,00 €
-T p2 366.0 660.5 10.0 Helvetica Regelsteuersatz
-T p2 498.9 660.5 10.0 Helvetica 25,00 %
+T p2 64.7 555.6 10.0 Helvetica-Bold Positionsnummer 1 — Buchungsreferenz Position: Konteringsstreng
+T p2 64.7 567.5 10.0 Helvetica-Bold Positionsnummer 2 — Positionshinweis: Testing note on line level
+T p2 64.7 579.4 10.0 Helvetica-Bold Positionsnummer 2 — Positionszeitraum: 1. Dezember 2017 — 5. Dezember 2017
+T p2 64.7 591.3 10.0 Helvetica-Bold Positionsnummer 2 — Bestellpositionsreferenz der Rechnungsposition: 124
+T p2 64.7 603.2 10.0 Helvetica-Bold Positionsnummer 2 — Buchungsreferenz Position: Konteringsstreng
+T p2 64.7 615.1 10.0 Helvetica-Bold Positionsnummer 3 — Positionshinweis: Testing note on line level
+T p2 64.7 627.0 10.0 Helvetica-Bold Positionsnummer 3 — Positionszeitraum: 1. Dezember 2017 — 5. Dezember 2017
+T p2 64.7 638.9 10.0 Helvetica-Bold Positionsnummer 3 — Bestellpositionsreferenz der Rechnungsposition: 124
+T p2 64.7 650.8 10.0 Helvetica-Bold Positionsnummer 3 — Buchungsreferenz Position: Konteringsstreng
+T p2 56.7 676.3 8.0 Helvetica-Bold NACHLÄSSE UND GEBÜHREN
+T p2 59.7 691.2 7.0 Helvetica-Bold GRUND
+T p2 183.3 691.2 7.0 Helvetica-Bold BASISBETRAG
+T p2 263.3 691.2 7.0 Helvetica-Bold %
+T p2 315.3 691.2 7.0 Helvetica-Bold BETRAG
+T p2 353.0 691.2 7.0 Helvetica-Bold UST-KATEGORIE
+T p2 498.5 691.2 7.0 Helvetica-Bold UST-SATZ
+T p2 59.7 709.8 10.0 Helvetica Discount (Discount)
+T p2 304.7 709.8 10.0 Helvetica -200,00 €
+T p2 353.0 709.8 10.0 Helvetica Regelsteuersatz
+T p2 498.9 709.8 10.0 Helvetica 25,00 %
+T p2 59.7 725.2 7.0 Helvetica-Bold GRUND
+T p2 172.6 725.2 7.0 Helvetica-Bold BASISBETRAG
+T p2 281.3 725.2 7.0 Helvetica-Bold %
+T p2 328.4 725.2 7.0 Helvetica-Bold BETRAG
+T p2 366.0 725.2 7.0 Helvetica-Bold UST-KATEGORIE
+T p2 498.5 725.2 7.0 Helvetica-Bold UST-SATZ
+T p2 59.7 743.8 10.0 Helvetica Cleaning 
+T p2 59.7 755.3 10.0 Helvetica-Oblique (Cleaning)
+T p2 179.9 743.8 10.0 Helvetica 1.000,00 €
+T p2 251.3 743.8 10.0 Helvetica 20,00 %
+T p2 315.3 743.8 10.0 Helvetica +200,00 €
+T p2 366.0 743.8 10.0 Helvetica Regelsteuersatz
+T p2 498.9 743.8 10.0 Helvetica 25,00 %
 T p2 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
 T p3 56.7 74.2 8.0 Helvetica-Bold STEUERAUFSCHLÜSSELUNG
 T p3 59.7 89.1 7.0 Helvetica-Bold UST-KATEGORIE

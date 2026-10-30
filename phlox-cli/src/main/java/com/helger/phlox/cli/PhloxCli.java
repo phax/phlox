@@ -51,6 +51,7 @@ import com.helger.phlox.pdf.PdfEmbeddedSource;
 import com.helger.phlox.pdf.PdfFontFamily;
 import com.helger.phlox.pdf.PdfInvoiceWriter;
 import com.helger.phlox.pdf.PdfRenderContext;
+import com.helger.phlox.template.EPhloxTemplateCoverageMode;
 import com.helger.phlox.template.PhloxTemplate;
 import com.helger.phlox.text.TextInvoiceWriter;
 import com.helger.phlox.text.TextRenderContext;
@@ -146,6 +147,11 @@ public class PhloxCli implements Callable <Integer>
            description = "The template to render through: 'default' for the template shipped with phlox, 'classpath:<path>' for a template on the classpath, or the path of a .ptpl file. Default: 'default'.")
   String m_sTemplate;
 
+  @Option (names = "--template-coverage",
+           description = "What to do with a template that does not show all BTs of EN 16931: WARN logs a warning, REJECT refuses the template. Default: WARN.",
+           defaultValue = "WARN")
+  EPhloxTemplateCoverageMode m_eTemplateCoverage;
+
   @Option (names = "--theme",
            description = "A JSON file with the layout parameters of the HTML and PDF output (colours, fonts, page size, language, watermark, ...). The options of the command line override the theme.")
   Path m_aThemeFile;
@@ -229,13 +235,14 @@ public class PhloxCli implements Callable <Integer>
   }
 
   @NonNull
-  private static PhloxTemplate _loadTemplate (@Nullable final String sTemplate)
+  private static PhloxTemplate _loadTemplate (@Nullable final String sTemplate,
+                                              @NonNull final EPhloxTemplateCoverageMode eCoverageMode)
   {
     if (sTemplate == null || TEMPLATE_DEFAULT.equals (sTemplate))
       return PhloxTemplate.getDefault ();
     if (sTemplate.startsWith (TEMPLATE_CLASSPATH_PREFIX))
-      return PhloxTemplate.fromClasspath (sTemplate.substring (TEMPLATE_CLASSPATH_PREFIX.length ()));
-    return PhloxTemplate.fromFile (new File (sTemplate));
+      return PhloxTemplate.fromClasspath (sTemplate.substring (TEMPLATE_CLASSPATH_PREFIX.length ()), eCoverageMode);
+    return PhloxTemplate.fromFile (new File (sTemplate), eCoverageMode);
   }
 
   private static byte [] _readAllStdin () throws IOException
@@ -282,7 +289,11 @@ public class PhloxCli implements Callable <Integer>
       if (m_sLang != null)
         aCtx.setLocale (Locale.forLanguageTag (m_sLang.replace ('_', '-')));
       if (m_sTemplate != null)
-        aCtx.setTemplate (_loadTemplate (m_sTemplate));
+        aCtx.setTemplate (_loadTemplate (m_sTemplate, m_eTemplateCoverage));
+      // The template of a theme is loaded without the coverage mode of the command line
+      if (m_eTemplateCoverage == EPhloxTemplateCoverageMode.REJECT &&
+          aCtx.getTemplate () instanceof final PhloxTemplate aTemplate)
+        aTemplate.checkCoverage (m_eTemplateCoverage);
       if (m_aLogoFile != null)
       {
         if (!Files.isRegularFile (m_aLogoFile))

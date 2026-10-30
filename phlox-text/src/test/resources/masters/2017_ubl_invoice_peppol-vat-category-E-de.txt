@@ -43,6 +43,8 @@ Nr.  Beschreibung                                        Menge  Einzelpreis     
   1  Test item, category Z                            10 Stück     120,00 £  USt-befreit 0,00 %   1.200,00 £
      Standardartikelkennung: 0160:192387129837129873
 
+  Positionsnummer 1 — Bestellpositionsreferenz der Rechnungsposition: 1
+
 Steueraufschlüsselung
 ---------------------
 

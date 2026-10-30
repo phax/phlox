@@ -59,6 +59,10 @@ Porto + Versandkosten  Porto + Versandkosten                 1 Stück      26,07
   Positionsnummer Zeitschrift [...] — Positionshinweis: Die letzte Lieferung im
   Rahmen des abgerechneten Abonnements erfolgt in 12/2016 Lieferung erfolgt /
   erfolgte direkt vom Verlag
+  Positionsnummer Zeitschrift [...] — Positionszeitraum: 1. Januar 2016 — 31.
+  Dezember 2016
+  Positionsnummer Zeitschrift [...] — Bestellpositionsreferenz der
+  Rechnungsposition: 6171175.1
 
 Steueraufschlüsselung
 ---------------------

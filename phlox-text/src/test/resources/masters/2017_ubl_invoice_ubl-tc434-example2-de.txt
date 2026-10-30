@@ -131,7 +131,17 @@ Nr.  Grund    Basisbetrag  %      Betrag
   1  Testing                  +12,00 NOK
 
   Positionsnummer 1 — Positionshinweis: Scratch on box
+  Positionsnummer 1 — Positionszeitraum: 1. Juni 2013 — 30. Juni 2013
+  Positionsnummer 1 — Bestellpositionsreferenz der Rechnungsposition: 1
+  Positionsnummer 1 — Buchungsreferenz Position: BookingCode001
   Positionsnummer 2 — Positionshinweis: Cover is slightly damaged.
+  Positionsnummer 2 — Bestellpositionsreferenz der Rechnungsposition: 5
+  Positionsnummer 2 — Buchungsreferenz Position: BookingCode002
+  Positionsnummer 3 — Bestellpositionsreferenz der Rechnungsposition: 3
+  Positionsnummer 3 — Buchungsreferenz Position: BookingCode003
+  Positionsnummer 4 — Bestellpositionsreferenz der Rechnungsposition: 2
+  Positionsnummer 4 — Buchungsreferenz Position: BookingCode004
+  Positionsnummer 5 — Buchungsreferenz Position: BookingCode005
 
 Nachlässe und Gebühren
 ----------------------
