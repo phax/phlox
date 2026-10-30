@@ -41,11 +41,35 @@ public final class DefaultPhloxLabelResolverTest
   }
 
   @Test
+  public void testDutchLabel ()
+  {
+    final Locale aDutch = Locale.forLanguageTag ("nl");
+    assertEquals ("Factuur", DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice", aDutch));
+    // A region of Dutch finds the same bundle
+    assertEquals ("Factuur",
+                  DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice",
+                                                               Locale.forLanguageTag ("nl-BE")));
+  }
+
+  @Test
   public void testEnglishLabel ()
   {
     final String sValue = DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice", Locale.ENGLISH);
     assertNotNull (sValue);
     assertEquals ("Invoice", sValue);
+  }
+
+  @Test
+  public void testFrenchLabel ()
+  {
+    final Locale aFrench = Locale.forLanguageTag ("fr");
+    assertEquals ("Facture", DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice", aFrench));
+    // Non-ASCII on purpose: the bundle is read as UTF-8, like the German one
+    assertEquals ("Num\u00E9ro de facture", DefaultPhloxLabelResolver.INSTANCE.getLabel ("BT-1", aFrench));
+    // A region of Spanish finds the same bundle
+    assertEquals ("Facture",
+                  DefaultPhloxLabelResolver.INSTANCE.getLabel ("section.header.title.invoice",
+                                                               Locale.forLanguageTag ("fr-BE")));
   }
 
   @Test
