@@ -22,7 +22,7 @@ import org.jspecify.annotations.Nullable;
 /**
  * Immutable resolved image — the binary, MIME type and filename for an {@code <img>} produced
  * from one of the supported template URL schemes ({@code data:}, {@code attachment:logo},
- * {@code attachment:BG-24[i]}, {@code classpath:/…}). Sits in the sidecar map on the
+ * {@code attachment:BG-24[i]}, {@code classpath:/…}, {@code qrcode:…}). Sits in the sidecar map on the
  * {@link PhloxTemplateAst}, keyed by the original commonmark {@code Image} node.
  *
  * @author Philip Helger

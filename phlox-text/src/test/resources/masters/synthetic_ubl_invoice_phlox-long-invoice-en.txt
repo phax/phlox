@@ -328,6 +328,8 @@ Credit transfer
 
 - Mustermann Industrial Supplies — AT611904300234573201 (BIC BKAUATWW)
 
+[SEPA payment QR code]
+
 Payment terms
 -------------
 

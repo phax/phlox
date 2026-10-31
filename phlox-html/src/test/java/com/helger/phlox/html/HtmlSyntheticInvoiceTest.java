@@ -126,7 +126,7 @@ public final class HtmlSyntheticInvoiceTest
     {
       aLogo = new PhloxAttachment ().setBinary (aIS.readAllBytes ()).setMimeCode ("image/png").setFilename ("phoss.png");
     }
-    assertFalse (_render (aModel, new HtmlRenderContext (), "logo-without").contains ("<img"));
+    assertFalse (_render (aModel, new HtmlRenderContext (), "logo-without").contains ("class=\"phlox-logo\""));
     final String sWith = _render (aModel, new HtmlRenderContext ().setLogo (aLogo), "logo-with");
     assertTrue (sWith.contains ("class=\"phlox-logo\""));
     assertTrue (sWith.contains ("src=\"data:image/png;base64,iVBORw0KGgo"));

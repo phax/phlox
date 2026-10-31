@@ -517,6 +517,10 @@
 {{/BG-16.BG-17}}
 {{/BG-16.BG-17}}
 
+{{?epc_payload}}
+![{{label:section.payment.epcqrcode}}](qrcode:{{epc_payload | url}})
+
+{{/epc_payload}}
 {{?BG-16.BG-18}}
 {{class:label}}
 

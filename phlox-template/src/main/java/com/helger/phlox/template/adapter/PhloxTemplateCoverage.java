@@ -54,6 +54,7 @@ public final class PhloxTemplateCoverage
     "BG-38", List.of ("BT-203", "BT-204", "BT-205", "BT-206", "BT-207", "BT-208"));
 
   private static final String AMOUNT_MODIFIER_PREFIX = "amount:";
+  private static final String URL_MODIFIER = "url";
   private static final String PARENT_PREFIX = "..";
 
   private PhloxTemplateCoverage ()
@@ -92,6 +93,11 @@ public final class PhloxTemplateCoverage
                                     @NonNull final ICommonsSet <String> aShown)
   {
     final List <String> aParts = StringHelper.getExploded ('|', sTag);
+    // An encoded value goes into a QR code or a link, where it is not readable on the page
+    for (final String sPart : aParts.subList (1, aParts.size ()))
+      if (URL_MODIFIER.equals (sPart.trim ()))
+        return;
+
     String sHead = aParts.get (0).trim ();
     if (sHead.startsWith (PARENT_PREFIX))
       sHead = sHead.substring (PARENT_PREFIX.length ());

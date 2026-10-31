@@ -71,6 +71,7 @@ import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.watermark.WatermarkSpec;
 import com.helger.phlox.cii.CiiInvoiceReader;
+import com.helger.phlox.template.PhloxTemplate;
 import com.helger.phlox.testfiles.MockPhloxTestFiles;
 import com.helger.phlox.ubl.UblInvoiceReader;
 
@@ -162,6 +163,11 @@ public final class PdfInvoiceWriterPdfATest
     _assertPdfA3Valid (_render (aInvoice,
                                 _createContext (EPdfALevel.PDF_A_3B).setUserWatermark (WatermarkSpec.text ("DRAFT")),
                                 "ubl-3b-watermark"));
+
+    // With a QR code, also as a tagged PDF
+    final PhloxTemplate aQrTemplate = PhloxTemplate.fromString ("# {{BT-1}}\n\n![Payment](qrcode:{{BT-1 | url}} \"height-px:80\")");
+    _assertPdfA3Valid (_render (aInvoice, _createContext (EPdfALevel.PDF_A_3B).setTemplate (aQrTemplate), "ubl-3b-qr"));
+    _assertPdfA3Valid (_render (aInvoice, _createContext (EPdfALevel.PDF_A_3A).setTemplate (aQrTemplate), "ubl-3a-qr"));
   }
 
   @Test

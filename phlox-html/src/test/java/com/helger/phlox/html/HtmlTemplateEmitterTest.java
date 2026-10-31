@@ -16,6 +16,7 @@
  */
 package com.helger.phlox.html;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -216,5 +217,25 @@ public final class HtmlTemplateEmitterTest
     final String sHtml = _render (aModel, PhloxTemplate.fromString ("<script>alert(1)</script>\n"), Locale.ENGLISH);
     assertFalse (sHtml.contains ("<script>"));
     assertTrue (sHtml.contains ("&lt;script&gt;"));
+  }
+
+  @Test
+  public void testQrCode ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final String sHtml = _render (aModel,
+                                  PhloxTemplate.fromString ("![EPC](qrcode:one \"height-px:80\")\n\n![Link](qrcode:{{BT-1 | url}})\n\n![Gone](qrcode:)"),
+                                  Locale.ENGLISH);
+    final String sPngSource = "src=\"data:image/png;base64,";
+    int nImages = 0;
+    for (int i = sHtml.indexOf (sPngSource); i >= 0; i = sHtml.indexOf (sPngSource, i + 1))
+      nImages++;
+    assertEquals (sHtml, 2, nImages);
+    assertTrue (sHtml, sHtml.contains ("alt=\"EPC\""));
+    assertTrue (sHtml, sHtml.contains ("height:80px"));
+    // The default height of the second one
+    assertTrue (sHtml, sHtml.contains ("height:120px"));
+    assertFalse (sHtml, sHtml.contains ("Gone"));
+    assertFalse (sHtml, sHtml.contains ("qrcode:"));
   }
 }

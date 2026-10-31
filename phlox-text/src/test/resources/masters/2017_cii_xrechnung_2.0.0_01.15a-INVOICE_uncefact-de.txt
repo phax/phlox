@@ -87,6 +87,8 @@ Verwendungszweck: 0000123456
 
 - [Payment account name] — DE12123000001234567890 (BIC [BIC])
 
+[QR-Code für die SEPA-Überweisung]
+
 Zahlungsbedingungen
 -------------------
 

@@ -552,7 +552,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     // BG-17 — credit transfers across ALL payment means
     for (final PaymentMeansType aOnePM : aPaymentMeans)
       if (aOnePM.getPayeeFinancialAccount () != null)
-        aOut.creditTransfers ().add (_readCreditTransfer (aOnePM.getPayeeFinancialAccount ()));
+        aOut.creditTransfers ().add (_readCreditTransfer (aOnePM.getPayeeFinancialAccount ()).setPaymentMeansCode (str (aOnePM.getPaymentMeansCodeValue ())));
 
     // BG-18 / BG-19 may sit in any of the payment means, not only in the first one
     PaymentMeansType aCardMeans = null;

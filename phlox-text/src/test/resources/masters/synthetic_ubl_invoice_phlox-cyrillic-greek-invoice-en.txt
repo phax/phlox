@@ -102,6 +102,8 @@ Credit transfer
 
 - Фотон Електроникс ООД — BG80BNBG96611020345678 (BIC BNBGBGSD)
 
+[SEPA payment QR code]
+
 Payment terms
 -------------
 

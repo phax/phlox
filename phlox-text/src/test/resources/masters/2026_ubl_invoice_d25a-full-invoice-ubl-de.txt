@@ -167,6 +167,8 @@ Verwendungszweck: REMIT-1
 
 - Seller Account — AT611904300234573201 (BIC GIBAATWWXXX)
 
+[QR-Code für die SEPA-Überweisung]
+
 Zahlungsbedingungen
 -------------------
 

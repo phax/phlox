@@ -766,6 +766,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
         for (final CreditorFinancialAccountType aFA : aOne.getPayeePartyCreditorFinancialAccount ())
         {
           final PhloxCreditTransfer aCT = new PhloxCreditTransfer ();
+          aCT.setPaymentMeansCode (_codeValue (aOne.getTypeCode ()));
           // BT-84 — IBANID if applicable, ProprietaryID else
           aCT.setAccountIdentifier (aFA.getIBANID () != null ? _idValue (aFA.getIBANID ())
                                                              : _idValue (aFA.getProprietaryID ()));

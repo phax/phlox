@@ -87,6 +87,8 @@ Credit transfer
 
 - [Payment account name] — DE12123000001234567890 (BIC [BIC])
 
+[SEPA payment QR code]
+
 Payment terms
 -------------
 

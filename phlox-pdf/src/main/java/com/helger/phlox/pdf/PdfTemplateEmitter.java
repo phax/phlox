@@ -48,6 +48,7 @@ import com.helger.pdflayout.base.PLColor;
 import com.helger.pdflayout.base.PLPageSet;
 import com.helger.pdflayout.element.box.PLBox;
 import com.helger.pdflayout.element.hbox.PLHBox;
+import com.helger.pdflayout.element.image.EPLImageType;
 import com.helger.pdflayout.element.image.PLImage;
 import com.helger.pdflayout.element.link.AbstractPLExternalLink;
 import com.helger.pdflayout.element.list.IBulletPointCreator;
@@ -69,6 +70,7 @@ import com.helger.pdflayout.spec.PaddingSpec;
 import com.helger.pdflayout.spec.PreloadFont;
 import com.helger.pdflayout.spec.WidthSpec;
 import com.helger.pdflayout.tagging.EPLStructureRole;
+import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
@@ -98,6 +100,8 @@ public final class PdfTemplateEmitter extends
   private static final float ROW_GAP = 14f;
   private static final float LOGO_HEIGHT = 40f;
   private static final float MAX_IMAGE_WIDTH = 200f;
+  // 96 CSS pixels are 72 points, so that height-px gives the same size as in HTML
+  private static final float POINTS_PER_CSS_PIXEL = 0.75f;
   // Width of the column with the list marker: a bullet, or a number like "10."
   private static final float BULLET_WIDTH = 10f;
   private static final float NUMBER_WIDTH = 16f;
@@ -340,9 +344,9 @@ public final class PdfTemplateEmitter extends
     }
   }
 
-  private static void _addImage (@NonNull final PhloxTemplateAst aAst,
-                                 @NonNull final Image aImage,
-                                 @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  private void _addImage (@NonNull final PhloxTemplateAst aAst,
+                          @NonNull final Image aImage,
+                          @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
     final PhloxResolvedImage aResolved = aAst.getResolvedImage (aImage);
     if (aResolved == null)
@@ -360,18 +364,27 @@ public final class PdfTemplateEmitter extends
     }
     final float fRatio = (float) aBufferedImage.getWidth () / aBufferedImage.getHeight ();
     float fHeight = LOGO_URL.equals (aImage.getDestination ()) ? LOGO_HEIGHT : aBufferedImage.getHeight ();
+    final int nHeightPx = PhloxTemplatePostParser.getImageHeightPx (aImage);
+    if (nHeightPx > 0)
+      fHeight = nHeightPx * POINTS_PER_CSS_PIXEL;
     float fWidth = fHeight * fRatio;
-    if (fWidth > MAX_IMAGE_WIDTH)
+    // An explicit height is only limited by the page
+    final float fMaxWidth = nHeightPx > 0 ? m_fContentWidth : MAX_IMAGE_WIDTH;
+    if (fWidth > fMaxWidth)
     {
-      fWidth = MAX_IMAGE_WIDTH;
+      fWidth = fMaxWidth;
       fHeight = fWidth / fRatio;
     }
     // Tagged PDF: a figure needs an alternate text
     String sAltText = aResolved.getAltText ();
     if (StringHelper.isEmpty (sAltText))
       sAltText = LOGO_URL.equals (aImage.getDestination ()) ? "Logo" : "Image";
-    aSink.accept (new PLImage (aBufferedImage, fWidth, fHeight).setMarginBottom (PARAGRAPH_GAP)
-                                                               .setAlternateText (sAltText));
+    final PLImage aPLImage = new PLImage (aBufferedImage, fWidth, fHeight).setMarginBottom (PARAGRAPH_GAP)
+                                                                          .setAlternateText (sAltText);
+    // The default JPEG compression blurs the modules of a QR code
+    if (aImage.getDestination ().startsWith (PhloxTemplatePostParser.QRCODE_URL_PREFIX))
+      aPLImage.setImageType (EPLImageType.LOSSLESS);
+    aSink.accept (aPLImage);
   }
 
   private void _addParagraph (@NonNull final PhloxTemplateAst aAst,

@@ -64,6 +64,10 @@
       <groupId>org.commonmark</groupId>
       <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.google.zxing</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>com.helger.phlox</groupId>

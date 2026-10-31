@@ -86,6 +86,8 @@ Credit transfer
 
 - DE75512108001245126199
 
+[SEPA payment QR code]
+
 Payment terms
 -------------
 

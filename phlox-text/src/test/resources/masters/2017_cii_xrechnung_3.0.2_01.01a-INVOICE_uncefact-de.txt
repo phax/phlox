@@ -86,6 +86,8 @@ Zahlungsart: SEPA-Überweisung
 
 - DE75512108001245126199
 
+[QR-Code für die SEPA-Überweisung]
+
 Zahlungsbedingungen
 -------------------
 

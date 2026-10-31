@@ -171,6 +171,8 @@ Credit transfer
 
 - Seller Account — AT611904300234573201 (BIC GIBAATWWXXX)
 
+[SEPA payment QR code]
+
 Payment terms
 -------------
 

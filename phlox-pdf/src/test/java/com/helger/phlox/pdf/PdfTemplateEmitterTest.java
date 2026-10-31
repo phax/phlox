@@ -21,20 +21,31 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
 import org.apache.pdfbox.cos.COSName;
+import org.apache.pdfbox.cos.COSNumber;
 import org.apache.pdfbox.pdfparser.PDFStreamParser;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Test;
 
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.ReaderException;
+import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.qrcode.QRCodeReader;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
@@ -315,5 +326,46 @@ public final class PdfTemplateEmitterTest
     aCtx.putBlockStyle ("warn", new PdfBlockStyle (PLColor.YELLOW, PLColor.RED));
     assertEquals (PLColor.YELLOW, aCtx.getBlockStyle ("warn").getFillColor ());
     assertEquals (PLColor.RED, aCtx.getBlockStyle ("warn").getTextColor ());
+  }
+
+  @Test
+  public void testQrCode () throws IOException, ReaderException
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final String sText = "Müller & Co\nLine 2";
+    final byte [] aPdf = _render (aModel,
+                                  PhloxTemplate.fromString ("![Code](qrcode:M%C3%BCller%20%26%20Co%0ALine%202 \"height-px:80\")"),
+                                  Locale.ENGLISH);
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      final PDPage aPage = aDoc.getPage (0);
+      PDImageXObject aImage = null;
+      for (final COSName aName : aPage.getResources ().getXObjectNames ())
+        if (aPage.getResources ().getXObject (aName) instanceof final PDImageXObject aXObject)
+          aImage = aXObject;
+      assertNotNull (aImage);
+      // Lossless, so the code can be read back from the PDF
+      assertEquals ("png", aImage.getSuffix ());
+      final BufferedImage aBuffered = aImage.getImage ();
+      final int nWidth = aBuffered.getWidth ();
+      final int nHeight = aBuffered.getHeight ();
+      final int [] aPixels = aBuffered.getRGB (0, 0, nWidth, nHeight, null, 0, nWidth);
+      final BinaryBitmap aBitmap = new BinaryBitmap (new HybridBinarizer (new RGBLuminanceSource (nWidth,
+                                                                                                  nHeight,
+                                                                                                  aPixels)));
+      assertEquals (sText,
+                    new QRCodeReader ().decode (aBitmap, Map.of (DecodeHintType.PURE_BARCODE, Boolean.TRUE)).getText ());
+
+      // 80 CSS pixels are 60 points
+      final List <Object> aTokens = new PDFStreamParser (aPage).parse ();
+      boolean bFound = false;
+      for (int i = 6; i < aTokens.size (); ++i)
+        if (aTokens.get (i) instanceof final Operator aOp &&
+            "cm".equals (aOp.getName ()) &&
+            aTokens.get (i - 6) instanceof final COSNumber aScale &&
+            aScale.floatValue () == 60f)
+          bFound = true;
+      assertTrue (bFound);
+    }
   }
 }

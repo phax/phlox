@@ -72,6 +72,7 @@
     <picocli.version>4.7.7</picocli.version>
     <jmustache.version>1.16</jmustache.version>
     <commonmark.version>0.31.0</commonmark.version>
+    <zxing.version>3.5.4</zxing.version>
   </properties>
 
   <dependencyManagement>
@@ -147,6 +148,11 @@
         <groupId>info.picocli</groupId>
         <artifactId>picocli</artifactId>
         <version>${picocli.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.zxing</groupId>
+        <artifactId>core</artifactId>
+        <version>${zxing.version}</version>
       </dependency>
       <dependency>
         <groupId>com.samskivert</groupId>

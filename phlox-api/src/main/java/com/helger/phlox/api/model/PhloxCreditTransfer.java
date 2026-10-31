@@ -21,7 +21,9 @@ import org.jspecify.annotations.Nullable;
 
 /**
  * BG-17 CREDIT TRANSFER (0..n). Carries BT-84 (account identifier), BT-85 (account name) and
- * BT-86 (payment service provider ID, e.g. BIC).
+ * BT-86 (payment service provider ID, e.g. BIC). In addition it holds the code of the payment means
+ * that the account belongs to, because an invoice can have several payment means but the model has
+ * only one BT-81.
  *
  * @author Philip Helger
  */
@@ -30,6 +32,7 @@ public class PhloxCreditTransfer
   private String m_sAccountIdentifier;
   private String m_sAccountName;
   private String m_sServiceProviderID;
+  private String m_sPaymentMeansCode;
 
   /** Create an empty credit transfer. */
   public PhloxCreditTransfer ()
@@ -107,6 +110,32 @@ public class PhloxCreditTransfer
   public PhloxCreditTransfer setServiceProviderID (@Nullable final String sServiceProviderID)
   {
     m_sServiceProviderID = sServiceProviderID;
+    return this;
+  }
+
+  /**
+   * Get the code of the payment means (UNCL 4461) that this account belongs to. This is not a
+   * separate term of EN 16931 but BT-81 of the payment means of the source document.
+   *
+   * @return Payment means code. May be {@code null}.
+   */
+  @Nullable
+  public String getPaymentMeansCode ()
+  {
+    return m_sPaymentMeansCode;
+  }
+
+  /**
+   * Set the code of the payment means that this account belongs to.
+   *
+   * @param sPaymentMeansCode
+   *        Payment means code; may be {@code null}.
+   * @return this for chaining.
+   */
+  @NonNull
+  public PhloxCreditTransfer setPaymentMeansCode (@Nullable final String sPaymentMeansCode)
+  {
+    m_sPaymentMeansCode = sPaymentMeansCode;
     return this;
   }
 }

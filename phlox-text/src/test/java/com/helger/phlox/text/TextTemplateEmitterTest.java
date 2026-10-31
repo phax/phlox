@@ -237,4 +237,11 @@ public final class TextTemplateEmitterTest
     _renderAll (CiiInvoiceReader.fromD16B (), MockPhloxTestFiles.getCiiD16BFiles ());
     _renderAll (CiiInvoiceReader.fromD25A (), MockPhloxTestFiles.getCiiD25AFiles ());
   }
+
+  @Test
+  public void testQrCode ()
+  {
+    assertEquals ("[Code]", _render ("![Code](qrcode:abc \"height-px:80\")"));
+    assertEquals ("Before", _render ("Before\n\n![Gone](qrcode:)"));
+  }
 }

@@ -69,6 +69,8 @@ public final class PhloxTemplateCoverageTest
     assertFalse (_isMissing ("{{BG-29.BT-149-if-not-one}}", "BT-149"));
     assertFalse (_isMissing ("{{BT-125.filename}}", "BT-125"));
     assertFalse (_isMissing ("{{BT-111 | amount:BT-6}}", "BT-6"));
+    // Only readable inside of a QR code
+    assertTrue (_isMissing ("![a](qrcode:{{BT-1 | url}})", "BT-1"));
   }
 
   @Test

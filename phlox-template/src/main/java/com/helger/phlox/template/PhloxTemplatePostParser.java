@@ -18,6 +18,7 @@ package com.helger.phlox.template;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Base64;
 import java.util.Deque;
@@ -40,6 +41,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.base.string.StringReplace;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
@@ -64,7 +66,8 @@ import com.helger.phlox.template.ast.PhloxResolvedImage;
  * class to the next sibling block via a {@code Map<Node, String>}.</li>
  * <li>Replaces {@code [[PHLOX:PAGEBREAK]]} sentinels with {@link PhloxPageBreakNode}.</li>
  * <li>Resolves {@link Image} {@code destination} URLs ({@code data:}, {@code attachment:logo},
- * {@code attachment:BG-24[i]}, {@code classpath:/…}) into {@link PhloxResolvedImage} entries.
+ * {@code attachment:BG-24[i]}, {@code classpath:/…}, {@code qrcode:…}) into
+ * {@link PhloxResolvedImage} entries.
  * Rejects {@code http:}, {@code https:}, {@code file:} schemes with
  * {@link PhloxTemplateException}.</li>
  * </ol>
@@ -73,6 +76,12 @@ import com.helger.phlox.template.ast.PhloxResolvedImage;
  */
 public final class PhloxTemplatePostParser
 {
+  /** The prefix of an image URL that shows the percent-encoded text after it as a QR code. */
+  public static final String QRCODE_URL_PREFIX = "qrcode:";
+
+  /** The height of a QR code without an explicit {@code height-px}. */
+  public static final int DEFAULT_QRCODE_HEIGHT_PX = 120;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PhloxTemplatePostParser.class);
 
   private static final Pattern CLASS_SENTINEL = Pattern.compile ("\\[\\[PHLOX:CLASS=([^\\]]+)\\]\\]");
@@ -80,6 +89,8 @@ public final class PhloxTemplatePostParser
   private static final String END_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_END;
   private static final String PAGEBREAK_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_PAGEBREAK;
   private static final Pattern ATTACHMENT_BG24_PATTERN = Pattern.compile ("attachment:BG-24\\[(\\d+)\\]");
+  // The image title holds the options of an image, e.g. ![alt](url "height-px:120")
+  private static final Pattern HEIGHT_PX_TITLE = Pattern.compile ("height-px:([1-9][0-9]{0,4})");
 
   private final PhloxInvoice m_aInvoice;
   private final AbstractRenderContext <?> m_aContext;
@@ -97,6 +108,8 @@ public final class PhloxTemplatePostParser
         super.visit (aImage);
         return;
       }
+      // Fail on a bad option at parse time, like on a bad URL
+      getImageHeightPx (aImage);
       final PhloxResolvedImage aResolved = _resolveImage (sDest, aImage);
       if (aResolved != null)
         m_aImageMap.put (aImage, aResolved);
@@ -402,6 +415,53 @@ public final class PhloxTemplatePostParser
     return null;
   }
 
+  /**
+   * Decode the text of a {@code qrcode:} URL. Only {@code %XX} is special, so unlike with
+   * <code>URLDecoder</code> a plus sign stays a plus sign.
+   */
+  @NonNull
+  private static String _percentDecode (@NonNull final String sEncoded, @NonNull final String sDest)
+  {
+    final byte [] aBytes = sEncoded.getBytes (StandardCharsets.UTF_8);
+    try (final NonBlockingByteArrayOutputStream aOut = new NonBlockingByteArrayOutputStream (aBytes.length))
+    {
+      for (int i = 0; i < aBytes.length; ++i)
+      {
+        if (aBytes[i] != '%')
+        {
+          aOut.write (aBytes[i]);
+          continue;
+        }
+        final int nHigh = i + 2 < aBytes.length ? Character.digit (aBytes[i + 1], 16) : -1;
+        final int nLow = i + 2 < aBytes.length ? Character.digit (aBytes[i + 2], 16) : -1;
+        if (nHigh < 0 || nLow < 0)
+          throw new PhloxTemplateException (EStage.PARSE, sDest, "invalid percent encoding in the QR code text");
+        aOut.write (nHigh * 16 + nLow);
+        i += 2;
+      }
+      return aOut.getAsString (StandardCharsets.UTF_8);
+    }
+  }
+
+  /**
+   * @return The image of the QR code or <code>null</code> if the invoice data gives none. This is
+   *         not an error of the template, so the image is left out.
+   */
+  @Nullable
+  private static PhloxResolvedImage _resolveQrCode (@NonNull final String sDest, @Nullable final String sAlt)
+  {
+    final String sText = _percentDecode (sDest.substring (QRCODE_URL_PREFIX.length ()), sDest);
+    if (sText.isEmpty ())
+      return null;
+    final byte [] aPng = PhloxQrCodeGenerator.createPng (sText);
+    if (aPng == null)
+    {
+      LOGGER.warn ("The text of a QR code is too long with " + sText.length () + " characters - skipping it");
+      return null;
+    }
+    return new PhloxResolvedImage (aPng, PhloxQrCodeGenerator.MIME_TYPE, null, sAlt);
+  }
+
   @Nullable
   private PhloxResolvedImage _resolveImage (@NonNull final String sDest, @NonNull final Image aImage)
   {
@@ -459,13 +519,15 @@ public final class PhloxTemplatePostParser
         throw new PhloxTemplateException (EStage.PARSE, sDest, "failed to read classpath resource", ex);
       }
     }
+    if (sDest.startsWith (QRCODE_URL_PREFIX))
+      return _resolveQrCode (sDest, sAlt);
     if (sDest.startsWith ("http:") || sDest.startsWith ("https:") || sDest.startsWith ("file:"))
       throw new PhloxTemplateException (EStage.PARSE,
                                         sDest,
                                         "image URL scheme rejected — writers do not fetch external resources");
     throw new PhloxTemplateException (EStage.PARSE,
                                       sDest,
-                                      "unsupported image URL scheme; expected one of: data:, attachment:, classpath:");
+                                      "unsupported image URL scheme; expected one of: data:, attachment:, classpath:, qrcode:");
   }
 
   /**
@@ -501,6 +563,32 @@ public final class PhloxTemplatePostParser
   public Map <Image, PhloxResolvedImage> getImageMap ()
   {
     return m_aImageMap;
+  }
+
+  /**
+   * Get the height that the template requests for an image, in CSS pixels. A QR code without a
+   * request has {@link #DEFAULT_QRCODE_HEIGHT_PX}.
+   *
+   * @param aImage
+   *        The image node. Never {@code null}.
+   * @return The height in pixels, or 0 to use the default size of the writer.
+   * @throws PhloxTemplateException
+   *         when the image has a title other than <code>height-px:N</code>.
+   */
+  public static int getImageHeightPx (@NonNull final Image aImage)
+  {
+    final String sTitle = aImage.getTitle ();
+    if (sTitle == null || sTitle.isEmpty ())
+    {
+      final String sDest = aImage.getDestination ();
+      return sDest != null && sDest.startsWith (QRCODE_URL_PREFIX) ? DEFAULT_QRCODE_HEIGHT_PX : 0;
+    }
+    final Matcher aMatcher = HEIGHT_PX_TITLE.matcher (sTitle.trim ());
+    if (!aMatcher.matches ())
+      throw new PhloxTemplateException (EStage.PARSE,
+                                        aImage.getDestination (),
+                                        "invalid image option '" + sTitle + "'; expected height-px:N with N > 0");
+    return Integer.parseInt (aMatcher.group (1));
   }
 
   /**

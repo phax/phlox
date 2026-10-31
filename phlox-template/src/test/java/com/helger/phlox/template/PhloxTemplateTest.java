@@ -19,6 +19,7 @@ package com.helger.phlox.template;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -32,13 +33,17 @@ import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Heading;
+import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.phlox.api.AbstractRenderContext;
@@ -415,5 +420,71 @@ public final class PhloxTemplateTest
     assertTrue (sOut, sOut.contains ("AWV:OBJ-1"));
     assertTrue (sOut, sOut.contains ("POL-7"));
     assertTrue (sOut, sOut.contains ("COST-3"));
+  }
+
+  @Test
+  public void testUrlModifier ()
+  {
+    final PhloxInvoice aInvoice = _buildMinimalInvoice ();
+    aInvoice.setNumber ("Müller & Co|1_a b+c");
+    final String sOut = PhloxTemplate.fromString ("{{BT-1 | url}}").renderSubstituted (aInvoice, new TestCtx ());
+    assertEquals ("M%C3%BCller%20%26%20Co%7C1_a%20b%2Bc", sOut);
+  }
+
+  @Test
+  public void testQrCodeImage ()
+  {
+    final PhloxInvoice aInvoice = _buildMinimalInvoice ();
+    aInvoice.setNumber ("Line 1\nMüller (a|b)");
+    final String sSource = "| x |\n|---|\n| ![Code](qrcode:{{BT-1 | url}} \"height-px:80\") |\n\n![](qrcode:plain%20text)\n";
+    final PhloxTemplateAst aAst = PhloxTemplate.fromString (sSource).renderAst (aInvoice, new TestCtx ());
+
+    final ICommonsList <Image> aImages = new CommonsArrayList <> ();
+    aAst.getRoot ().accept (new AbstractVisitor ()
+    {
+      @Override
+      public void visit (final Image aImage)
+      {
+        aImages.add (aImage);
+      }
+    });
+    assertEquals (2, aImages.size ());
+    assertEquals ("image/png", aAst.getResolvedImage (aImages.get (0)).getMimeCode ());
+    assertEquals ("Code", aAst.getResolvedImage (aImages.get (0)).getAltText ());
+    assertEquals (80, PhloxTemplatePostParser.getImageHeightPx (aImages.get (0)));
+    assertEquals (PhloxTemplatePostParser.DEFAULT_QRCODE_HEIGHT_PX,
+                  PhloxTemplatePostParser.getImageHeightPx (aImages.get (1)));
+  }
+
+  @Test
+  public void testQrCodeWithoutData ()
+  {
+    final PhloxInvoice aInvoice = _buildMinimalInvoice ();
+    aInvoice.setNumber ("x".repeat (10_000));
+    for (final String sSource : new String [] { "![a](qrcode:)", "![a](qrcode:{{BT-1 | url}})" })
+    {
+      final PhloxTemplateAst aAst = PhloxTemplate.fromString (sSource).renderAst (aInvoice, new TestCtx ());
+      final Node aImage = aAst.getRoot ().getFirstChild ().getFirstChild ();
+      assertNull (aAst.getResolvedImage ((Image) aImage));
+    }
+  }
+
+  @Test
+  public void testBadImageOptions ()
+  {
+    final PhloxInvoice aInvoice = _buildMinimalInvoice ();
+    for (final String sSource : new String [] { "![a](qrcode:%zz)",
+                                                "![a](qrcode:abc%4)",
+                                                "![a](qrcode:x \"height-px:0\")",
+                                                "![a](qrcode:x \"height-px:abc\")",
+                                                "![a](qrcode:x \"width-px:10\")",
+                                                "![a](attachment:logo \"just a title\")" })
+    {
+      final PhloxTemplateException ex = assertThrows (sSource,
+                                                      PhloxTemplateException.class,
+                                                      () -> PhloxTemplate.fromString (sSource)
+                                                                         .renderAst (aInvoice, new TestCtx ()));
+      assertEquals (PhloxTemplateException.EStage.PARSE, ex.getStage ());
+    }
   }
 }

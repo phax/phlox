@@ -80,6 +80,7 @@ import com.helger.html.hc.html.textlevel.HCEM;
 import com.helger.html.hc.html.textlevel.HCS;
 import com.helger.html.hc.html.textlevel.HCStrong;
 import com.helger.html.hc.impl.HCTextNode;
+import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
@@ -140,9 +141,11 @@ public final class HtmlTemplateEmitter extends
              Base64.getEncoder ().encodeToString (aResolved.getBinary ());
     else
     {
-      if (LOGO_URL.equals (aImage.getDestination ()) || aImage.getDestination ().startsWith ("attachment:"))
+      if (LOGO_URL.equals (aImage.getDestination ()) ||
+          aImage.getDestination ().startsWith ("attachment:") ||
+          aImage.getDestination ().startsWith (PhloxTemplatePostParser.QRCODE_URL_PREFIX))
       {
-        // Nothing to show for an attachment that could not be resolved
+        // Nothing to show for an attachment or QR code that could not be resolved
         LOGGER.warn ("Template image '" + aImage.getDestination () + "' could not be resolved - skipping it");
         return null;
       }
@@ -153,6 +156,14 @@ public final class HtmlTemplateEmitter extends
       aImg.setAlt (aResolved.getAltText ());
     if (LOGO_URL.equals (aImage.getDestination ()))
       aImg.addClass (HtmlDocumentSupport.cls (m_aCtx.getCssClassPrefix () + "logo"));
+    final int nHeightPx = PhloxTemplatePostParser.getImageHeightPx (aImage);
+    if (nHeightPx > 0)
+    {
+      // The explicit height wins over the limits of the logo class
+      aImg.addStyle (CCSSProperties.HEIGHT.newValue (nHeightPx + "px"));
+      aImg.addStyle (CCSSProperties.MAX_HEIGHT.newValue ("none"));
+      aImg.addStyle (CCSSProperties.MAX_WIDTH.newValue ("none"));
+    }
     return aImg;
   }
 

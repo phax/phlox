@@ -17,6 +17,7 @@
 package com.helger.phlox.template.adapter;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayDeque;
@@ -118,6 +119,9 @@ public final class PhloxInvoiceMustacheContext
   private static final Pattern LABEL_PATTERN = Pattern.compile ("\\{\\{\\s*label:([^}\\s|]+)\\s*\\}\\}");
 
   private static final String PARENT_PREFIX = "..";
+
+  // The text of the EPC QR code, a value that no BT holds
+  private static final String EPC_PAYLOAD = "epc_payload";
 
   private static final class PhloxCollector implements Mustache.Collector
   {
@@ -444,6 +448,39 @@ public final class PhloxInvoiceMustacheContext
     };
   }
 
+  /**
+   * Percent-encode everything but the unreserved characters of RFC 3986, so that the text is safe
+   * in a CommonMark link destination and in a table cell.
+   */
+  @NonNull
+  private static String _percentEncode (@NonNull final String sText)
+  {
+    final StringBuilder aSB = new StringBuilder (sText.length () * 2);
+    for (final byte nByte : sText.getBytes (StandardCharsets.UTF_8))
+    {
+      final char c = (char) (nByte & 0xff);
+      if (c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || "-._~".indexOf (c) >= 0)
+        aSB.append (c);
+      else
+        aSB.append ('%')
+           .append (Character.toUpperCase (Character.forDigit (c >> 4, 16)))
+           .append (Character.toUpperCase (Character.forDigit (c & 0xf, 16)));
+    }
+    return aSB.toString ();
+  }
+
+  @NonNull
+  private static String _getUrlText (@NonNull final Object aValue, @NonNull final PhloxRenderEnv aEnv)
+  {
+    if (aValue instanceof final PhloxIdentifier aID)
+      return StringHelper.getNotNull (aID.getValue ());
+    if (aValue instanceof final LocalDate aDate)
+      return PhloxFormat.date (aDate, aEnv.getLocale (), aEnv.getFormatOptions ());
+    if (aValue instanceof final BigDecimal aDecimal)
+      return aDecimal.toPlainString ();
+    return aValue.toString ();
+  }
+
   @Nullable
   private static String _applyOneModifier (@Nullable final Object aValue,
                                            @NonNull final String sName,
@@ -457,6 +494,8 @@ public final class PhloxInvoiceMustacheContext
     {
       case "raw":
         return aValue.toString ();
+      case "url":
+        return _percentEncode (_getUrlText (aValue, aEnv));
       case "amount":
       {
         if (!(aValue instanceof final BigDecimal aAmount))
@@ -505,7 +544,7 @@ public final class PhloxInvoiceMustacheContext
       final int nColon = sModifier.indexOf (':');
       final String sName = nColon < 0 ? sModifier : sModifier.substring (0, nColon);
       final String sArg = nColon < 0 ? null : sModifier.substring (nColon + 1);
-      bRaw |= "raw".equals (sName);
+      bRaw |= "raw".equals (sName) || "url".equals (sName);
       aValue = _applyOneModifier (aValue, sName, sArg, aEnv);
     }
     if (aValue == null)
@@ -606,6 +645,8 @@ public final class PhloxInvoiceMustacheContext
         return Boolean.valueOf (_lineAllowancesPresent (aEnv.getInvoice ()));
       if ("line_charges_present".equals (sSegment))
         return Boolean.valueOf (_lineChargesPresent (aEnv.getInvoice ()));
+      if (EPC_PAYLOAD.equals (sSegment))
+        return PhloxEpcPayload.getPayload (aEnv.getInvoice ());
       aCurrent = PhloxModelRegistry.resolve (aCurrent, sSegment);
     }
     return aCurrent;
@@ -765,7 +806,8 @@ public final class PhloxInvoiceMustacheContext
     // skipped its own dot-split — that happens whenever the placeholder also carries a pipe
     // modifier ({@code {{BG-22.BT-115 | amount}}}), because the embedded space stops
     // JMustache treating the name as a path. Walk it ourselves.
-    final Object aValue = _walkDottedPath (aCtx, sHead);
+    final Object aValue = EPC_PAYLOAD.equals (sHead) ? PhloxEpcPayload.getPayload (aEnv.getInvoice ())
+                                                     : _walkDottedPath (aCtx, sHead);
     if (aValue == null)
       return null;
     // Lists (BG-3, BG-25, …) must reach JMustache untouched so that {{#BG-x}} sections iterate

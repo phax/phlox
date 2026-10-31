@@ -53,6 +53,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.phlox.api.watermark.PhloxProgramWatermark;
 import com.helger.phlox.api.watermark.WatermarkSpec;
+import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
@@ -199,8 +200,10 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
   private String _getImageText (@NonNull final PhloxTemplateAst aAst, @NonNull final Image aImage)
   {
     final PhloxResolvedImage aResolved = aAst.getResolvedImage (aImage);
-    // Nothing to show for an attachment that could not be resolved, as in HTML
-    if (aResolved == null && aImage.getDestination ().startsWith ("attachment:"))
+    // Nothing to show for an attachment or QR code that could not be resolved, as in HTML
+    if (aResolved == null &&
+        (aImage.getDestination ().startsWith ("attachment:") ||
+         aImage.getDestination ().startsWith (PhloxTemplatePostParser.QRCODE_URL_PREFIX)))
       return null;
     String sAlt = aResolved == null ? null : aResolved.getAltText ();
     if (StringHelper.isEmpty (sAlt))
