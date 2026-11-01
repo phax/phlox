@@ -481,7 +481,7 @@ T p1 66.7 664.7 10.0 Helvetica-Bold Referenzobjekt-Kennung: AVE:METER-9
 T p1 56.7 680.3 10.0 Helvetica •
 T p1 66.7 680.6 10.0 Helvetica-Bold Buchungsreferenz Käufer: COST-CENTRE-1
 T p1 56.7 696.2 10.0 Helvetica •
-T p1 66.7 696.5 10.0 Helvetica-Bold Vorhergehende Rechnungsreferenz: PREV-INV-1 (15.12.2025)
+T p1 66.7 696.5 10.0 Helvetica-Bold Vorhergehende Rechnungsreferenz: PREV-INV-1 (15. Dezember 2025)
 T p1 56.7 712.1 10.0 Helvetica •
 T p1 66.7 712.4 10.0 Helvetica-Bold Vorhergehende Rechnungsreferenz: PREV-INV-2
 T p1 56.7 737.9 8.0 Helvetica-Bold ANMERKUNGEN

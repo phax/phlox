@@ -76,7 +76,7 @@ public final class PhloxFormat
   }
 
   /**
-   * Format a date in the locale's medium style.
+   * Format a date in the style of the format options.
    *
    * @param aDate
    *        The date, may be {@code null}.
@@ -94,7 +94,7 @@ public final class PhloxFormat
     if (aDate == null)
       return "";
     final FormatStyle eStyle = aOptions != null && aOptions.getDateStyle () != null ? aOptions.getDateStyle ()
-                                                                                    : FormatStyle.MEDIUM;
+                                                                                    : PhloxFormatOptions.DEFAULT_DATE_STYLE;
     return PDTFormatter.getFormatterDate (eStyle, aLocale, EDTFormatterMode.PRINT).format (aDate);
   }
 

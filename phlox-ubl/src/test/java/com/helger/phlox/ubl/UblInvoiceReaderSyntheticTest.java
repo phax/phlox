@@ -235,13 +235,24 @@ public final class UblInvoiceReaderSyntheticTest
   }
 
   @Test
-  public void testOtherValuesThanTheFillerAreKept ()
+  public void testPeppolFillerIsAbsent ()
   {
     for (final String sFile : ALL_FILES)
     {
       final PhloxInvoice aModel = _read (sFile, _load (sFile, ">None<", ">NA<"));
-      assertEquals (sFile, "NA", aModel.getPurchaseOrderReference ());
-      assertEquals (sFile, "NA", aModel.lines ().get (0).getPurchaseOrderLineRef ());
+      assertNull (sFile, aModel.getPurchaseOrderReference ());
+      assertNull (sFile, aModel.lines ().get (0).getPurchaseOrderLineRef ());
+    }
+  }
+
+  @Test
+  public void testOtherValuesThanTheFillerAreKept ()
+  {
+    for (final String sFile : ALL_FILES)
+    {
+      final PhloxInvoice aModel = _read (sFile, _load (sFile, ">None<", ">NA1<"));
+      assertEquals (sFile, "NA1", aModel.getPurchaseOrderReference ());
+      assertEquals (sFile, "NA1", aModel.lines ().get (0).getPurchaseOrderLineRef ());
     }
   }
 

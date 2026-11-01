@@ -20,10 +20,10 @@
 
 | | |
 |---|---|
-| {{label:BT-2}} | {{BT-2 | date:long}} |
+| {{label:BT-2}} | {{BT-2 | date}} |
 {{?BT-166}}| {{label:BT-166}} | {{BT-166}} |
-{{/BT-166}}{{?BT-9}}| {{label:BT-9}} | {{BT-9 | date:long}} |
-{{/BT-9}}{{?BT-7}}| {{label:BT-7}} | {{BT-7 | date:long}} |
+{{/BT-166}}{{?BT-9}}| {{label:BT-9}} | {{BT-9 | date}} |
+{{/BT-9}}{{?BT-7}}| {{label:BT-7}} | {{BT-7 | date}} |
 {{/BT-7}}{{?BT-8}}| {{label:BT-8}} | {{BT-8 | code:vatpointdate}} |
 {{/BT-8}}{{?BT-5}}| {{label:BT-5}} | {{BT-5}} |
 {{/BT-5}}{{?BT-6}}| {{label:BT-6}} | {{BT-6}} |
@@ -138,7 +138,7 @@
 {{class:muted}}
 
 {{?BG-13.BT-71}}{{label:BT-71}}: {{BG-13.BT-71}}
-{{/BG-13.BT-71}}{{?BG-13.BT-72}}{{label:BT-72}}: {{BG-13.BT-72 | date:long}}
+{{/BG-13.BT-71}}{{?BG-13.BT-72}}{{label:BT-72}}: {{BG-13.BT-72 | date}}
 {{/BG-13.BT-72}}
 
 {{end}}
@@ -190,7 +190,7 @@
 {{?BG-14}}
 ## {{label:BG-14}}
 
-{{BG-14.BT-73 | date:long}} — {{BG-14.BT-74 | date:long}}
+{{BG-14.BT-73 | date}} — {{BG-14.BT-74 | date}}
 {{/BG-14}}
 
 {{!
@@ -227,7 +227,7 @@
 {{/BT-17}}{{?BT-18}}- **{{label:BT-18}}:** {{BT-18}}
 {{/BT-18}}{{?BT-19}}- **{{label:BT-19}}:** {{BT-19}}
 {{/BT-19}}
-{{#BG-3}}- **{{label:BG-3}}:** {{BT-25}}{{?BT-26}} ({{BT-26 | date:medium}}){{/BT-26}}{{?BT-202}} [{{BT-202}}]{{/BT-202}}
+{{#BG-3}}- **{{label:BG-3}}:** {{BT-25}}{{?BT-26}} ({{BT-26 | date}}){{/BT-26}}{{?BT-202}} [{{BT-202}}]{{/BT-202}}
 {{/BG-3}}
 {{/references_present}}
 
@@ -338,7 +338,7 @@
 > **{{label:BT-126}} {{BT-126}} — {{label:BT-128}}:** {{BT-128}}
 {{/BT-128}}
 {{?BG-26}}
-> **{{label:BT-126}} {{BT-126}} — {{label:BG-26}}:** {{BG-26.BT-134 | date:long}} — {{BG-26.BT-135 | date:long}}
+> **{{label:BT-126}} {{BT-126}} — {{label:BG-26}}:** {{BG-26.BT-134 | date}} — {{BG-26.BT-135 | date}}
 {{/BG-26}}
 {{?BT-132}}
 > **{{label:BT-126}} {{BT-126}} — {{label:BT-132}}:** {{BT-132}}
@@ -383,14 +383,14 @@
 > **{{label:BT-126}} {{BT-126}} — {{label:BT-195}}:** {{BG-30.BT-195}}
 {{/BG-30.BT-195}}
 {{?BG-37}}
-> **{{label:BT-126}} {{BT-126}} — {{label:BG-37}}:** {{?BG-37.BT-185}}{{BG-37.BT-185}} {{/BG-37.BT-185}}{{?BG-37.BT-186}}({{BG-37.BT-186}}) {{/BG-37.BT-186}}{{?BG-37.BT-187}}{{BG-37.BT-187 | date:long}}{{/BG-37.BT-187}}
+> **{{label:BT-126}} {{BT-126}} — {{label:BG-37}}:** {{?BG-37.BT-185}}{{BG-37.BT-185}} {{/BG-37.BT-185}}{{?BG-37.BT-186}}({{BG-37.BT-186}}) {{/BG-37.BT-186}}{{?BG-37.BT-187}}{{BG-37.BT-187 | date}}{{/BG-37.BT-187}}
 {{?BG-37.BG-38}}
 > {{label:BG-38}}: {{BG-37.BG-38.address}}, {{BG-37.BG-38.BT-209 | code:country}}
 {{/BG-37.BG-38}}
 {{/BG-37}}
 {{?BG-39}}
 {{#BG-39}}
-> {{label:BG-39}} ({{label:BT-126}} {{..BT-126}}): {{BT-217}}{{?BT-218}} ({{BT-218 | date:medium}}){{/BT-218}}{{?BT-219}} [{{BT-219}}]{{/BT-219}}{{?BT-220}}, {{label:BT-220}} {{BT-220}}{{/BT-220}}
+> {{label:BG-39}} ({{label:BT-126}} {{..BT-126}}): {{BT-217}}{{?BT-218}} ({{BT-218 | date}}){{/BT-218}}{{?BT-219}} [{{BT-219}}]{{/BT-219}}{{?BT-220}}, {{label:BT-220}} {{BT-220}}{{/BT-220}}
 {{/BG-39}}
 {{/BG-39}}
 {{/BG-25}}
@@ -572,7 +572,7 @@
 
 | | | |
 |---|---:|---:|
-{{#BG-35}}| {{label:BG-35}} {{BT-170 | date:long}} | {{BT-171 | percent}} | {{BT-172 | amount}} |
+{{#BG-35}}| {{label:BG-35}} {{BT-170 | date}} | {{BT-171 | percent}} | {{BT-172 | amount}} |
 {{/BG-35}}
 {{/BG-35}}
 {{?BG-36}}
@@ -580,7 +580,7 @@
 
 | | | |
 |---|---:|---:|
-{{#BG-36}}| {{label:BG-36}} {{BT-181 | date:long}} | {{BT-182 | percent}} | {{BT-183 | amount}} |
+{{#BG-36}}| {{label:BG-36}} {{BT-181 | date}} | {{BT-182 | percent}} | {{BT-183 | amount}} |
 {{/BG-36}}
 {{/BG-36}}
 {{/BG-33}}

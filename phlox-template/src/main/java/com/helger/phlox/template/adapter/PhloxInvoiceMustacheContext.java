@@ -488,10 +488,8 @@ public final class PhloxInvoiceMustacheContext
   }
 
   @NonNull
-  private static FormatStyle _parseDateStyle (@Nullable final String sArg)
+  private static FormatStyle _parseDateStyle (@NonNull final String sArg)
   {
-    if (sArg == null)
-      return FormatStyle.MEDIUM;
     return switch (sArg)
     {
       case "short" -> FormatStyle.SHORT;
@@ -628,6 +626,8 @@ public final class PhloxInvoiceMustacheContext
       {
         if (!(aValue instanceof final LocalDate aDate))
           return aValue.toString ();
+        if (sArg == null)
+          return PhloxFormat.date (aDate, aEnv.getLocale (), aEnv.getFormatOptions ());
         final FormatStyle eStyle = _parseDateStyle (sArg);
         return PDTFormatter.getFormatterDate (eStyle, aEnv.getLocale (), EDTFormatterMode.PRINT).format (aDate);
       }

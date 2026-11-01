@@ -480,7 +480,7 @@ T p1 66.7 654.9 10.0 Helvetica-Bold Invoiced object identifier: AVE:METER-9
 T p1 56.7 670.4 10.0 Helvetica •
 T p1 66.7 670.8 10.0 Helvetica-Bold Buyer accounting reference: COST-CENTRE-1
 T p1 56.7 686.3 10.0 Helvetica •
-T p1 66.7 686.7 10.0 Helvetica-Bold Preceding invoice reference: PREV-INV-1 (Dec 15, 2025)
+T p1 66.7 686.7 10.0 Helvetica-Bold Preceding invoice reference: PREV-INV-1 (December 15, 2025)
 T p1 56.7 702.2 10.0 Helvetica •
 T p1 66.7 702.6 10.0 Helvetica-Bold Preceding invoice reference: PREV-INV-2
 T p1 56.7 728.1 8.0 Helvetica-Bold NOTES

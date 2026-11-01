@@ -84,7 +84,7 @@ References
 - Tender or lot reference: TENDER-5
 - Invoiced object identifier: AVE:METER-9
 - Buyer accounting reference: COST-CENTRE-1
-- Preceding invoice reference: PREV-INV-1 (Dec 15, 2025)
+- Preceding invoice reference: PREV-INV-1 (December 15, 2025)
 - Preceding invoice reference: PREV-INV-2
 
 Notes

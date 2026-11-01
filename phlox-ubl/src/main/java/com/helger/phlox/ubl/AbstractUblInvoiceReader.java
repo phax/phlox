@@ -49,6 +49,9 @@ abstract class AbstractUblInvoiceReader
   /** The scheme identifier of the SEPA creditor identifier (BT-90) in a party identification. */
   protected static final String SEPA_SCHEME_ID = EN16931CodeLists.CREDITOR_REFERENCE_SCHEME_ID;
 
+  // Not part of the binding, but the common filler of Peppol documents
+  private static final String PEPPOL_FILLER = "NA";
+
   private static final String ROOT_INVOICE = "Invoice";
   private static final String ROOT_CREDIT_NOTE = "CreditNote";
 
@@ -126,17 +129,17 @@ abstract class AbstractUblInvoiceReader
   /**
    * Get a value that UBL requires even if the business term is absent: the binding prescribes the
    * filler {@link EN16931CodeLists#MISSING_VALUE_PLACEHOLDER} for BT-13, BT-132, BT-190, BT-192,
-   * BT-199 and BT-201.
+   * BT-199 and BT-201. Peppol documents use {@value #PEPPOL_FILLER} in the same places.
    *
    * @param sValue
    *        The value of the element. May be {@code null}.
-   * @return The trimmed value or {@code null} if it is empty or the filler.
+   * @return The trimmed value or {@code null} if it is empty or a filler.
    */
   @Nullable
   protected static String strWithoutFiller (@Nullable final String sValue)
   {
     final String ret = str (sValue);
-    return EN16931CodeLists.MISSING_VALUE_PLACEHOLDER.equals (ret) ? null : ret;
+    return EN16931CodeLists.MISSING_VALUE_PLACEHOLDER.equals (ret) || PEPPOL_FILLER.equals (ret) ? null : ret;
   }
 
   @Nullable

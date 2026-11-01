@@ -84,7 +84,7 @@ Referenzen
 - Ausschreibungs- oder Losreferenz: TENDER-5
 - Referenzobjekt-Kennung: AVE:METER-9
 - Buchungsreferenz Käufer: COST-CENTRE-1
-- Vorhergehende Rechnungsreferenz: PREV-INV-1 (15.12.2025)
+- Vorhergehende Rechnungsreferenz: PREV-INV-1 (15. Dezember 2025)
 - Vorhergehende Rechnungsreferenz: PREV-INV-2
 
 Anmerkungen

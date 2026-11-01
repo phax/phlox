@@ -92,6 +92,11 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `--font` | Regular font file (TTF or OTF) for HTML and PDF; also `--font-bold`, `--font-italic` and `--font-bold-italic` |
 | `--watermark` | User watermark text; see also `--watermark-opacity` and `--watermark-rotation` |
 | `--line-width` | Width at which the `TEXT` output wraps paragraphs; `0` for no wrapping |
+| `--annotate-bt-ids` | Show the Business Term number after each label |
+| `--date-style` | Style of formatted dates: `SHORT`, `MEDIUM`, `LONG` or `FULL` |
+| `--amount-fraction-digits`, `--percent-fraction-digits` | Number of fraction digits of amounts and percentages |
+| `--negative-style` | Negative amounts: `MINUS_SIGN` or `PARENTHESES` |
+| `--creation-date-time` | `PDF` only: fixed creation date and time in the metadata, for reproducible output |
 | `--pdfa` | PDF/A level of the PDF: `2b`, `2u`, `3a` (tagged), `3b` or `3u`; needs `--font` (or fonts in the theme) |
 | `--pdfua` | Create a PDF/UA-1 (accessible, tagged PDF); can be combined with `--pdfa`; needs `--font` (or fonts in the theme) |
 | `--embed-source` | Embed the input XML into the PDF (PDF/A-3, `3b` unless `--pdfa` is given) |

@@ -23,6 +23,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
@@ -40,6 +43,8 @@ import com.helger.pdflayout.PDFCreationException;
 import com.helger.pdflayout.pdfa.EPdfALevel;
 import com.helger.phlox.api.AbstractRenderContext;
 import com.helger.phlox.api.CPhloxVersion;
+import com.helger.phlox.api.ENegativeStyle;
+import com.helger.phlox.api.PhloxFormatOptions;
 import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.api.PhloxRuntimeException;
 import com.helger.phlox.api.i18n.DefaultPhloxLabelResolver;
@@ -201,6 +206,26 @@ public class PhloxCli implements Callable <Integer>
            description = "TEXT only: the width in characters at which paragraphs are wrapped; 0 for no wrapping. Default: the theme or 80.")
   Integer m_aLineWidth;
 
+  @Option (names = "--annotate-bt-ids",
+           description = "Show the number of the Business Term after each label, like 'Invoice number [BT-1]'.")
+  boolean m_bAnnotateBtIDs;
+
+  @Option (names = "--date-style",
+           description = "Style of formatted dates: SHORT, MEDIUM, LONG or FULL. Default: the theme or LONG.")
+  FormatStyle m_eDateStyle;
+
+  @Option (names = "--amount-fraction-digits",
+           description = "Number of fraction digits of amounts. Default: the theme or the digits of the currency.")
+  Integer m_aAmountFractionDigits;
+
+  @Option (names = "--percent-fraction-digits",
+           description = "Number of fraction digits of percentages. Default: the theme or 2.")
+  Integer m_aPercentFractionDigits;
+
+  @Option (names = "--negative-style",
+           description = "Representation of negative amounts: MINUS_SIGN or PARENTHESES. Default: the theme or MINUS_SIGN.")
+  ENegativeStyle m_eNegativeStyle;
+
   @Option (names = "--pdfa",
            description = "PDF only: create PDF/A at the given level: 2b, 2u, 3a, 3b or 3u. 3a is a tagged (accessible) PDF. PDF/A requires embedded fonts (--font or 'pdf.fonts' in the theme).")
   String m_sPdfALevel;
@@ -216,6 +241,10 @@ public class PhloxCli implements Callable <Integer>
   @Option (names = "--embed-attachments",
            description = "PDF only: embed the attached documents of the invoice (BG-24) into the PDF (relationship 'Supplement'). Requires PDF/A-3; without --pdfa, 3b is used.")
   boolean m_bEmbedAttachments;
+
+  @Option (names = "--creation-date-time",
+           description = "PDF only: the creation date and time in the metadata, in ISO 8601 with offset like 2026-11-01T10:15:30+01:00. A fixed value makes the output reproducible. Default: the theme or the current time.")
+  String m_sCreationDateTime;
 
   @Option (names = "--zugferd",
            description = "PDF only: create a ZUGFeRD / Factur-X hybrid invoice. The CII input is embedded as factur-x.xml (xrechnung.xml for XRechnung) with the Factur-X metadata. Only for CII invoices of EN 16931:2017. Requires PDF/A-3; without --pdfa, 3b is used.")
@@ -354,6 +383,18 @@ public class PhloxCli implements Callable <Integer>
                                             .setMimeCode (_getMimeCode (sFilename))
                                             .setFilename (sFilename));
       }
+      if (m_bAnnotateBtIDs)
+        aCtx.setAnnotateBtIDs (true);
+      final PhloxFormatOptions aOptions = aCtx.getFormatOptions ();
+      if (m_eDateStyle != null)
+        aOptions.setDateStyle (m_eDateStyle);
+      if (m_aAmountFractionDigits != null)
+        aOptions.setAmountFractionDigits (m_aAmountFractionDigits);
+      if (m_aPercentFractionDigits != null)
+        aOptions.setPercentFractionDigits (m_aPercentFractionDigits.intValue ());
+      if (m_eNegativeStyle != null)
+        aOptions.setNegativeStyle (m_eNegativeStyle);
+      aCtx.setFormatOptions (aOptions);
       if (m_sWatermark != null || m_aWatermarkOpacity != null || m_aWatermarkRotation != null)
       {
         if (m_sWatermark == null && aCtx.getUserWatermark () == null)
@@ -423,7 +464,8 @@ public class PhloxCli implements Callable <Integer>
   }
 
   /**
-   * Apply PDF/A and the embedding of the source XML. The options are checked before.
+   * Apply PDF/A and the embedding of the source XML, on top of what the theme set. The options are
+   * checked before.
    *
    * @return {@code null} on success or the exit code of the error.
    */
@@ -432,7 +474,7 @@ public class PhloxCli implements Callable <Integer>
                                         final byte @NonNull [] aBytes,
                                         @NonNull final ESourceSyntax eSyntax)
   {
-    EPdfALevel ePdfALevel = null;
+    EPdfALevel ePdfALevel = aCtx.getPdfALevel ();
     if (m_sPdfALevel != null)
     {
       ePdfALevel = EPdfALevel.getFromIDOrNull (m_sPdfALevel.trim ().toLowerCase (Locale.ROOT));
@@ -443,12 +485,23 @@ public class PhloxCli implements Callable <Integer>
       }
     }
 
+    if (m_sCreationDateTime != null)
+      try
+      {
+        aCtx.setDocumentCreationDateTime (ZonedDateTime.parse (m_sCreationDateTime.trim ()));
+      }
+      catch (final DateTimeParseException ex)
+      {
+        System.err.println ("Unsupported --creation-date-time '" +
+                            m_sCreationDateTime +
+                            "'. Use ISO 8601 with offset, like 2026-11-01T10:15:30+01:00.");
+        return Integer.valueOf (2);
+      }
+
     if (m_bEmbedAttachments)
-    {
-      if (ePdfALevel == null)
-        ePdfALevel = EPdfALevel.PDF_A_3B;
       aCtx.setEmbedAttachments (true);
-    }
+    if (aCtx.isEmbedAttachments () && ePdfALevel == null)
+      ePdfALevel = EPdfALevel.PDF_A_3B;
     if (m_bEmbedSource || m_bZugferd)
     {
       if (ePdfALevel == null)
@@ -483,7 +536,8 @@ public class PhloxCli implements Callable <Integer>
       }
     }
     aCtx.setPdfALevel (ePdfALevel);
-    aCtx.setPdfUA (m_bPdfUA);
+    if (m_bPdfUA)
+      aCtx.setPdfUA (true);
     return null;
   }
 
@@ -502,9 +556,16 @@ public class PhloxCli implements Callable <Integer>
          m_bEmbedSource ||
          m_bEmbedAttachments ||
          m_bZugferd ||
-         m_sZugferdProfile != null) && m_eFormat != EOutputFormat.PDF)
+         m_sZugferdProfile != null ||
+         m_sCreationDateTime != null) && m_eFormat != EOutputFormat.PDF)
     {
-      System.err.println ("--pdfa, --pdfua, --embed-source, --embed-attachments, --zugferd and --zugferd-profile require --format PDF");
+      System.err.println ("--pdfa, --pdfua, --embed-source, --embed-attachments, --zugferd, --zugferd-profile and --creation-date-time require --format PDF");
+      return Integer.valueOf (2);
+    }
+    if ((m_aAmountFractionDigits != null && m_aAmountFractionDigits.intValue () < 0) ||
+        (m_aPercentFractionDigits != null && m_aPercentFractionDigits.intValue () < 0))
+    {
+      System.err.println ("--amount-fraction-digits and --percent-fraction-digits must not be negative");
       return Integer.valueOf (2);
     }
     if (m_aLineWidth != null && m_eFormat != EOutputFormat.TEXT)

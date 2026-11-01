@@ -32,7 +32,7 @@ import com.helger.base.clone.ICloneable;
 public class PhloxFormatOptions implements ICloneable <PhloxFormatOptions>
 {
   /** Default style of formatted dates. */
-  public static final FormatStyle DEFAULT_DATE_STYLE = FormatStyle.MEDIUM;
+  public static final FormatStyle DEFAULT_DATE_STYLE = FormatStyle.LONG;
   /** Default number of fraction digits of percentages. */
   public static final int DEFAULT_PERCENT_FRACTION_DIGITS = 2;
   /** Default representation of negative amounts. */
@@ -73,9 +73,9 @@ public class PhloxFormatOptions implements ICloneable <PhloxFormatOptions>
   }
 
   /**
-   * Get the date format style (MEDIUM by default).
+   * Get the date format style (LONG by default).
    *
-   * @return The date format style (MEDIUM by default). Never {@code null}.
+   * @return The date format style (LONG by default). Never {@code null}.
    */
   @NonNull
   public FormatStyle getDateStyle ()

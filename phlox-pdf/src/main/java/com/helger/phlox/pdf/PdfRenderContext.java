@@ -18,6 +18,7 @@ package com.helger.phlox.pdf;
 
 import java.awt.Color;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
@@ -79,6 +80,36 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
   private PdfEmbeddedSource m_aEmbeddedSource;
   private boolean m_bEmbedAttachments = DEFAULT_EMBED_ATTACHMENTS;
   private boolean m_bPdfUA = DEFAULT_PDF_UA;
+
+  @NonNull
+  private static EPdfALevel _getPdfALevel (@NonNull final PhloxThemeObject aPdf, @NonNull final String sLevel)
+  {
+    final EPdfALevel ret = EPdfALevel.getFromIDOrNull (sLevel.trim ().toLowerCase (Locale.ROOT));
+    if (ret == null)
+      throw new PhloxThemeException ("Theme error at '" +
+                                     aPdf.getPath () +
+                                     ".pdfALevel': unknown PDF/A level '" +
+                                     sLevel +
+                                     "', expected 2b, 2u, 3a, 3b or 3u");
+    return ret;
+  }
+
+  @NonNull
+  private static ZonedDateTime _getCreationDateTime (@NonNull final PhloxThemeObject aPdf, @NonNull final String sValue)
+  {
+    try
+    {
+      return ZonedDateTime.parse (sValue.trim ());
+    }
+    catch (final DateTimeParseException ex)
+    {
+      throw new PhloxThemeException ("Theme error at '" +
+                                     aPdf.getPath () +
+                                     ".documentCreationDateTime': expected an ISO 8601 date and time with offset, not '" +
+                                     sValue +
+                                     "'");
+    }
+  }
 
   @NonNull
   private static PDRectangle _getPageSize (@NonNull final PhloxThemeObject aPdf, @NonNull final String sName)
@@ -713,6 +744,10 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
    * fonts are embedded into the PDF and applied before the following three keys</li>
    * <li><code>bodyFont</code>, <code>headerFont</code>, <code>tableHeaderFont</code> - an object
    * with the keys <code>size</code>, <code>bold</code> and <code>color</code></li>
+   * <li><code>pdfALevel</code> - <code>2b</code>, <code>2u</code>, <code>3a</code>, <code>3b</code>
+   * or <code>3u</code>; <code>pdfUA</code> and <code>embedAttachments</code> - <code>true</code> or
+   * <code>false</code></li>
+   * <li><code>documentCreationDateTime</code> - ISO 8601 date and time with offset</li>
    * <li><code>blockStyles</code> - an object that maps the name of a block class of the template
    * (<code>{{class:name}}</code>, <code>{{group:name}}</code>) to an object with the keys
    * <code>fill</code>, <code>text</code>, <code>padding</code>, <code>borderTop</code> and
@@ -741,7 +776,11 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
                     "bodyFont",
                     "headerFont",
                     "tableHeaderFont",
-                    "blockStyles");
+                    "blockStyles",
+                    "pdfALevel",
+                    "pdfUA",
+                    "embedAttachments",
+                    "documentCreationDateTime");
 
     final String sPageSize = aPdf.getString ("pageSize");
     PDRectangle aPageSize = sPageSize == null ? m_aPageSize : _getPageSize (aPdf, sPageSize);
@@ -760,6 +799,19 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
     m_aBodyFont = _getFont (aPdf, "bodyFont", m_aBodyFont);
     m_aHeaderFont = _getFont (aPdf, "headerFont", m_aHeaderFont);
     m_aTableHeaderFont = _getFont (aPdf, "tableHeaderFont", m_aTableHeaderFont);
+
+    final String sPdfALevel = aPdf.getString ("pdfALevel");
+    if (sPdfALevel != null)
+      m_ePdfALevel = _getPdfALevel (aPdf, sPdfALevel);
+    final Boolean aPdfUA = aPdf.getBoolean ("pdfUA");
+    if (aPdfUA != null)
+      m_bPdfUA = aPdfUA.booleanValue ();
+    final Boolean aEmbedAttachments = aPdf.getBoolean ("embedAttachments");
+    if (aEmbedAttachments != null)
+      m_bEmbedAttachments = aEmbedAttachments.booleanValue ();
+    final String sCreationDateTime = aPdf.getString ("documentCreationDateTime");
+    if (sCreationDateTime != null)
+      m_aDocumentCreationDateTime = _getCreationDateTime (aPdf, sCreationDateTime);
 
     final PhloxThemeObject aStyles = aPdf.getObject ("blockStyles");
     if (aStyles != null)

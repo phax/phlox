@@ -22,9 +22,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.time.ZonedDateTime;
+
 import org.junit.Test;
 
 import com.helger.pdflayout.base.PLColor;
+import com.helger.pdflayout.pdfa.EPdfALevel;
 import com.helger.pdflayout.spec.PreloadFont;
 import com.helger.phlox.theme.PhloxThemeException;
 import com.helger.phlox.theme.PhloxThemeReader;
@@ -39,6 +42,41 @@ public final class PdfRenderContextThemeTest
   private static PdfRenderContext _apply (final String sJson)
   {
     return new PdfRenderContext ().applyTheme (PhloxThemeReader.readFromString (sJson, null));
+  }
+
+  @Test
+  public void testArchiveOptions ()
+  {
+    final PdfRenderContext aDefault = new PdfRenderContext ();
+    final PdfRenderContext aEmpty = _apply ("{\"pdf\":{}}");
+    assertEquals (aDefault.getPdfALevel (), aEmpty.getPdfALevel ());
+    assertEquals (Boolean.valueOf (aDefault.isPdfUA ()), Boolean.valueOf (aEmpty.isPdfUA ()));
+    assertEquals (Boolean.valueOf (aDefault.isEmbedAttachments ()), Boolean.valueOf (aEmpty.isEmbedAttachments ()));
+    assertEquals (aDefault.getDocumentCreationDateTime (), aEmpty.getDocumentCreationDateTime ());
+
+    final PdfRenderContext aCtx = _apply ("{\"pdf\":{\"pdfALevel\":\"3A\",\"pdfUA\":true,\"embedAttachments\":true,"
+                                          + "\"documentCreationDateTime\":\"2026-11-01T10:15:30+01:00\"}}");
+    assertEquals (EPdfALevel.PDF_A_3A, aCtx.getPdfALevel ());
+    assertEquals (Boolean.TRUE, Boolean.valueOf (aCtx.isPdfUA ()));
+    assertEquals (Boolean.TRUE, Boolean.valueOf (aCtx.isEmbedAttachments ()));
+    assertEquals (ZonedDateTime.parse ("2026-11-01T10:15:30+01:00"), aCtx.getDocumentCreationDateTime ());
+  }
+
+  @Test
+  public void testArchiveOptionsInvalid ()
+  {
+    for (final String sJson : new String [] { "{\"pdf\":{\"pdfALevel\":\"4x\"}}",
+                                              "{\"pdf\":{\"documentCreationDateTime\":\"yesterday\"}}" })
+      try
+      {
+        _apply (sJson);
+        fail (sJson);
+      }
+      catch (final PhloxThemeException ex)
+      {
+        // Expected
+        assertNotNull (ex.getMessage ());
+      }
   }
 
   @Test

@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Calendar;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -900,5 +901,109 @@ public final class PhloxCliTest
       System.setErr (aOldErr);
     }
     assertEquals ("", aErr.toString (StandardCharsets.UTF_8));
+  }
+
+  @Test
+  public void testFormatOptions () throws IOException
+  {
+    final String sUbl = _copyInvoice ().toString ();
+    final Path aOut = _tempFile (".txt");
+    assertEquals (0, _run ("-i", sUbl, "-f", "TEXT", "--line-width", "0", "-o", aOut.toString ()));
+    final String sDefault = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertFalse (sDefault, sDefault.contains ("[BT-2]"));
+    assertTrue (sDefault, sDefault.contains ("January 9, 2015"));
+    assertFalse (sDefault, sDefault.contains ("Friday"));
+
+    assertEquals (0,
+                  _run ("-i",
+                        sUbl,
+                        "-f",
+                        "TEXT",
+                        "--line-width",
+                        "0",
+                        "--annotate-bt-ids",
+                        "--date-style",
+                        "FULL",
+                        "--amount-fraction-digits",
+                        "3",
+                        "--percent-fraction-digits",
+                        "1",
+                        "--negative-style",
+                        "PARENTHESES",
+                        "-o",
+                        aOut.toString ()));
+    final String sChanged = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertTrue (sChanged, sChanged.contains ("[BT-2]"));
+    assertTrue (sChanged, sChanged.contains ("Friday, January 9, 2015"));
+    assertTrue (sChanged, sChanged.contains ("9.950"));
+    assertTrue (sChanged, sChanged.contains ("6.0%"));
+
+    assertEquals (2, _run ("-i", sUbl, "--amount-fraction-digits", "-1", "-o", aOut.toString ()));
+    assertEquals (2, _run ("-i", sUbl, "--percent-fraction-digits", "-1", "-o", aOut.toString ()));
+    assertEquals (2, _run ("-i", sUbl, "--date-style", "HUGE", "-o", aOut.toString ()));
+    assertEquals (2, _run ("-i", sUbl, "--negative-style", "RED", "-o", aOut.toString ()));
+  }
+
+  @Test
+  public void testCreationDateTime () throws IOException
+  {
+    final String sUbl = _copyInvoice ().toString ();
+    final Path aOut = _tempFile (".pdf");
+    assertEquals (0,
+                  _run ("-i", sUbl, "-f", "PDF", "--creation-date-time", "2020-03-04T05:06:07+01:00", "-o", aOut.toString ()));
+    try (final PDDocument aDoc = Loader.loadPDF (aOut.toFile ()))
+    {
+      assertEquals (2020, aDoc.getDocumentInformation ().getCreationDate ().get (Calendar.YEAR));
+    }
+    assertEquals (2, _run ("-i", sUbl, "-f", "PDF", "--creation-date-time", "yesterday", "-o", aOut.toString ()));
+    // Not PDF
+    assertEquals (2, _run ("-i", sUbl, "--creation-date-time", "2020-03-04T05:06:07+01:00", "-o", aOut.toString ()));
+  }
+
+  @NonNull
+  private static String _getPdfAPart (@NonNull final Path aFile) throws IOException
+  {
+    try (final PDDocument aDoc = Loader.loadPDF (aFile.toFile ()))
+    {
+      final String sXmp = new String (aDoc.getDocumentCatalog ().getMetadata ().toByteArray (), StandardCharsets.UTF_8);
+      final int nIndex = sXmp.indexOf ("<pdfaid:part>");
+      assertTrue (sXmp, nIndex >= 0);
+      return sXmp.substring (nIndex + "<pdfaid:part>".length (), nIndex + "<pdfaid:part>".length () + 1);
+    }
+  }
+
+  @Test
+  public void testArchiveOptionsOfTheTheme () throws IOException
+  {
+    final String sUbl = _copyInvoice ().toString ();
+    final String sFont = _fontFile (EFontResourceRoboto.ROBOTO_NORMAL, "Regular.ttf").toString ();
+    final Path aTheme = _tempFile (".json");
+    final Path aOut = _tempFile (".pdf");
+
+    // The command line must not reset the level of the theme
+    Files.writeString (aTheme, "{\"pdf\":{\"pdfALevel\":\"2b\"}}");
+    assertEquals (0, _run ("-i", sUbl, "-f", "PDF", "--font", sFont, "--theme", aTheme.toString (), "-o", aOut.toString ()));
+    assertEquals ("2", _getPdfAPart (aOut));
+
+    // And wins if it names one
+    assertEquals (0,
+                  _run ("-i",
+                        sUbl,
+                        "-f",
+                        "PDF",
+                        "--font",
+                        sFont,
+                        "--theme",
+                        aTheme.toString (),
+                        "--pdfa",
+                        "3b",
+                        "-o",
+                        aOut.toString ()));
+    assertEquals ("3", _getPdfAPart (aOut));
+
+    // Embedding from the theme selects PDF/A-3 like the option does
+    Files.writeString (aTheme, "{\"pdf\":{\"embedAttachments\":true}}");
+    assertEquals (0, _run ("-i", sUbl, "-f", "PDF", "--font", sFont, "--theme", aTheme.toString (), "-o", aOut.toString ()));
+    assertEquals ("3", _getPdfAPart (aOut));
   }
 }
