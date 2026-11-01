@@ -541,6 +541,22 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
     return aOut;
   }
 
+  /**
+   * The binding of BT-11 in the credit note of UBL 2.1 is
+   * <code>cac:AdditionalDocumentReference/cbc:ID</code> without a discriminator, so what tells it
+   * from BG-24 is that the reference has nothing else.
+   *
+   * @return {@code true} if the reference has an ID and no other content.
+   */
+  private static boolean _isOnlyAnID (@NonNull final DocumentReferenceType aRef)
+  {
+    return str (aRef.getIDValue ()) != null &&
+           aRef.getDocumentType () == null &&
+           aRef.getDocumentTypeCode () == null &&
+           aRef.getDocumentDescription ().isEmpty () &&
+           aRef.getAttachment () == null;
+  }
+
   @NonNull
   private static PhloxLineAllowance _readLineAllowance (@NonNull final AllowanceChargeType aAC)
   {
@@ -995,7 +1011,7 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
     if (!aCreditNote.getOriginatorDocumentReference ().isEmpty ())
       aModel.setTenderOrLotReference (str (aCreditNote.getOriginatorDocumentReference ().get (0).getIDValue ()));
 
-    // BT-18 + BG-24 from additional document references
+    // BT-11, BT-18 + BG-24 from additional document references
     for (final DocumentReferenceType aRef : aCreditNote.getAdditionalDocumentReference ())
     {
       // The binding of the credit note uses cbc:DocumentType, the type code of the invoice is
@@ -1007,11 +1023,17 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
           aModel.setInvoicedObjectIdentifier (identifier (aRef.getID ()));
       }
       else
-      {
-        final PhloxSupportingDocument aDoc = _readSupportingDocument (aRef);
-        if (!aDoc.isEmpty ())
-          aModel.supportingDocuments ().add (aDoc);
-      }
+        if (aModel.getProjectReference () == null && _isOnlyAnID (aRef))
+        {
+          // The credit note of UBL 2.1 has no cac:ProjectReference
+          aModel.setProjectReference (str (aRef.getIDValue ()));
+        }
+        else
+        {
+          final PhloxSupportingDocument aDoc = _readSupportingDocument (aRef);
+          if (!aDoc.isEmpty ())
+            aModel.supportingDocuments ().add (aDoc);
+        }
     }
 
     _readPrecedingInvoiceRefs (aCreditNote.getBillingReference (), aModel);

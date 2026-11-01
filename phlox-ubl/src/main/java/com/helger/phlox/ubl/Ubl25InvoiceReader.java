@@ -28,6 +28,8 @@ import com.helger.datetime.xml.XMLOffsetTime;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931Edition;
+import com.helger.en16931.basics.codelist.EEN16931ChargeReasonCode;
+import com.helger.en16931.basics.codelist.EEN16931DutyTaxFeeTypeCode;
 import com.helger.en16931.basics.codelist.EN16931CodeLists;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
 import com.helger.phlox.api.model.PhloxAttachment;
@@ -655,6 +657,24 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
            NON_VAT_TAX_CODE_LIST_ID.equals (aAC.getAllowanceChargeReasonCode ().getListID ());
   }
 
+  /**
+   * The binding allows to omit BT-193-1, the only permitted value, on the line level. Then only the
+   * code list can tell BT-193 from BT-145. A code that is part of both lists stays BT-145, because
+   * nothing says it is a tax.
+   *
+   * @return {@code true} if the reason code has no list identifier and is a non-VAT tax code only.
+   */
+  private static boolean _isLineNonVatTaxCodeWithoutListID (@NonNull final AllowanceChargeType aAC)
+  {
+    if (aAC.getAllowanceChargeReasonCode () == null || aAC.getAllowanceChargeReasonCode ().getListID () != null)
+      return false;
+    final String sCode = str (aAC.getAllowanceChargeReasonCodeValue ());
+    return sCode != null &&
+           EEN16931DutyTaxFeeTypeCode.getFromIDOrNull (sCode) != EEN16931DutyTaxFeeTypeCode.VAT &&
+           EEN16931DutyTaxFeeTypeCode.containsID (sCode) &&
+           !EEN16931ChargeReasonCode.containsID (sCode);
+  }
+
   @NonNull
   private static PhloxDocumentAllowance _readDocumentAllowance (@NonNull final AllowanceChargeType aAC)
   {
@@ -999,11 +1019,12 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
                                                                : str (aAC.getAllowanceChargeReason ()
                                                                           .get (0)
                                                                           .getValue ()));
-    // BT-145 (UNTDID 7161) or BT-193 + BT-193-1 (UNTDID 5153, told apart by @listID)
-    if (_isNonVatTaxCode (aAC))
+    // BT-145 (UNTDID 7161) or BT-193 + BT-193-1 (UNTDID 5153, told apart by @listID or, because it
+    // may be omitted, by the code list)
+    if (_isNonVatTaxCode (aAC) || _isLineNonVatTaxCodeWithoutListID (aAC))
     {
       aOut.setNonVatTaxTypeCode (str (aAC.getAllowanceChargeReasonCodeValue ()));
-      aOut.setNonVatTaxTypeCodeListID (str (aAC.getAllowanceChargeReasonCode ().getListID ()));
+      aOut.setNonVatTaxTypeCodeListID (NON_VAT_TAX_CODE_LIST_ID);
     }
     else
       aOut.setReasonCode (str (aAC.getAllowanceChargeReasonCodeValue ()));

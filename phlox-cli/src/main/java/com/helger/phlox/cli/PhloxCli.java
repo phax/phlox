@@ -268,17 +268,6 @@ public class PhloxCli implements Callable <Integer>
   {}
 
   @NonNull
-  private static String _getMimeCode (@NonNull final String sFilename)
-  {
-    final String sLower = sFilename.toLowerCase (Locale.ROOT);
-    if (sLower.endsWith (".jpg") || sLower.endsWith (".jpeg"))
-      return "image/jpeg";
-    if (sLower.endsWith (".gif"))
-      return "image/gif";
-    return "image/png";
-  }
-
-  @NonNull
   private static PhloxTemplate _loadTemplate (@Nullable final String sTemplate,
                                               @NonNull final EPhloxTemplateCoverageMode eCoverageMode)
   {
@@ -378,10 +367,8 @@ public class PhloxCli implements Callable <Integer>
           System.err.println ("Logo file '" + m_aLogoFile + "' does not exist");
           return Integer.valueOf (2);
         }
-        final String sFilename = m_aLogoFile.getFileName ().toString ();
-        aCtx.setLogo (new PhloxAttachment ().setBinary (Files.readAllBytes (m_aLogoFile))
-                                            .setMimeCode (_getMimeCode (sFilename))
-                                            .setFilename (sFilename));
+        aCtx.setLogo (PhloxAttachment.createLogo (Files.readAllBytes (m_aLogoFile),
+                                                  m_aLogoFile.getFileName ().toString ()));
       }
       if (m_bAnnotateBtIDs)
         aCtx.setAnnotateBtIDs (true);
@@ -477,7 +464,7 @@ public class PhloxCli implements Callable <Integer>
     EPdfALevel ePdfALevel = aCtx.getPdfALevel ();
     if (m_sPdfALevel != null)
     {
-      ePdfALevel = EPdfALevel.getFromIDOrNull (m_sPdfALevel.trim ().toLowerCase (Locale.ROOT));
+      ePdfALevel = EPdfALevel.getFromIDCaseInsensitiveOrNull (m_sPdfALevel.trim ());
       if (ePdfALevel == null)
       {
         System.err.println ("Unsupported --pdfa '" + m_sPdfALevel + "'. Use 2b, 2u, 3a, 3b or 3u.");

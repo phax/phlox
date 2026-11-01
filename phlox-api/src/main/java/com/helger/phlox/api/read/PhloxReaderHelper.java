@@ -16,6 +16,9 @@
  */
 package com.helger.phlox.api.read;
 
+import java.util.List;
+import java.util.function.Consumer;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -26,6 +29,7 @@ import com.helger.en16931.basics.codelist.EEN16931InvoiceTypeCode;
 import com.helger.en16931.basics.codelist.EEN16931InvoiceTypeCodeRole;
 import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
 
 /**
  * Helpers that all {@link IInvoiceReader} implementations share, so that the same value leads to
@@ -38,6 +42,39 @@ public final class PhloxReaderHelper
 {
   private PhloxReaderHelper ()
   {}
+
+  /**
+   * Take over the occurrences of a term that the model has only once. The first value goes into the
+   * model and every other one becomes an additional term, so that no value gets lost.
+   *
+   * @param <T>
+   *        The type of the values.
+   * @param aValues
+   *        All values in the order of the document. A {@code null} value is skipped. Never
+   *        {@code null}.
+   * @param sTerm
+   *        The key of the label of the additional terms. Never {@code null}.
+   * @param aSetter
+   *        Receives the first value. Never {@code null}.
+   * @param aAdditionalTerms
+   *        Receives the other values. Never {@code null}.
+   */
+  public static <T> void setAndAddRepeated (@NonNull final Iterable <? extends T> aValues,
+                                            @NonNull final String sTerm,
+                                            @NonNull final Consumer <? super T> aSetter,
+                                            @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    boolean bFirst = true;
+    for (final T aValue : aValues)
+      if (aValue != null)
+      {
+        if (bFirst)
+          aSetter.accept (aValue);
+        else
+          aAdditionalTerms.add (new PhloxAdditionalTerm (sTerm, aValue));
+        bFirst = false;
+      }
+  }
 
   /**
    * Determine the document kind from BT-3 (Invoice type code). The EN 16931 code list

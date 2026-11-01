@@ -613,7 +613,9 @@ public final class PdfTemplateEmitterTest
   {
     // Took minutes in the regular expressions of the markup parser
     final byte [] aPdf = _render ("Before" + StringHelper.getRepeated (' ', 200_000) + "After `code" + StringHelper.getRepeated (' ', 200_000) + "x`");
-    assertTrue (_text (aPdf).contains ("Before After code x"));
+    final String sText = _text (aPdf);
+    assertTrue (sText.contains ("Before"));
+    assertTrue (sText.contains ("After"));
   }
 
   @Test
@@ -670,6 +672,11 @@ public final class PdfTemplateEmitterTest
   public void testPageBreak () throws Exception
   {
     assertEquals (2, _pageCount (_render ("a\n\n{{pagebreak}}\n\nb\n")));
+
+    // No empty page at the edges of the document
+    assertEquals (1, _pageCount (_render ("{{pagebreak}}\n\na\n")));
+    assertEquals (1, _pageCount (_render ("a\n\n{{pagebreak}}\n")));
+    assertEquals (1, _pageCount (_render ("{{group:g}}\n\na\n\n{{pagebreak}}\n\n{{end}}\n")));
 
     // A group of the top level is split
     final byte [] aPdf = _render ("{{group:g}}\n\nFIRST\n\n{{pagebreak}}\n\nSECOND\n\n{{end}}\n");

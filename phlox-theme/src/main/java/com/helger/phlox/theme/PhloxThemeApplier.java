@@ -66,17 +66,6 @@ public final class PhloxThemeApplier
   {}
 
   @NonNull
-  private static String _getMimeCode (@NonNull final String sFilename)
-  {
-    final String sLower = sFilename.toLowerCase (Locale.ROOT);
-    if (sLower.endsWith (".jpg") || sLower.endsWith (".jpeg"))
-      return "image/jpeg";
-    if (sLower.endsWith (".gif"))
-      return "image/gif";
-    return "image/png";
-  }
-
-  @NonNull
   private static WatermarkSpec _createWatermark (@NonNull final PhloxThemeObject aObject)
   {
     aObject.checkKeys ("text", "opacity", "rotation", "color", "position", "fontSize", "repeatPerPage");
@@ -163,9 +152,7 @@ public final class PhloxThemeApplier
 
     final String sLogo = aCommon.getString ("logo");
     if (sLogo != null)
-      aCtx.setLogo (new PhloxAttachment ().setBinary (aTheme.readBinary (sLogo))
-                                          .setMimeCode (_getMimeCode (sLogo))
-                                          .setFilename (sLogo));
+      aCtx.setLogo (PhloxAttachment.createLogo (aTheme.readBinary (sLogo), sLogo));
 
     final PhloxThemeObject aWatermark = aCommon.getObject ("watermark");
     if (aWatermark != null)

@@ -40,6 +40,7 @@ public class PhloxBuyer
   private PhloxIdentifier m_aElectronicAddress;
   private PhloxPostalAddress m_aPostalAddress;
   private PhloxContact m_aContact;
+  private final ICommonsList <PhloxAdditionalTerm> m_aAdditionalTerms = new CommonsArrayList <> ();
 
   /** Create an empty buyer. */
   public PhloxBuyer ()
@@ -93,6 +94,18 @@ public class PhloxBuyer
   {
     m_sTradingName = sTradingName;
     return this;
+  }
+
+  /**
+   * Get the mutable list of the values of the buyer that the model has no place for.
+   *
+   * @return Mutable list of the additional terms. Never {@code null}; empty when there are none.
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public ICommonsList <PhloxAdditionalTerm> additionalTerms ()
+  {
+    return m_aAdditionalTerms;
   }
 
   /**

@@ -155,6 +155,7 @@ public final class TextTemplateEmitterTest
   {
     final String sRule = StringHelper.getRepeated ('-', TextRenderContext.DEFAULT_LINE_WIDTH);
     assertEquals ("a\n\n" + sRule + "\n\nb\n\n" + sRule + "\n\nc", _render ("a\n\n---\n\nb\n\n{{pagebreak}}\n\nc"));
+    assertEquals ("a", _render ("{{pagebreak}}\n\na\n\n{{pagebreak}}\n"));
     assertEquals ("a\n\n" + StringHelper.getRepeated ('-', 10) + "\n\nb",
                   _render ("a\n\n---\n\nb", new TextRenderContext ().setLineWidth (10)));
   }

@@ -86,9 +86,20 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
   {}
 
   /**
-   * Create the user watermark. The opacity is simulated by lightening the colour towards white, so
-   * that the PDF uses no transparency.
+   * The opacity is simulated by lightening the colour towards white, so that the PDF uses no
+   * transparency.
    */
+  @NonNull
+  private static PLColor _getOpaqueColor (@NonNull final WatermarkSpec aSpec)
+  {
+    final Color aRGB = aSpec.getColor ();
+    final float fO = Math.max (0f, Math.min (1f, aSpec.getOpacity ()));
+    return new PLColor (Math.round (255 - (255 - aRGB.getRed ()) * fO),
+                        Math.round (255 - (255 - aRGB.getGreen ()) * fO),
+                        Math.round (255 - (255 - aRGB.getBlue ()) * fO));
+  }
+
+  /** Create the user watermark. */
   @NonNull
   private static PLTextWatermark _createWatermark (@NonNull final PdfFontFamily aFamily,
                                                    @NonNull final WatermarkSpec aSpec)
@@ -96,13 +107,8 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
     // Bold for the large centred watermark, regular for the small ones at the edges
     final PreloadFont aFont = aSpec.getPosition () == EWatermarkPosition.CENTER ? aFamily.getBold ()
                                                                                 : aFamily.getRegular ();
-    final Color aRGB = aSpec.getColor ();
-    final float fO = Math.max (0f, Math.min (1f, aSpec.getOpacity ()));
-    final PLColor aColor = new PLColor (Math.round (255 - (255 - aRGB.getRed ()) * fO),
-                                        Math.round (255 - (255 - aRGB.getGreen ()) * fO),
-                                        Math.round (255 - (255 - aRGB.getBlue ()) * fO));
     final PLTextWatermark ret = new PLTextWatermark (aSpec.getText (), aFont).setFontSize (aSpec.getFontSizePt ())
-                                                                             .setColor (aColor)
+                                                                             .setColor (_getOpaqueColor (aSpec))
                                                                              .setRotation (aSpec.getRotation ());
     switch (aSpec.getPosition ())
     {
@@ -125,11 +131,6 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
                                                                @NonNull final WatermarkSpec aSpec)
   {
     // PLColor is RGB-only - approximate the opacity by lightening the colour towards white
-    final Color aRGB = aSpec.getColor ();
-    final float fO = Math.max (0f, Math.min (1f, aSpec.getOpacity ()));
-    final PLColor aColor = new PLColor (Math.round (255 - (255 - aRGB.getRed ()) * fO),
-                                        Math.round (255 - (255 - aRGB.getGreen ()) * fO),
-                                        Math.round (255 - (255 - aRGB.getBlue ()) * fO));
     final PLRichText aText = PLRichText.createFromMarkup ("{link[" +
                                                           PhloxDocumentProperties.PROJECT_URL +
                                                           "]}" +
@@ -137,7 +138,7 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
                                                           "{link}",
                                                           aFamily.getAsPLFontFamily (),
                                                           aSpec.getFontSizePt (),
-                                                          aColor);
+                                                          _getOpaqueColor (aSpec));
     aText.setHorzAlign (EHorzAlignment.RIGHT);
     return new PLBox (aText).setMarginTop (4).setHorzAlign (EHorzAlignment.RIGHT);
   }

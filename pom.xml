@@ -63,11 +63,12 @@
     <ph-commons.version>12.5.3</ph-commons.version>
     <ph-ubl.version>10.2.1</ph-ubl.version>
     <ph-cii.version>4.1.3</ph-cii.version>
-    <en16931-basics.version>1.0.3</en16931-basics.version>
+    <en16931-basics.version>1.0.4-SNAPSHOT</en16931-basics.version>
     <ph-codelists.version>1.0.0</ph-codelists.version>
+    <ph-css.version>8.3.0</ph-css.version>
     <ph-oton.version>10.7.0</ph-oton.version>
     <pdfcompare.version>1.2.11</pdfcompare.version>
-    <ph-pdf-layout.version>8.4.0</ph-pdf-layout.version>
+    <ph-pdf-layout.version>8.4.1</ph-pdf-layout.version>
     <kaltblut.version>0.9.5</kaltblut.version>
     <picocli.version>4.7.7</picocli.version>
     <jmustache.version>1.16</jmustache.version>
@@ -109,6 +110,14 @@
         <groupId>com.helger.codelists</groupId>
         <artifactId>ph-codelists-unit</artifactId>
         <version>${ph-codelists.version}</version>
+      </dependency>
+      <!-- Before ph-oton, which imports an older version -->
+      <dependency>
+        <groupId>com.helger</groupId>
+        <artifactId>ph-css-parent-pom</artifactId>
+        <version>${ph-css.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>com.helger.photon</groupId>

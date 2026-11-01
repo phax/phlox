@@ -28,7 +28,6 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import com.helger.annotation.concurrent.Immutable;
-import com.helger.base.CGlobal;
 import com.helger.datetime.format.EDTFormatterMode;
 import com.helger.datetime.format.PDTFormatter;
 import com.helger.phlox.api.ENegativeStyle;
@@ -76,6 +75,14 @@ public final class PhloxFormat
   }
 
   /**
+   * @return The number of fraction digits that the value needs, not counting trailing zeros.
+   */
+  private static int _getFractionDigits (@NonNull final BigDecimal aValue)
+  {
+    return Math.max (aValue.stripTrailingZeros ().scale (), 0);
+  }
+
+  /**
    * Format a date in the style of the format options.
    *
    * @param aDate
@@ -99,8 +106,10 @@ public final class PhloxFormat
   }
 
   /**
-   * Format an amount with the given currency in the locale's number style. A negative amount is
-   * shown as {@link PhloxFormatOptions#getNegativeStyle()} asks for.
+   * Format an amount with the given currency in the locale's number style. An amount is never
+   * rounded: it has the fraction digits of the currency, or of
+   * {@link PhloxFormatOptions#getAmountFractionDigits()}, and more if its value needs them. A
+   * negative amount is shown as {@link PhloxFormatOptions#getNegativeStyle()} asks for.
    *
    * @param aAmount
    *        The amount, may be {@code null}.
@@ -148,6 +157,7 @@ public final class PhloxFormat
       aFmt.setMinimumFractionDigits (aOptions.getAmountFractionDigits ().intValue ());
       aFmt.setMaximumFractionDigits (aOptions.getAmountFractionDigits ().intValue ());
     }
+    aFmt.setMaximumFractionDigits (Math.max (aFmt.getMaximumFractionDigits (), _getFractionDigits (aAmount)));
     if (aAmount.signum () < 0 && aOptions != null && aOptions.getNegativeStyle () == ENegativeStyle.PARENTHESES)
       return "(" + _keepTogether (aFmt.format (aAmount.negate ())) + ")";
     return _keepTogether (aFmt.format (aAmount));
@@ -155,7 +165,8 @@ public final class PhloxFormat
 
   /**
    * Format a percentage value (e.g. {@code 19} → {@code "19.00%"} in en-US, {@code "19,00 %"} in
-   * de-DE).
+   * de-DE). A percentage is never rounded: it has the fraction digits of the options and more if its
+   * value needs them.
    *
    * @param aRate
    *        The value expressed in whole-percent (i.e. {@code 19} for 19%). May be {@code null}.
@@ -176,8 +187,8 @@ public final class PhloxFormat
     final NumberFormat aFmt = NumberFormat.getPercentInstance (aLocale);
     final int nDigits = aOptions != null ? aOptions.getPercentFractionDigits () : 2;
     aFmt.setMinimumFractionDigits (nDigits);
-    aFmt.setMaximumFractionDigits (nDigits);
+    aFmt.setMaximumFractionDigits (Math.max (nDigits, _getFractionDigits (aRate)));
     // From 19 to 0,19
-    return _keepTogether (aFmt.format (aRate.divide (CGlobal.BIGDEC_100)));
+    return _keepTogether (aFmt.format (aRate.movePointLeft (2)));
   }
 }

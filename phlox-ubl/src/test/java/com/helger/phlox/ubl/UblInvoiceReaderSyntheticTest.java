@@ -36,6 +36,7 @@ import org.junit.Test;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.string.StringReplace;
 import com.helger.cache.regex.RegExHelper;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931Edition;
 import com.helger.io.resource.ClassPathResource;
@@ -43,6 +44,7 @@ import com.helger.phlox.api.model.PhloxDirectDebit;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.model.PhloxInvoiceLine;
 import com.helger.phlox.api.model.PhloxItem;
+import com.helger.phlox.api.model.PhloxLineCharge;
 import com.helger.phlox.testfiles.MockPhloxTestFiles;
 
 /**
@@ -173,6 +175,78 @@ public final class UblInvoiceReaderSyntheticTest
       assertEquals (sFile, bCreditNote, aMissing.isCreditNote ());
       assertEquals (sFile, 0, aErrors2.getCount (x -> x.getErrorText (Locale.ROOT).startsWith ("Unknown BT-3")));
     }
+  }
+
+  @NonNull
+  private static PhloxLineCharge _readLineChargeWithCode (@NonNull final String sCode)
+  {
+    final String sCharge = "<cac:AllowanceCharge><cbc:ChargeIndicator>true</cbc:ChargeIndicator>" +
+                           sCode +
+                           "<cbc:Amount currencyID=\"EUR\">1.00</cbc:Amount></cac:AllowanceCharge>";
+    final PhloxInvoice aModel = _read (UBL25_INVOICE, _load (UBL25_INVOICE, "<cac:Item>", sCharge + "<cac:Item>"));
+    final ICommonsList <PhloxLineCharge> aCharges = aModel.lines ().get (0).charges ();
+    return aCharges.getLastOrNull ();
+  }
+
+  @Test
+  public void testLineNonVatTaxCodeWithOptionalListID ()
+  {
+    // With the identifier of the code list
+    PhloxLineCharge aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode listID=\"5153\">AAA</cbc:AllowanceChargeReasonCode>");
+    assertEquals ("AAA", aCharge.getNonVatTaxTypeCode ());
+    assertEquals ("5153", aCharge.getNonVatTaxTypeCodeListID ());
+    assertNull (aCharge.getReasonCode ());
+
+    // The identifier may be omitted: only part of UNTDID 5153, and the identifier has only one value
+    aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>ENV</cbc:AllowanceChargeReasonCode>");
+    assertEquals ("ENV", aCharge.getNonVatTaxTypeCode ());
+    assertEquals ("5153", aCharge.getNonVatTaxTypeCodeListID ());
+    assertNull (aCharge.getReasonCode ());
+
+    // Added to UNTDID 5153 after D15B
+    aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>AAO</cbc:AllowanceChargeReasonCode>");
+    assertEquals ("AAO", aCharge.getNonVatTaxTypeCode ());
+    assertNull (aCharge.getReasonCode ());
+
+    // Part of UNTDID 7161
+    aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>FC</cbc:AllowanceChargeReasonCode>");
+    assertEquals ("FC", aCharge.getReasonCode ());
+    assertNull (aCharge.getNonVatTaxTypeCode ());
+
+    // Part of both code lists
+    aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>AAA</cbc:AllowanceChargeReasonCode>");
+    assertEquals ("AAA", aCharge.getReasonCode ());
+    assertNull (aCharge.getNonVatTaxTypeCode ());
+
+    // Excluded by the binding, and an unknown code
+    for (final String sCode : new String [] { "VAT", "XYZ" })
+    {
+      aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>" + sCode + "</cbc:AllowanceChargeReasonCode>");
+      assertEquals (sCode, aCharge.getReasonCode ());
+      assertNull (aCharge.getNonVatTaxTypeCode ());
+    }
+  }
+
+  @Test
+  public void testProjectReferenceInCreditNote21 ()
+  {
+    assertNull (_read (UBL21_CREDIT_NOTE).getProjectReference ());
+
+    final String sProject = "<cac:AdditionalDocumentReference><cbc:ID>PROJECT-1</cbc:ID></cac:AdditionalDocumentReference>";
+    final String sOther = "<cac:AdditionalDocumentReference><cbc:ID>OTHER</cbc:ID></cac:AdditionalDocumentReference>";
+    final String sAnchor = "<cac:AccountingSupplierParty>";
+
+    // A reference with only an ID is BT-11
+    PhloxInvoice aModel = _read (UBL21_CREDIT_NOTE, _load (UBL21_CREDIT_NOTE, sAnchor, sProject + sAnchor));
+    assertEquals ("PROJECT-1", aModel.getProjectReference ());
+    assertEquals (1, aModel.supportingDocuments ().size ());
+    assertEquals ("SUPPORT-1", aModel.supportingDocuments ().get (0).getReference ());
+
+    // There is only one BT-11
+    aModel = _read (UBL21_CREDIT_NOTE, _load (UBL21_CREDIT_NOTE, sAnchor, sProject + sOther + sAnchor));
+    assertEquals ("PROJECT-1", aModel.getProjectReference ());
+    assertEquals (2, aModel.supportingDocuments ().size ());
+    assertEquals ("OTHER", aModel.supportingDocuments ().get (1).getReference ());
   }
 
   @Test

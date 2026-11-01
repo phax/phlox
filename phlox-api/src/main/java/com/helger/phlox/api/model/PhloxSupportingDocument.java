@@ -30,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 public class PhloxSupportingDocument
 {
   private String m_sReference;
+  private String m_sDocumentTypeCode;
   private String m_sDescription;
   private String m_sExternalLocation;
   private PhloxAttachment m_aAttachment;
@@ -60,6 +61,32 @@ public class PhloxSupportingDocument
   public PhloxSupportingDocument setReference (@Nullable final String sReference)
   {
     m_sReference = sReference;
+    return this;
+  }
+
+  /**
+   * Get the supporting document reference code (BT-122-1). The binding only knows the fixed value
+   * {@code 916}, so that value is left out and only another code is held here.
+   *
+   * @return The document type that differs from {@code 916}. May be {@code null}.
+   */
+  @Nullable
+  public String getDocumentTypeCode ()
+  {
+    return m_sDocumentTypeCode;
+  }
+
+  /**
+   * Set the supporting document reference code (BT-122-1).
+   *
+   * @param sDocumentTypeCode
+   *        The document type that differs from {@code 916}; may be {@code null}.
+   * @return this for chaining.
+   */
+  @NonNull
+  public PhloxSupportingDocument setDocumentTypeCode (@Nullable final String sDocumentTypeCode)
+  {
+    m_sDocumentTypeCode = sDocumentTypeCode;
     return this;
   }
 
@@ -146,6 +173,10 @@ public class PhloxSupportingDocument
    */
   public boolean isEmpty ()
   {
-    return m_sReference == null && m_sDescription == null && m_sExternalLocation == null && m_aAttachment == null;
+    return m_sReference == null &&
+           m_sDocumentTypeCode == null &&
+           m_sDescription == null &&
+           m_sExternalLocation == null &&
+           m_aAttachment == null;
   }
 }

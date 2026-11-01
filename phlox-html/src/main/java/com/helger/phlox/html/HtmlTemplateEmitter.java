@@ -16,7 +16,6 @@
  */
 package com.helger.phlox.html;
 
-import java.util.Base64;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -26,35 +25,15 @@ import org.commonmark.ext.gfm.tables.TableBody;
 import org.commonmark.ext.gfm.tables.TableCell;
 import org.commonmark.ext.gfm.tables.TableHead;
 import org.commonmark.ext.gfm.tables.TableRow;
-import org.commonmark.node.BlockQuote;
-import org.commonmark.node.BulletList;
-import org.commonmark.node.Code;
-import org.commonmark.node.Emphasis;
-import org.commonmark.node.FencedCodeBlock;
-import org.commonmark.node.HardLineBreak;
-import org.commonmark.node.Heading;
-import org.commonmark.node.HtmlBlock;
-import org.commonmark.node.HtmlInline;
-import org.commonmark.node.Image;
-import org.commonmark.node.IndentedCodeBlock;
-import org.commonmark.node.Link;
-import org.commonmark.node.ListItem;
-import org.commonmark.node.Node;
-import org.commonmark.node.OrderedList;
-import org.commonmark.node.Paragraph;
-import org.commonmark.node.SoftLineBreak;
-import org.commonmark.node.StrongEmphasis;
-import org.commonmark.node.Text;
-import org.commonmark.node.ThematicBreak;
+import org.commonmark.node.*;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.css.ECSSUnit;
 import com.helger.css.property.CCSSProperties;
-import com.helger.css.property.CSSPropertyFree;
-import com.helger.css.property.ECSSProperty;
-import com.helger.css.property.ICSSProperty;
+import com.helger.css.propertyvalue.CCSSValue;
 import com.helger.html.hc.IHCNodeWithChildren;
 import com.helger.html.hc.html.IHCElement;
 import com.helger.html.hc.html.embedded.HCImg;
@@ -84,6 +63,7 @@ import com.helger.html.hc.html.textlevel.HCS;
 import com.helger.html.hc.html.textlevel.HCStrong;
 import com.helger.html.hc.impl.HCTextNode;
 import com.helger.phlox.api.PhloxLogHelper;
+import com.helger.phlox.template.PhloxLinkHelper;
 import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
@@ -109,10 +89,6 @@ public final class HtmlTemplateEmitter extends
   private static final String LOGO_URL = "attachment:logo";
 
   private static final Pattern BR_TAG = Pattern.compile ("<br\\s*/?>", Pattern.CASE_INSENSITIVE);
-
-  // The constants of CCSSProperties only know numbers for these two and warn about "none"
-  private static final ICSSProperty MAX_HEIGHT = new CSSPropertyFree (ECSSProperty.MAX_HEIGHT);
-  private static final ICSSProperty MAX_WIDTH = new CSSPropertyFree (ECSSProperty.MAX_WIDTH);
 
   private final HtmlRenderContext m_aCtx;
 
@@ -142,10 +118,7 @@ public final class HtmlTemplateEmitter extends
     final PhloxResolvedImage aResolved = aAst.getResolvedImage (aImage);
     final String sSrc;
     if (aResolved != null)
-      sSrc = "data:" +
-             (aResolved.getMimeCode () == null ? "application/octet-stream" : aResolved.getMimeCode ()) +
-             ";base64," +
-             Base64.getEncoder ().encodeToString (aResolved.getBinary ());
+      sSrc = PhloxTemplatePostParser.toDataUri (aResolved);
     else
     {
       if (LOGO_URL.equals (aImage.getDestination ()) ||
@@ -160,31 +133,22 @@ public final class HtmlTemplateEmitter extends
       }
       sSrc = aImage.getDestination ();
     }
+
     final HCImg aImg = new HCImg ().setSrc (new SimpleURL (sSrc));
     if (aResolved != null && aResolved.getAltText () != null)
       aImg.setAlt (aResolved.getAltText ());
     if (LOGO_URL.equals (aImage.getDestination ()))
       aImg.addClass (HtmlDocumentSupport.cls (m_aCtx.getCssClassPrefix () + "logo"));
+
     final int nHeightPx = PhloxTemplatePostParser.getImageHeightPx (aImage);
     if (nHeightPx > 0)
     {
       // The explicit height wins over the limits of the logo class
-      aImg.addStyle (CCSSProperties.HEIGHT.newValue (nHeightPx + "px"));
-      aImg.addStyle (MAX_HEIGHT.newValue ("none"));
-      aImg.addStyle (MAX_WIDTH.newValue ("none"));
+      aImg.addStyle (CCSSProperties.HEIGHT.newValue (ECSSUnit.px (nHeightPx)));
+      aImg.addStyle (CCSSProperties.MAX_HEIGHT.newValue (CCSSValue.NONE));
+      aImg.addStyle (CCSSProperties.MAX_WIDTH.newValue (CCSSValue.NONE));
     }
     return aImg;
-  }
-
-  private static boolean _isSafeLink (@Nullable final String sDestination)
-  {
-    if (sDestination == null)
-      return false;
-    final int nColon = sDestination.indexOf (':');
-    if (nColon < 0)
-      return true;
-    final String sScheme = sDestination.substring (0, nColon).toLowerCase (Locale.ROOT);
-    return sScheme.equals ("http") || sScheme.equals ("https") || sScheme.equals ("mailto");
   }
 
   private void _emitHeading (@NonNull final PhloxTemplateAst aAst,
@@ -373,7 +337,7 @@ public final class HtmlTemplateEmitter extends
                             @NonNull final Link aLink,
                             @NonNull final IHCNodeWithChildren <?> aTarget)
   {
-    if (_isSafeLink (aLink.getDestination ()))
+    if (PhloxLinkHelper.isSafeLink (aLink.getDestination ()))
     {
       final HCA aA = new HCA (new SimpleURL (aLink.getDestination ()));
       visitInlineChildren (aAst, aLink, aA);
@@ -535,9 +499,7 @@ public final class HtmlTemplateEmitter extends
   public HCHtml emit (@NonNull final PhloxTemplateAst aAst)
   {
     final HCHtml aHtml = new HCHtml ();
-    final HCDiv aPage = HtmlDocumentSupport.createPage (aHtml,
-                                                        aAst.getInvoice (),
-                                                        m_aCtx);
+    final HCDiv aPage = HtmlDocumentSupport.createPage (aHtml, aAst.getInvoice (), m_aCtx);
     visitBlockChildren (aAst, aAst.getRoot (), aPage);
     return aHtml;
   }

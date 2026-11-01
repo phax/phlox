@@ -157,8 +157,9 @@ public final class DefaultPhloxLabelResolverTest
     assertEquals ("Regelsteuersatz", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatcategory", "S", Locale.GERMAN));
     assertEquals ("Commercial invoice", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("doctype", "380", Locale.ENGLISH));
     assertEquals ("Handelsrechnung", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("doctype", "380", Locale.GERMAN));
+    assertEquals ("Taux normal", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatcategory", "S", Locale.FRENCH));
     // Any other locale gets the English names
-    assertEquals ("Standard rate", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatcategory", "S", Locale.FRENCH));
+    assertEquals ("Standard rate", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatcategory", "S", Locale.ITALIAN));
   }
 
   @Test

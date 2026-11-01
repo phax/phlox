@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-**phlox** is a visualizer for EN 16931 electronic invoices (the EU structured e-invoicing standard). It reads UBL (2.1 / 2.5) or CII (D16B / D25A) XML into a syntax-neutral intermediate model, then writes HTML, PDF or plain text in EN, DE, ES, FR or NL.
+**phlox** is a visualiser for EN 16931 electronic invoices (the EU structured e-invoicing standard). It reads UBL (2.1 / 2.5) or CII (D16B / D25A) XML into a syntax-neutral intermediate model, then writes HTML, PDF or plain text in EN, DE, ES, FR or NL.
 
 Both editions of the standard are supported: EN 16931:2017 (UBL 2.1, CII D16B) and EN 16931:2026 (UBL 2.5, CII D25A). The model is a superset of both; terms that only exist in 2026 stay empty for 2017 documents. The edition is detected from BT-24 (`EEN16931Edition` from `com.helger:en16931-basics`) or chosen explicitly via the reader factories (`UblInvoiceReader.fromUbl21()/fromUbl25()/autoDetect()`, `CiiInvoiceReader.fromD16B()/fromD25A()/autoDetect()`).
 
@@ -13,7 +13,7 @@ Both editions of the standard are supported: EN 16931:2017 (UBL 2.1, CII D16B) a
 Three-stage pipeline: **Read** (source XML → intermediate model) → **Hold** (in-memory model) → **Write** (model → HTML / PDF / text).
 
 Module dependency rules are strict:
-- Readers and writers depend **only** on `phlox-api`, never on each other.
+- Readers depend **only** on `phlox-api`. Writers depend on `phlox-api`, `phlox-template` and `phlox-theme`, and only their tests use the readers. Readers and writers never depend on each other.
 - `phlox-cli` is the only module that wires readers and writers together.
 - Do not add cross-module deps to enable shortcuts — consumers must be able to depend on, e.g., HTML-for-UBL without pulling PDF libs.
 
@@ -32,34 +32,37 @@ Modules:
 
 ## Hard constraints
 
+- **All data of the XML appears in the output.** A reader, the model, the default template or a writer must not drop a value of the invoice: every occurrence of a repeated element is shown, and the PDF is the reference. If a value cannot be mapped, show it rather than lose it. Only the fillers `None` and `NA` of the UBL binding count as no data.
 - **No validation in phlox.** Business-rule checks (e.g. VAT consistency) belong in `phive-rules-en16931`. Do not add them here.
 - **Stateless library.** No config files, no environment variables, no system properties at startup. All tuning flows through typed `RenderContext` parameters. Never reach for `System.getProperty(...)` or `System.getenv(...)`.
-- **Intermediate model is the contract.** Every EN 16931 Business Group (BG) and Business Term (BT) is always populated. Use empty collections, never `null`. Writers must not have "field not present" branches.
+- **Intermediate model is the contract.** Collections are never `null`, only empty. Optional single BGs (BG-10, 11, 13, 14, 16; line BG-26, 29, 30, 31) and absent BTs are `null`; the template decides with `{{?...}}`. Emitters have no logic per field.
+- **The invoice is untrusted input.** Templates, themes and CLI arguments are trusted. A value must never become Markdown, a layout tag or a link: every substituted value goes through the escaping in `PhloxInvoiceMustacheContext`, which also strips `SENTINEL_MARKER` (U+FDD0), so layout sentinels cannot be forged. Log values through `PhloxLogHelper.sanitise`. No regex with quadratic time on invoice text.
 - **`RenderContext` type hierarchy is load-bearing.** `HtmlRenderContext`, `PdfRenderContext` and `TextRenderContext` all extend `AbstractRenderContext`. Writers accept their specific subclass — this is intentional, do not widen to the base type.
-- **JSpecify annotations** (`@NonNull` / `@Nullable`) on public types — used in 47 of 51 Java files.
-- **forbiddenapis** plugin runs at compile time using `ph-forbidden-apis` signatures. If it fails, fix the call site — do not exclude the rule.
+- **JSpecify annotations** (`@NonNull` / `@Nullable`) on public types.
+- **forbiddenapis** plugin runs at compile time using `ph-forbidden-apis` signatures. If it fails, fix the call site — do not exclude the rule. Only `phlox-cli` skips the plugin, see the comment in its POM.
 
 ## Build / test
 
-Standard Maven (Java 17+, Maven 3.x). The effective compiler release is 17: the parent POM pins it, so the `maven.compiler.release` property in `pom.xml` has no effect and Java 21+ language features (e.g. pattern-matching `switch`) do not compile. Worth knowing:
+Standard Maven (Java 17+, Maven 3.x). The compiler release is 17 through `java.version` in `pom.xml`, so Java 21+ language features (e.g. pattern-matching `switch`) do not compile. Worth knowing:
 - Single module: `mvn -pl phlox-ubl test`
-- Single test method: `mvn -Dtest=PdfInvoiceWriterTest#testHelloWorld test`
+- Single test method: `mvn -Dtest=PdfInvoiceWriterTest#testRenderUblToPdf test`
 - CLI deliverable is `phlox-cli/target/phlox-cli-full.jar` (shaded), **not** `phlox-cli.jar`.
-- No CI yet. No checkstyle, no formatter config — style comes from `~/.claude/rules/` (Hungarian notation, spaces before parens, Apache license header, ph-commons collections, etc.).
+- CI is `.github/workflows/maven.yml` with Java 17, 21 and 25. No checkstyle, no formatter config — style comes from `~/.claude/rules/` (Hungarian notation, spaces before parens, Apache licence header, ph-commons collections, etc.).
+- `en16931-basics`, `ph-css` (imported in `pom.xml` before `ph-oton`, which brings an older one) and `ph-pdf-layout` are `-SNAPSHOT` versions at the moment: install them from the sibling folders first, built with JDK 21 or older. Classes built by javac 25 cannot be read by javac 21 (`RuntimeInvisibleParameterAnnotations`, invalid class file), and a stale `target` keeps them, so use `clean install`.
 
 ## Tests
 
-- Test fixtures live in `phlox-testfiles/src/main/resources/external/en16931/{2017,2026}/{ubl,cii}/...`.
+- Test fixtures live in `phlox-testfiles/src/main/resources/external/en16931/{2017,2026}/{ubl,cii}/...`, invented edge cases in `.../en16931/synthetic/`.
 - Adding regression coverage usually means adding an XML fixture there, not a new Java test class.
-- JUnit 4 + AssertJ.
-- Reference files: `HtmlMastersTest` (phlox-html), `PdfMastersTest` (phlox-pdf) and `TextMastersTest` (phlox-text) compare the output of `MockPhloxTestFiles.getMasterFiles ()` with `src/test/resources/masters`. After an intended change of the output write them again with `-Dphlox.updateMasters=true` and review the `git diff`. The PDF master is a text description of the layout plus a PDF that is compared with pdfcompare.
+- JUnit 4.
+- Reference files: `HtmlMastersTest` (phlox-html), `PdfMastersTest` (phlox-pdf) and `TextMastersTest` (phlox-text) compare the output of `MockPhloxTestFiles.getMasterFiles ()` with `src/test/resources/masters`. After an intended change of the output write them again with `-Dphlox.updateMasters=true` and review the `git diff`. The PDF master is a text description of the layout plus a PDF that is compared with pdfcompare. The update strips the licence header of the HTML masters and rewrites every PDF, so restore the headers and the PDFs whose layout text did not change.
 
-## Localization
+## Localisation
 
-- Labels in `phlox-api/src/main/resources/phlox-labels_{en,de}.properties`.
+- Labels in `phlox-api/src/main/resources/phlox-labels_{en,de,es,fr,nl}.properties`.
 - Names of code list values (VAT categories, payment means, countries, units, ...) are not kept here: `DefaultPhloxLabelResolver` asks the `en16931-basics` enums (`getDisplayText (Locale)`) and `UnitCodes` of `ph-codelists-unit`, which fall back to English. Add translations there, not in phlox.
 - Default resolver: `DefaultPhloxLabelResolver`. Callers override via `RenderContext.setLabelResolver(...)`.
-- Adding a language = adding the `.properties` files plus a resource-bundle provider.
+- Adding a language = adding a `phlox-labels_<lang>.properties` file; no code changes.
 
 ## Other
 

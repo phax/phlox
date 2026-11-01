@@ -42,6 +42,7 @@ import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.template.PhloxTemplateException.EStage;
 import com.helger.phlox.template.adapter.PhloxInvoiceMustacheContext;
 import com.helger.phlox.template.ast.PhloxGroupNode;
+import com.helger.phlox.template.ast.PhloxPageBreakNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
 
@@ -67,6 +68,44 @@ public final class PhloxTemplatePostParserTest
   private static PhloxTemplateAst _ast (@NonNull final String sTemplate)
   {
     return PhloxTemplate.fromString (sTemplate).renderAst (_invoice (), new TestCtx ());
+  }
+
+  private static int _countPageBreaks (@NonNull final Node aParent)
+  {
+    int ret = 0;
+    for (Node aChild = aParent.getFirstChild (); aChild != null; aChild = aChild.getNext ())
+      if (aChild instanceof PhloxPageBreakNode)
+        ret++;
+      else
+        if (aChild instanceof PhloxGroupNode)
+          ret += _countPageBreaks (aChild);
+    return ret;
+  }
+
+  private static int _countPageBreaks (@NonNull final String sTemplate)
+  {
+    return _countPageBreaks (_ast (sTemplate).getRoot ());
+  }
+
+  @Test
+  public void testPageBreaksAtTheEdgesAreRemoved ()
+  {
+    final String sBreak = "{{pagebreak}}\n\n";
+    assertEquals (1, _countPageBreaks ("a\n\n" + sBreak + "b\n"));
+    assertEquals (2, _countPageBreaks ("a\n\n" + sBreak + sBreak + "b\n"));
+
+    assertEquals (0, _countPageBreaks (sBreak + "a\n"));
+    assertEquals (0, _countPageBreaks ("a\n\n" + sBreak));
+    assertEquals (0, _countPageBreaks (sBreak + sBreak + "a\n\n" + sBreak + sBreak));
+
+    // In a group at the edge, and a group that has nothing else is gone
+    assertEquals (0, _countPageBreaks ("{{group:g}}\n\n" + sBreak + "a\n\n" + sBreak + "{{end}}\n"));
+    assertEquals (0, _countPageBreaks ("a\n\n{{group:g}}\n\n" + sBreak + "{{end}}\n\n" + sBreak));
+    assertEquals (1, _countPageBreaks ("{{group:g}}\n\na\n\n" + sBreak + "b\n\n{{end}}\n"));
+
+    // Nothing else in the template is still an error
+    final PhloxTemplateException ex = assertThrows (PhloxTemplateException.class, () -> _ast (sBreak));
+    assertEquals (EStage.PARSE, ex.getStage ());
   }
 
   @NonNull

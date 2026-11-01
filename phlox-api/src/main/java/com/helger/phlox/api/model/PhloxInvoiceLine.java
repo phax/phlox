@@ -62,10 +62,23 @@ public class PhloxInvoiceLine
   private String m_sDeliveryNoteLineReference;
   private PhloxLineDelivery m_aDelivery;
   private final ICommonsList <PhloxLinePrecedingInvoiceRef> m_aPrecedingInvoiceRefs = new CommonsArrayList <> ();
+  private final ICommonsList <PhloxAdditionalTerm> m_aAdditionalTerms = new CommonsArrayList <> ();
 
   /** Create an empty invoice line. */
   public PhloxInvoiceLine ()
   {}
+
+  /**
+   * Get the mutable list of the values of the line that the model has no place for.
+   *
+   * @return Mutable list of the additional terms. Never {@code null}; empty when there are none.
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public ICommonsList <PhloxAdditionalTerm> additionalTerms ()
+  {
+    return m_aAdditionalTerms;
+  }
 
   /**
    * Get the invoice line identifier (BT-126).

@@ -52,6 +52,7 @@ public class PhloxInvoice
   private String m_sVatPointDateCode;
   private LocalDate m_aPaymentDueDate;
   private String m_sProjectReference;
+  private String m_sProjectName;
   private String m_sContractReference;
   private String m_sPurchaseOrderReference;
   private String m_sSalesOrderReference;
@@ -85,6 +86,7 @@ public class PhloxInvoice
   private String m_sDeliveryNoteReference;
   private final ICommonsList <PhloxIdentifier> m_aBuyerReferences = new CommonsArrayList <> ();
   private final ICommonsList <PhloxPaymentTerms> m_aPaymentTerms = new CommonsArrayList <> ();
+  private final ICommonsList <PhloxAdditionalTerm> m_aAdditionalTerms = new CommonsArrayList <> ();
 
   /** Create an empty invoice (defaults to {@link EPhloxDocumentKind#INVOICE}). */
   public PhloxInvoice ()
@@ -362,6 +364,32 @@ public class PhloxInvoice
   }
 
   /**
+   * Get the project name (BT-11-1). Only CII has it. It is {@code null} if it just repeats the project
+   * reference (BT-11), as the binding asks for.
+   *
+   * @return Project name (BT-11-1). May be {@code null}.
+   */
+  @Nullable
+  public String getProjectName ()
+  {
+    return m_sProjectName;
+  }
+
+  /**
+   * Set the project name (BT-11-1).
+   *
+   * @param sProjectName
+   *        The name; may be {@code null}.
+   * @return this for chaining.
+   */
+  @NonNull
+  public PhloxInvoice setProjectName (@Nullable final String sProjectName)
+  {
+    m_sProjectName = sProjectName;
+    return this;
+  }
+
+  /**
    * Get the contract reference (BT-12).
    *
    * @return Contract reference (BT-12). May be {@code null}.
@@ -559,6 +587,18 @@ public class PhloxInvoice
   {
     m_sBuyerAccountingReference = sBuyerAccountingReference;
     return this;
+  }
+
+  /**
+   * Get the mutable list of the values of the document that the model has no place for.
+   *
+   * @return Mutable list of the additional terms. Never {@code null}; empty when there are none.
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public ICommonsList <PhloxAdditionalTerm> additionalTerms ()
+  {
+    return m_aAdditionalTerms;
   }
 
   /**

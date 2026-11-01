@@ -67,7 +67,9 @@ import com.helger.phlox.template.ast.PhloxResolvedImage;
  * {@code {{row:name}}} and {@code {{end}}}.</li>
  * <li>Extracts the sentinels of {@code {{class:name}}} from {@link Text} nodes and attaches the
  * class to the next sibling block via a {@code Map<Node, String>}.</li>
- * <li>Replaces the sentinels of {@code {{pagebreak}}} with {@link PhloxPageBreakNode}.</li>
+ * <li>Replaces the sentinels of {@code {{pagebreak}}} with {@link PhloxPageBreakNode} and removes
+ * the page breaks at the start and at the end of the document, which would only give an empty
+ * page.</li>
  * <li>Drops all other sentinels with a warning.</li>
  * <li>Resolves {@link Image} {@code destination} URLs ({@code data:}, {@code attachment:logo},
  * {@code attachment:BG-24[i]}, {@code classpath:/…}, {@code qrcode:…}) into
@@ -260,6 +262,9 @@ public final class PhloxTemplatePostParser
       _attachClassesTo (aBreak, aClassesFound);
       return;
     }
+
+    if (bHasPageBreak)
+      LOGGER.warn ("A template tag has no effect here: '{{pagebreak}}' needs a paragraph of its own");
 
     if (!bHasNonSentinelContent && aParagraph.getFirstChild () == null)
     {
@@ -464,21 +469,6 @@ public final class PhloxTemplatePostParser
     return null;
   }
 
-  @Nullable
-  private static String _guessMime (@NonNull final String sPath)
-  {
-    final String sLower = sPath.toLowerCase (Locale.ROOT);
-    if (sLower.endsWith (".png"))
-      return "image/png";
-    if (sLower.endsWith (".jpg") || sLower.endsWith (".jpeg"))
-      return "image/jpeg";
-    if (sLower.endsWith (".gif"))
-      return "image/gif";
-    if (sLower.endsWith (".svg"))
-      return "image/svg+xml";
-    return null;
-  }
-
   /** @return The start of a <code>data:</code> URL, which may have any size, for a message. */
   @NonNull
   private static String _getShortened (@NonNull final String sDest)
@@ -607,7 +597,7 @@ public final class PhloxTemplatePostParser
     {
       final String sPath = sDest.substring ("classpath:".length ());
       // A custom template may build the URL from invoice data, so it must not reach other resources
-      final String sMime = _guessMime (sPath);
+      final String sMime = PhloxAttachment.getImageMimeCodeOrNull (sPath);
       if (sMime == null)
         throw new PhloxTemplateException (EStage.PARSE, sDest, "classpath resource is no png, jpg, jpeg, gif or svg image");
       final ClassPathResource aRes = new ClassPathResource (sPath);
@@ -652,6 +642,35 @@ public final class PhloxTemplatePostParser
   }
 
   /**
+   * Remove the page breaks at one edge of a parent. A group below each other can have them too, and
+   * is removed if nothing is left of it. A row is left alone, because it has no page breaks.
+   *
+   * @param aParent
+   *        The document root or a group. Never {@code null}.
+   * @param bStart
+   *        {@code true} for the start, {@code false} for the end of the parent.
+   */
+  private static void _removeEdgePageBreaksRecursive (@NonNull final Node aParent, final boolean bStart)
+  {
+    Node aNode = bStart ? aParent.getFirstChild () : aParent.getLastChild ();
+    while (aNode != null)
+    {
+      final Node aNext = bStart ? aNode.getNext () : aNode.getPrevious ();
+      if (aNode instanceof final PhloxGroupNode aGroup && !aGroup.isRow ())
+      {
+        _removeEdgePageBreaksRecursive (aGroup, bStart);
+        if (aGroup.getFirstChild () != null)
+          return;
+      }
+      else
+        if (!(aNode instanceof PhloxPageBreakNode))
+          return;
+      aNode.unlink ();
+      aNode = aNext;
+    }
+  }
+
+  /**
    * Run all post-passes against the document root.
    *
    * @param aRoot
@@ -665,6 +684,8 @@ public final class PhloxTemplatePostParser
     _buildGroups (aRoot);
     _processSentinels (aRoot);
     aRoot.accept (new StraySentinelRemover ());
+    _removeEdgePageBreaksRecursive (aRoot, true);
+    _removeEdgePageBreaksRecursive (aRoot, false);
     if (!_hasContentRecursive (aRoot))
       throw new PhloxTemplateException (EStage.PARSE, null, "the template produced no content for this invoice");
     aRoot.accept (new ImageResolver ());

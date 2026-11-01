@@ -17,14 +17,11 @@
 package com.helger.phlox.cii;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 
-import com.helger.datetime.format.PDTFromString;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931DateFormatCode;
@@ -41,9 +38,6 @@ import com.helger.phlox.api.PhloxLogHelper;
  */
 abstract class AbstractCiiInvoiceReader
 {
-  private static final DateTimeFormatter WEEK_DATE_FORMATTER = DateTimeFormatter.ofPattern (EEN16931DateFormatCode.YYWWD.getJavaPattern (),
-                                                                                            Locale.ROOT);
-
   /**
    * Check if a tax amount is the invoice total VAT amount in the VAT accounting currency (BT-111).
    * An amount in the invoice currency is always BT-110, also if BT-6 names the same currency.
@@ -116,10 +110,7 @@ abstract class AbstractCiiInvoiceReader
                               .build ());
       return null;
     }
-    // The week based pattern of format 103 depends on the locale of its formatter
-    final LocalDate ret = eFormat == EEN16931DateFormatCode.YYWWD ? PDTFromString.getLocalDateFromString (sDate,
-                                                                                                          WEEK_DATE_FORMATTER)
-                                                                  : eFormat.parseLocalDate (sDate);
+    final LocalDate ret = eFormat.parseLocalDate (sDate);
     if (ret == null)
       aErrors.add (SingleError.builderWarn ()
                               .errorText ("Could not parse CII date '" +

@@ -44,10 +44,9 @@ public final class AbstractCiiInvoiceReaderTest
   @Test
   public void testWeekDateDoesNotDependOnTheDefaultLocale ()
   {
-    // Sunday with Locale.ROOT; it was 29 December with a default locale like de_DE and 27 December
-    // with ar_EG
+    // Monday of ISO week 1 of 2026
     final ErrorList aErrors = new ErrorList ();
-    assertEquals (LocalDate.of (2025, 12, 28), AbstractCiiInvoiceReader.parseFormattedDate ("260101", "103", aErrors));
+    assertEquals (LocalDate.of (2025, 12, 29), AbstractCiiInvoiceReader.parseFormattedDate ("26011", "103", aErrors));
     assertTrue (aErrors.isEmpty ());
   }
 }

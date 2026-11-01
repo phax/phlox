@@ -84,7 +84,7 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
   @NonNull
   private static EPdfALevel _getPdfALevel (@NonNull final PhloxThemeObject aPdf, @NonNull final String sLevel)
   {
-    final EPdfALevel ret = EPdfALevel.getFromIDOrNull (sLevel.trim ().toLowerCase (Locale.ROOT));
+    final EPdfALevel ret = EPdfALevel.getFromIDCaseInsensitiveOrNull (sLevel.trim ());
     if (ret == null)
       throw new PhloxThemeException ("Theme error at '" +
                                      aPdf.getPath () +

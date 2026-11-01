@@ -54,16 +54,6 @@ public final class PdfTextSupportTest
   }
 
   @Test
-  public void testCollapseSpaces ()
-  {
-    assertEquals ("a b", PdfTextSupport.collapseSpaces ("a b"));
-    assertEquals ("a b c", PdfTextSupport.collapseSpaces ("a  b     c"));
-    assertEquals (" a ", PdfTextSupport.collapseSpaces ("   a   "));
-    // Only spaces collapse
-    assertEquals ("a\u00A0\u00A0b", PdfTextSupport.collapseSpaces ("a\u00A0\u00A0b"));
-  }
-
-  @Test
   public void testGetSafeFileName ()
   {
     assertEquals ("invoice.pdf", PdfTextSupport.getSafeFileName ("invoice.pdf", "x"));

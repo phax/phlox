@@ -19,7 +19,6 @@ package com.helger.phlox.api.model;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
 
@@ -31,24 +30,26 @@ import org.junit.Test;
 public final class PhloxAttachmentTest
 {
   @Test
-  public void testEmptyConstructor ()
+  public void testGetImageMimeCodeOrNull ()
   {
-    final PhloxAttachment aAtt = new PhloxAttachment ();
-    assertNull (aAtt.getBinary ());
-    assertNull (aAtt.getMimeCode ());
-    assertNull (aAtt.getFilename ());
+    assertEquals ("image/png", PhloxAttachment.getImageMimeCodeOrNull ("a.PNG"));
+    assertEquals ("image/jpeg", PhloxAttachment.getImageMimeCodeOrNull ("a/b.jpg"));
+    assertEquals ("image/jpeg", PhloxAttachment.getImageMimeCodeOrNull ("a.jpeg"));
+    assertEquals ("image/gif", PhloxAttachment.getImageMimeCodeOrNull ("a.gif"));
+    assertEquals ("image/svg+xml", PhloxAttachment.getImageMimeCodeOrNull ("a.svg"));
+    assertNull (PhloxAttachment.getImageMimeCodeOrNull ("application.properties"));
   }
 
   @Test
-  public void testFluentSettersStickValues ()
+  public void testCreateLogo ()
   {
-    final byte [] aBytes = { 1, 2, 3 };
-    final PhloxAttachment aAtt = new PhloxAttachment ();
-    assertSame (aAtt, aAtt.setBinary (aBytes));
-    assertSame (aAtt, aAtt.setMimeCode ("image/png"));
-    assertSame (aAtt, aAtt.setFilename ("logo.png"));
-    assertArrayEquals (aBytes, aAtt.getBinary ());
-    assertEquals ("image/png", aAtt.getMimeCode ());
-    assertEquals ("logo.png", aAtt.getFilename ());
+    final byte [] aBinary = { 1, 2 };
+    final PhloxAttachment aLogo = PhloxAttachment.createLogo (aBinary, "logo.gif");
+    assertArrayEquals (aBinary, aLogo.getBinary ());
+    assertEquals ("image/gif", aLogo.getMimeCode ());
+    assertEquals ("logo.gif", aLogo.getFilename ());
+
+    // The type of a file with another name is a guess
+    assertEquals ("image/png", PhloxAttachment.createLogo (aBinary, "logo").getMimeCode ());
   }
 }

@@ -16,8 +16,12 @@
  */
 package com.helger.phlox.api.model;
 
+import java.util.Locale;
+
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+
+import com.helger.mime.CMimeType;
 
 /**
  * Binary attachment. Used for BT-125 attached document with BT-125-1 mime code and BT-125-2
@@ -108,5 +112,45 @@ public class PhloxAttachment
   {
     m_sFilename = sFilename;
     return this;
+  }
+
+  /**
+   * Get the MIME type of an image from its file name.
+   *
+   * @param sFilename
+   *        The file name or path. Never {@code null}.
+   * @return The MIME type of a PNG, JPEG, GIF or SVG file, {@code null} for any other file.
+   */
+  @Nullable
+  public static String getImageMimeCodeOrNull (@NonNull final String sFilename)
+  {
+    final String sLower = sFilename.toLowerCase (Locale.ROOT);
+    if (sLower.endsWith (".png"))
+      return CMimeType.IMAGE_PNG.getAsString ();
+    if (sLower.endsWith (".jpg") || sLower.endsWith (".jpeg"))
+      return CMimeType.IMAGE_JPG.getAsString ();
+    if (sLower.endsWith (".gif"))
+      return CMimeType.IMAGE_GIF.getAsString ();
+    if (sLower.endsWith (".svg"))
+      return "image/svg+xml";
+    return null;
+  }
+
+  /**
+   * Create the attachment of a logo that was read from a file.
+   *
+   * @param aBinary
+   *        The content of the file. Never {@code null}.
+   * @param sFilename
+   *        The name of the file. Never {@code null}.
+   * @return The attachment, with PNG as the MIME type of an unknown file type. Never {@code null}.
+   */
+  @NonNull
+  public static PhloxAttachment createLogo (final byte @NonNull [] aBinary, @NonNull final String sFilename)
+  {
+    final String sMimeCode = getImageMimeCodeOrNull (sFilename);
+    return new PhloxAttachment ().setBinary (aBinary)
+                                 .setMimeCode (sMimeCode != null ? sMimeCode : CMimeType.IMAGE_PNG.getAsString ())
+                                 .setFilename (sFilename);
   }
 }

@@ -69,34 +69,6 @@ final class PdfTextSupport
   }
 
   /**
-   * Reduce every run of spaces to a single space. The lines of a block are stripped and joined with
-   * an explicit hard line break, so that spaces never have the meaning "hard line break" that the
-   * markup of ph-pdf-layout-richtext gives to two spaces before a line ending. Without this the
-   * regular expression for that break takes quadratic time on a long run of spaces.
-   *
-   * @param sText
-   *        The text to adjust. Never {@code null}.
-   * @return The adjusted text. Never {@code null}.
-   */
-  @NonNull
-  static String collapseSpaces (@NonNull final String sText)
-  {
-    if (sText.indexOf ("  ") < 0)
-      return sText;
-
-    final StringBuilder aSB = new StringBuilder (sText.length ());
-    char cPrev = 0;
-    for (int i = 0; i < sText.length (); ++i)
-    {
-      final char cChar = sText.charAt (i);
-      if (cChar != ' ' || cPrev != ' ')
-        aSB.append (cChar);
-      cPrev = cChar;
-    }
-    return aSB.toString ();
-  }
-
-  /**
    * Reduce a file name from an invoice to a base name that is safe in any file system, because the
    * reader of the PDF may extract the file under this name.
    *

@@ -38,10 +38,23 @@ public class PhloxPaymentInstructions
   private final ICommonsList <PhloxCreditTransfer> m_aCreditTransfers = new CommonsArrayList <> ();
   private PhloxPaymentCard m_aPaymentCard;
   private PhloxDirectDebit m_aDirectDebit;
+  private final ICommonsList <PhloxAdditionalTerm> m_aAdditionalTerms = new CommonsArrayList <> ();
 
   /** Create an empty payment instructions record. */
   public PhloxPaymentInstructions ()
   {}
+
+  /**
+   * Get the mutable list of the values of the payment, among them all payment means after the first one, that the model has no place for.
+   *
+   * @return Mutable list of the additional terms. Never {@code null}; empty when there are none.
+   */
+  @NonNull
+  @ReturnsMutableObject
+  public ICommonsList <PhloxAdditionalTerm> additionalTerms ()
+  {
+    return m_aAdditionalTerms;
+  }
 
   /**
    * Get the payment means type code (BT-81) — UNTDID 4461. May be {@code null}.

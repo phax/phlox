@@ -16,7 +16,6 @@
  */
 package com.helger.phlox.text;
 
-import java.util.Locale;
 import java.util.regex.Pattern;
 
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
@@ -53,6 +52,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.phlox.api.watermark.PhloxProgramWatermark;
 import com.helger.phlox.api.watermark.WatermarkSpec;
+import com.helger.phlox.template.PhloxLinkHelper;
 import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
@@ -221,17 +221,6 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
   private static String _getRule (@NonNull final TextBlockSink aSink)
   {
     return StringHelper.getRepeated ('-', aSink.getWidth () > 0 ? aSink.getWidth () : UNLIMITED_RULE_WIDTH);
-  }
-
-  private static boolean _isSafeLink (@Nullable final String sDestination)
-  {
-    if (sDestination == null)
-      return false;
-    final int nColon = sDestination.indexOf (':');
-    if (nColon < 0)
-      return true;
-    final String sScheme = sDestination.substring (0, nColon).toLowerCase (Locale.ROOT);
-    return sScheme.equals ("http") || sScheme.equals ("https") || sScheme.equals ("mailto");
   }
 
   /**
@@ -467,7 +456,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
 
     // The destination is shown after the text, unless the text already says it
     final String sDestination = aLink.getDestination ();
-    if (_isSafeLink (sDestination))
+    if (PhloxLinkHelper.isSafeLink (sDestination))
     {
       final String sShown = _clean (StringHelper.trimStart (sDestination, "mailto:"));
       if (!sShown.equals (aText.toString ().strip ()))

@@ -100,7 +100,8 @@ import com.helger.phlox.template.ast.PhloxTemplateAst;
  * Only a page break at the top level of the template, or directly in a group at the top level, can
  * work, because ph-pdf-layout handles page breaks only as direct children of a page set. Such a
  * group is split in two groups of the same style at the page break. A page break in any other place
- * is ignored with a warning.
+ * is ignored with a warning. A page break at the start or at the end of the document never gets here,
+ * see {@link PhloxTemplatePostParser}.
  *
  * @author Philip Helger
  */
@@ -317,7 +318,7 @@ public final class PdfTemplateEmitter extends
     final ICommonsList <String> aNonBlank = new CommonsArrayList <> ();
     for (final StringBuilder aLine : aLines)
     {
-      final String sLine = PdfTextSupport.collapseSpaces (aLine.toString ()).strip ();
+      final String sLine = aLine.toString ().strip ();
       if (!sLine.isEmpty ())
         aNonBlank.add (sLine);
     }
