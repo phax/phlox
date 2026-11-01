@@ -67,6 +67,11 @@ import com.helger.phlox.template.ast.PhloxTemplateAst;
  * {@link TextRenderContext#getLineWidth()}. An image is replaced by its alternative text in
  * brackets. The user watermark is the first line and the program watermark the last line of the
  * output. Block classes set with {@code {{class:name}}} have no effect.
+ * <p>
+ * The output may go to a terminal, so all control characters except the line feed and the tab, and
+ * the bidirectional embedding, override and isolate controls are removed from every text. They
+ * could move the cursor, recolour the terminal or show an IBAN in a different order than it has.
+ * The left-to-right and right-to-left marks stay: they are needed for mixed scripts.
  *
  * @author Philip Helger
  */
@@ -104,6 +109,43 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
   public TextTemplateEmitter (@NonNull final TextRenderContext aCtx)
   {
     m_aCtx = aCtx;
+  }
+
+  private static boolean _isForbiddenCharacter (final char cChar)
+  {
+    // C0 except tab and line feed, DEL, C1
+    if (cChar < 0x20)
+      return cChar != '\t' && cChar != '\n';
+    if (cChar >= 0x7f && cChar <= 0x9f)
+      return true;
+    // Bidi embedding and override (U+202A to U+202E), bidi isolate (U+2066 to U+2069)
+    return (cChar >= 0x202a && cChar <= 0x202e) || (cChar >= 0x2066 && cChar <= 0x2069);
+  }
+
+  /**
+   * Remove the characters that must not reach the output.
+   *
+   * @see #_isForbiddenCharacter(char)
+   */
+  @NonNull
+  private static String _clean (@NonNull final String sText)
+  {
+    final int nLength = sText.length ();
+    int nIndex = 0;
+    while (nIndex < nLength && !_isForbiddenCharacter (sText.charAt (nIndex)))
+      nIndex++;
+    if (nIndex == nLength)
+      return sText;
+
+    final StringBuilder aSB = new StringBuilder (nLength);
+    aSB.append (sText, 0, nIndex);
+    for (; nIndex < nLength; ++nIndex)
+    {
+      final char cChar = sText.charAt (nIndex);
+      if (!_isForbiddenCharacter (cChar))
+        aSB.append (cChar);
+    }
+    return aSB.toString ();
   }
 
   private static int _length (@NonNull final String s)
@@ -205,7 +247,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
         (aImage.getDestination ().startsWith ("attachment:") ||
          aImage.getDestination ().startsWith (PhloxTemplatePostParser.QRCODE_URL_PREFIX)))
       return null;
-    String sAlt = aResolved == null ? null : aResolved.getAltText ();
+    String sAlt = aResolved == null || aResolved.getAltText () == null ? null : _clean (aResolved.getAltText ());
     if (StringHelper.isEmpty (sAlt))
     {
       final StringBuilder aAlt = new StringBuilder ();
@@ -362,7 +404,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
                             @NonNull final Text aText,
                             @NonNull final StringBuilder aTarget)
   {
-    aTarget.append (aText.getLiteral ());
+    aTarget.append (_clean (aText.getLiteral ()));
   }
 
   @Override
@@ -411,7 +453,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
                             @NonNull final Code aCode,
                             @NonNull final StringBuilder aTarget)
   {
-    aTarget.append (aCode.getLiteral ());
+    aTarget.append (_clean (aCode.getLiteral ()));
   }
 
   @Override
@@ -427,7 +469,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
     final String sDestination = aLink.getDestination ();
     if (_isSafeLink (sDestination))
     {
-      final String sShown = StringHelper.trimStart (sDestination, "mailto:");
+      final String sShown = _clean (StringHelper.trimStart (sDestination, "mailto:"));
       if (!sShown.equals (aText.toString ().strip ()))
         aTarget.append (" (").append (sShown).append (')');
     }
@@ -453,7 +495,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
     if (BR_TAG.matcher (aHtml.getLiteral ()).matches ())
       aTarget.append ('\n');
     else
-      aTarget.append (aHtml.getLiteral ());
+      aTarget.append (_clean (aHtml.getLiteral ()));
   }
 
   @Override
@@ -521,7 +563,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
                                        @NonNull final FencedCodeBlock aBlock,
                                        @NonNull final TextBlockSink aSink)
   {
-    aSink.addBlock (StringHelper.getExploded ('\n', StringHelper.trimEnd (aBlock.getLiteral (), '\n')));
+    aSink.addBlock (StringHelper.getExploded ('\n', StringHelper.trimEnd (_clean (aBlock.getLiteral ()), '\n')));
   }
 
   @Override
@@ -529,7 +571,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
                                          @NonNull final IndentedCodeBlock aBlock,
                                          @NonNull final TextBlockSink aSink)
   {
-    aSink.addBlock (StringHelper.getExploded ('\n', StringHelper.trimEnd (aBlock.getLiteral (), '\n')));
+    aSink.addBlock (StringHelper.getExploded ('\n', StringHelper.trimEnd (_clean (aBlock.getLiteral ()), '\n')));
   }
 
   @Override
@@ -563,7 +605,7 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
                                  @NonNull final HtmlBlock aHtml,
                                  @NonNull final TextBlockSink aSink)
   {
-    aSink.addBlock (StringHelper.getExploded ('\n', StringHelper.trimEnd (aHtml.getLiteral (), '\n')));
+    aSink.addBlock (StringHelper.getExploded ('\n', StringHelper.trimEnd (_clean (aHtml.getLiteral ()), '\n')));
   }
 
   @Override
@@ -598,11 +640,11 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
     final TextBlockSink aSink = new TextBlockSink (m_aCtx.getLineWidth ());
     final WatermarkSpec aUW = m_aCtx.getUserWatermark ();
     if (aUW != null)
-      aSink.addLine ("*** " + aUW.getText () + " ***");
+      aSink.addLine ("*** " + _clean (aUW.getText ()) + " ***");
     visitBlockChildren (aAst, aAst.getRoot (), aSink);
     final WatermarkSpec aPW = PhloxProgramWatermark.getInstance ();
     if (aPW != null)
-      aSink.addLine (aPW.getText ());
+      aSink.addLine (_clean (aPW.getText ()));
     return String.join ("\n", aSink.getAllLines ()) + "\n";
   }
 }

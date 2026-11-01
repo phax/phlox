@@ -3,12 +3,13 @@ Rechnung
 D25A-NEW-BG34-INV-1
 ===================
 
-Rechnungsdatum    15. Januar 2026
-Fälligkeitsdatum  14. Februar 2026
-USt-Stichtag      10. Januar 2026
-Rechnungswährung  EUR
-Käuferreferenz    BUYER-REF-4711 (ADE)
-Rechnungstyp      380 — Handelsrechnung
+Rechnungsdatum           15. Januar 2026
+Fälligkeitsdatum         14. Februar 2026
+USt-Stichtag             10. Januar 2026
+Rechnungswährung         EUR
+USt-Verrechnungswährung  USD
+Käuferreferenz           BUYER-REF-4711 (ADE)
+Rechnungstyp             380 — Handelsrechnung
 
 --------------------------------------------------------------------------------
 
@@ -94,14 +95,14 @@ Anmerkungen
 Rechnungspositionen
 -------------------
 
-Nr.  Beschreibung                                 Menge                    Einzelpreis                      USt  Zeilensumme
----  ------------------------------------------  ------  -----------------------------  -----------------------  -----------
-  1  Widget                                      4 Eins                        25,00 €  Regelsteuersatz 20,00 %     100,00 €
-     A round widget                                         Bruttoeinzelpreis: 30,00 €
-     Artikel-ID Verkäufer: SELLER-ART-1                  Artikel-Preisnachlass: 5,00 €
+Nr.  Beschreibung                                                                  Menge                    Einzelpreis                      USt  Zeilensumme
+---  ---------------------------------------------------------------------------  ------  -----------------------------  -----------------------  -----------
+  1  Widget                                                                       4 Eins                        25,00 €  Regelsteuersatz 20,00 %     100,00 €
+     A round widget                                                                          Bruttoeinzelpreis: 30,00 €
+     Artikel-ID Verkäufer: SELLER-ART-1                                                   Artikel-Preisnachlass: 5,00 €
      Artikel-ID Käufer: BUYER-ART-1
      Standardartikelkennung: 0160:1234567890128
-     Klassifikationskennung: TST:CLASS-1
+     Klassifikationskennung: TST:CLASS-1 (Version Klassifikationsliste: TST:1.0)
      Ursprungsland des Artikels: Österreich
      Colour: Blue
      Weight: 2 kg

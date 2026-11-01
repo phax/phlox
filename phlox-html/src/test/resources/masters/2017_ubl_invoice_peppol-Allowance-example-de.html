@@ -17,7 +17,7 @@
 
 -->
 <!DOCTYPE html>
-<html dir="ltr">
+<html xml:lang="de" lang="de" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="generator" content="phlox @VERSION@" />
@@ -76,31 +76,9 @@ code{font-family:ui-monospace,Menlo,monospace}
 blockquote{margin:0 0 2mm;padding-left:3mm;border-left:2px solid var(--phlox-rule);color:var(--phlox-muted);font-size:9pt}
 ul,ol{margin:0 0 2mm;padding-left:5mm}
 li{margin:0 0 1mm}
-.phlox-totals-due td{font-weight:650}
 .phlox-watermark-user{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:6em;color:rgba(128,128,128,0.12);pointer-events:none;z-index:9999;user-select:none}
 .phlox-watermark-program{position:fixed;bottom:4mm;right:4mm;font-size:.8em;color:rgba(100,100,100,0.6);z-index:9999}
 .phlox-watermark-program a{color:inherit}
-.phlox-section-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
-.phlox-header-meta{display:grid;grid-template-columns:auto auto;gap:.25rem 1rem}
-.phlox-parties-grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm}
-.phlox-party-title{font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:0 0 1.5mm}
-.phlox-address div{line-height:1.4}
-.phlox-contact{margin-top:.5rem;font-size:.9rem;color:var(--phlox-muted)}
-.phlox-kv-label{color:var(--phlox-muted);margin-right:.5rem}
-.phlox-kvgrid{display:grid;grid-template-columns:auto 1fr;column-gap:1rem;row-gap:.2rem}
-.phlox-lines-table,.phlox-vat-table,.phlox-ac-table{width:100%;border-collapse:collapse;margin-top:.5rem}
-.phlox-lines-table th,.phlox-vat-table th,.phlox-ac-table th{font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;text-align:left;padding:2mm;border-bottom:1.5px solid var(--phlox-ink)}
-.phlox-lines-table td,.phlox-vat-table td,.phlox-ac-table td{padding:2.4mm 2mm;border-bottom:1px solid var(--phlox-rule);vertical-align:top}
-.phlox-lines-table th:nth-child(n+3),.phlox-lines-table td:nth-child(n+3){text-align:right}
-.phlox-ac-table th:nth-child(n+3),.phlox-ac-table td:nth-child(n+3){text-align:right}
-.phlox-vat-table th:nth-child(n+2),.phlox-vat-table td:nth-child(n+2){text-align:right}
-.phlox-item-name{font-weight:650}
-.phlox-item-desc,.phlox-item-attr,.phlox-line-note{color:var(--phlox-muted);font-size:8.5pt}
-.phlox-totals-ladder{display:grid;grid-template-columns:1fr auto;row-gap:.25rem;max-width:78mm;margin-left:auto;background:var(--phlox-wash);border-radius:3px;padding:3mm 4mm}
-.phlox-total-row{display:contents}
-.phlox-total-label{padding-right:1rem}
-.phlox-total-amount{text-align:right}
-.phlox-totals-due .phlox-total-row:last-child .phlox-total-amount{font-weight:650;border-top:2px solid var(--phlox-accent);padding-top:.25rem}
 @media print{.phlox-watermark-user{position:fixed}}
 .phlox-foot{margin-top:10mm;padding-top:3mm;border-top:1px solid var(--phlox-rule);font-size:7.5pt;color:var(--phlox-faint)}
 .phlox-lines td:first-child{width:2em;color:var(--phlox-muted)}
@@ -140,6 +118,10 @@ li{margin:0 0 1mm}
               <tr>
                 <td>Rechnungswährung</td>
                 <td>EUR</td>
+              </tr>
+              <tr>
+                <td>USt-Verrechnungswährung</td>
+                <td>SEK</td>
               </tr>
               <tr>
                 <td>Käuferreferenz</td>

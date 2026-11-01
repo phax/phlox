@@ -39,8 +39,13 @@ import oasis.names.specification.ubl.schema.xsd.invoice_21.InvoiceType;
  * <li>{@link EEN16931Edition#EN2017} - UBL 2.1, see {@link #fromUbl21()}</li>
  * <li>{@link EEN16931Edition#EN2026} - UBL 2.5, see {@link #fromUbl25()}</li>
  * </ul>
- * {@link #autoDetect()} determines the edition per document from BT-24 (Specification identifier),
- * because the edition cannot be told from the XML namespaces.
+ * {@link #autoDetect()} (also the behaviour of the public constructor) determines the edition per
+ * document from BT-24 (Specification identifier), because the edition cannot be told from the XML
+ * namespaces.
+ * <p>
+ * The reader sets no limit on the size of its input. An application that reads invoices from
+ * untrusted sources must cap the size of the XML before it calls the reader: the time and the memory
+ * of reading and rendering grow with it.
  *
  * @author Philip Helger
  */
@@ -57,6 +62,12 @@ public class UblInvoiceReader implements IInvoiceReader <InputStream>
   protected UblInvoiceReader (@Nullable final EEN16931Edition eEdition)
   {
     m_eEdition = eEdition;
+  }
+
+  /** Create a reader that determines the edition of each document from its BT-24. */
+  public UblInvoiceReader ()
+  {
+    this (null);
   }
 
   /**
@@ -141,7 +152,24 @@ public class UblInvoiceReader implements IInvoiceReader <InputStream>
   }
 
   /**
-   * Read an already-parsed UBL 2.1 Invoice (EN 16931:2017) into a {@link PhloxInvoice}.
+   * Read an already-parsed UBL 2.1 Invoice (EN 16931:2017) into a {@link PhloxInvoice}, collecting
+   * non-fatal issues (unknown type codes, ignored values) into the supplied error list.
+   *
+   * @param aInvoice
+   *        The JAXB invoice. Never {@code null}.
+   * @param aErrors
+   *        The error list to fill with warnings. Never {@code null}.
+   * @return The populated model.
+   */
+  @NonNull
+  public PhloxInvoice readInvoice (@NonNull final InvoiceType aInvoice, @NonNull final ErrorList aErrors)
+  {
+    return new Ubl21InvoiceReader ().readInvoice (aInvoice, aErrors);
+  }
+
+  /**
+   * Read an already-parsed UBL 2.1 Invoice (EN 16931:2017) into a {@link PhloxInvoice}. Convenience
+   * overload that discards any collected warnings.
    *
    * @param aInvoice
    *        The JAXB invoice. Never {@code null}.
@@ -150,11 +178,28 @@ public class UblInvoiceReader implements IInvoiceReader <InputStream>
   @NonNull
   public PhloxInvoice readInvoice (@NonNull final InvoiceType aInvoice)
   {
-    return new Ubl21InvoiceReader ().readInvoice (aInvoice);
+    return readInvoice (aInvoice, new ErrorList ());
+  }
+
+  /**
+   * Read an already-parsed UBL 2.1 CreditNote (EN 16931:2017) into a {@link PhloxInvoice},
+   * collecting non-fatal issues (unknown type codes, ignored values) into the supplied error list.
+   *
+   * @param aCreditNote
+   *        The JAXB credit note. Never {@code null}.
+   * @param aErrors
+   *        The error list to fill with warnings. Never {@code null}.
+   * @return The populated model.
+   */
+  @NonNull
+  public PhloxInvoice readCreditNote (@NonNull final CreditNoteType aCreditNote, @NonNull final ErrorList aErrors)
+  {
+    return new Ubl21InvoiceReader ().readCreditNote (aCreditNote, aErrors);
   }
 
   /**
    * Read an already-parsed UBL 2.1 CreditNote (EN 16931:2017) into a {@link PhloxInvoice}.
+   * Convenience overload that discards any collected warnings.
    *
    * @param aCreditNote
    *        The JAXB credit note. Never {@code null}.
@@ -163,7 +208,7 @@ public class UblInvoiceReader implements IInvoiceReader <InputStream>
   @NonNull
   public PhloxInvoice readCreditNote (@NonNull final CreditNoteType aCreditNote)
   {
-    return new Ubl21InvoiceReader ().readCreditNote (aCreditNote);
+    return readCreditNote (aCreditNote, new ErrorList ());
   }
 
   // The UBL 2.1 and UBL 2.5 JAXB types share their simple names, so the UBL 2.5 ones are qualified

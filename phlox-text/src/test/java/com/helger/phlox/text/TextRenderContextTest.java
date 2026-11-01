@@ -23,6 +23,9 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.helger.phlox.theme.PhloxThemeException;
+import com.helger.phlox.theme.PhloxThemeReader;
+
 /**
  * Test class for class {@link TextRenderContext}.
  *
@@ -56,5 +59,26 @@ public final class TextRenderContextTest
     assertEquals (Locale.GERMAN, aCopy.getLocale ());
     // The line width is not a shared setting
     assertEquals (TextRenderContext.DEFAULT_LINE_WIDTH, aCopy.getLineWidth ());
+  }
+
+  @Test
+  public void testApplyTheme ()
+  {
+    assertEquals (40, new TextRenderContext ().applyTheme (PhloxThemeReader.readFromString ("{\"text\":{\"lineWidth\":40}}", null)).getLineWidth ());
+    // 0 means no wrapping
+    assertEquals (0, new TextRenderContext ().applyTheme (PhloxThemeReader.readFromString ("{\"text\":{\"lineWidth\":0}}", null)).getLineWidth ());
+    // Only what is in the theme changes
+    assertEquals (33, new TextRenderContext ().setLineWidth (33).applyTheme (PhloxThemeReader.readFromString ("{}", null)).getLineWidth ());
+
+    for (final String sTheme : new String [] { "{\"text\":{\"lineWidth\":-1}}", "{\"text\":{\"lineWdth\":10}}" })
+      try
+      {
+        new TextRenderContext ().applyTheme (PhloxThemeReader.readFromString (sTheme, null));
+        fail ();
+      }
+      catch (final PhloxThemeException ex)
+      {
+        // expected
+      }
   }
 }

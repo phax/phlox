@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>phlox-api</name>
   <description>phlox - API interfaces, intermediate model and shared types</description>
-  <url>https://github.com/phax/phlox/phlox-api</url>
+  <url>https://github.com/phax/phlox/tree/main/phlox-api</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>

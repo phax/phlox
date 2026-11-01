@@ -3,12 +3,13 @@ Invoice
 D25A-NEW-ALLOWCHG-INV-1
 =======================
 
-Invoice issue date          January 15, 2026
-Payment due date            February 14, 2026
-Value added tax point date  January 10, 2026
-Invoice currency code       EUR
-Buyer reference             BUYER-REF-4711 (ADE)
-Invoice type code           380 — Commercial invoice
+Invoice issue date            January 15, 2026
+Payment due date              February 14, 2026
+Value added tax point date    January 10, 2026
+Invoice currency code         EUR
+VAT accounting currency code  USD
+Buyer reference               BUYER-REF-4711 (ADE)
+Invoice type code             380 — Commercial invoice
 
 --------------------------------------------------------------------------------
 
@@ -94,14 +95,14 @@ Notes
 Invoice lines
 -------------
 
-#  Description                                     Qty                   Unit price                   VAT  Line total
--  --------------------------------------------  -----  ---------------------------  --------------------  ----------
-1  Widget                                        4 one                      € 25.00  Standard rate 20.00%    € 100.00
-   A round widget                                         Item gross price: € 30.00
-   Item seller's identifier: SELLER-ART-1               Item price discount: € 5.00
+#  Description                                                                                                        Qty                   Unit price                   VAT  Line total
+-  ---------------------------------------------------------------------------------------------------------------  -----  ---------------------------  --------------------  ----------
+1  Widget                                                                                                           4 one                      € 25.00  Standard rate 20.00%    € 100.00
+   A round widget                                                                                                            Item gross price: € 30.00
+   Item seller's identifier: SELLER-ART-1                                                                                  Item price discount: € 5.00
    Item buyer's identifier: BUYER-ART-1
    Item standard identifier: 0160:1234567890128
-   Item classification identifier: TST:CLASS-1
+   Item classification identifier: TST:CLASS-1 (Item classification identifier scheme version identifier: TST:1.0)
    Item country of origin: Austria
    Colour: Blue
    Weight: 2 kg

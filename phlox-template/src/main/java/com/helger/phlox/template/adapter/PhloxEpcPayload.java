@@ -51,7 +51,6 @@ public final class PhloxEpcPayload
   private static final Pattern IBAN = Pattern.compile ("[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}");
   private static final Pattern BIC = Pattern.compile ("[A-Z0-9]{8}(?:[A-Z0-9]{3})?");
   private static final Pattern RF_REFERENCE = Pattern.compile ("RF[0-9]{2}[A-Z0-9]{1,21}");
-  private static final Pattern LINE_BREAKS = Pattern.compile ("\\s*[\\r\\n]+\\s*");
   private static final Pattern WHITESPACE = Pattern.compile ("\\s+");
 
   private static final int MAX_NAME_LENGTH = 70;
@@ -61,11 +60,43 @@ public final class PhloxEpcPayload
   private PhloxEpcPayload ()
   {}
 
-  /** @return The text on one line, because the elements of the payload are separated by lines. */
+  /** @return <code>true</code> for what the regular expression class <code>\s</code> matches. */
+  private static boolean _isWhitespace (final char c)
+  {
+    return c == ' ' || c == '\t' || c == '\n' || c == '\u000B' || c == '\f' || c == '\r';
+  }
+
+  /**
+   * @return The text on one line, because the elements of the payload are separated by lines. Each
+   *         run of white space with a line break becomes one space. This is a scan and not a regular
+   *         expression, whose time would grow quadratically with a long run of spaces.
+   */
   @NonNull
   private static String _getSingleLine (@Nullable final String sText)
   {
-    return sText == null ? "" : LINE_BREAKS.matcher (sText.strip ()).replaceAll (" ");
+    if (sText == null)
+      return "";
+    final String sStripped = sText.strip ();
+    final int nLen = sStripped.length ();
+    final StringBuilder aSB = new StringBuilder (nLen);
+    int i = 0;
+    while (i < nLen)
+    {
+      final int nRunStart = i;
+      boolean bLineBreak = false;
+      while (i < nLen && _isWhitespace (sStripped.charAt (i)))
+      {
+        bLineBreak |= sStripped.charAt (i) == '\r' || sStripped.charAt (i) == '\n';
+        ++i;
+      }
+      if (bLineBreak)
+        aSB.append (' ');
+      else
+        aSB.append (sStripped, nRunStart, i);
+      if (i < nLen)
+        aSB.append (sStripped.charAt (i++));
+    }
+    return aSB.toString ();
   }
 
   @NonNull

@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Artificial test file for the readers, see the README.md of this folder. Not a valid EN 16931 document. -->
+<CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:CustomizationID>urn:cen.eu:en16931:2026</cbc:CustomizationID>
+  <cbc:ID>READER-UBL25</cbc:ID>
+  <cbc:IssueDate>2026-01-15</cbc:IssueDate>
+  <cbc:DueDate>2026-02-15</cbc:DueDate>
+  <cbc:CreditNoteTypeCode>380</cbc:CreditNoteTypeCode>
+  <cbc:DocumentCurrencyCode> EUR </cbc:DocumentCurrencyCode>
+  <cbc:TaxCurrencyCode>USD</cbc:TaxCurrencyCode>
+  <cac:OrderReference>
+    <cbc:ID>None</cbc:ID>
+    <cbc:SalesOrderID>SO-1</cbc:SalesOrderID>
+  </cac:OrderReference>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID> </cbc:ID>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID>PREV-1</cbc:ID>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID schemeID="AVE">OBJECT-1</cbc:ID>
+    <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>SUPPORT-1</cbc:ID>
+    <cbc:DocumentTypeCode>916</cbc:DocumentTypeCode>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID> </cbc:ID>
+    <cbc:DocumentTypeCode>916</cbc:DocumentTypeCode>
+  </cac:AdditionalDocumentReference>
+  <cac:Annotation>
+    <cbc:SubjectCode>AAI</cbc:SubjectCode>
+    <cbc:AnnotationContent> </cbc:AnnotationContent>
+  </cac:Annotation>
+  <cac:Annotation>
+    <cbc:AnnotationContent>Header note</cbc:AnnotationContent>
+  </cac:Annotation>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0088">4012345000009</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="SEPA">DE98ZZZ09999999999</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0088">   </cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>Seller Trading</cbc:Name>
+      </cac:PartyName>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>DE123456789</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>TAX-FIRST</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>TAX-SECOND</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Seller Ltd</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0088"> </cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Buyer Ltd</cbc:RegistrationName>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>30</cbc:PaymentMeansCode>
+    <cac:PayeeFinancialAccount>
+      <cbc:ID>DE75512108001245126199</cbc:ID>
+    </cac:PayeeFinancialAccount>
+  </cac:PaymentMeans>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode>59</cbc:PaymentMeansCode>
+  </cac:PaymentMeans>
+  <cac:PaymentTerms>
+    <cbc:Note>First terms</cbc:Note>
+  </cac:PaymentTerms>
+  <cac:PaymentTerms>
+    <cbc:Note>Second terms</cbc:Note>
+  </cac:PaymentTerms>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="EUR">20.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="EUR">100.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="EUR">20.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>20</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="USD">24.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="USD">120.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="USD">24.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>20</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="EUR">100.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="EUR">100.00</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="EUR">120.00</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="EUR">120.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:CreditNoteLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:CreditedQuantity unitCode=" C62 ">4</cbc:CreditedQuantity>
+    <cbc:LineExtensionAmount currencyID="EUR">100.00</cbc:LineExtensionAmount>
+    <cac:OrderLineReference>
+      <cbc:LineID>None</cbc:LineID>
+      <cbc:SalesOrderLineID>None</cbc:SalesOrderLineID>
+      <cac:OrderReference>
+        <cbc:ID>LINE-PO</cbc:ID>
+        <cbc:SalesOrderID>LINE-SO</cbc:SalesOrderID>
+      </cac:OrderReference>
+    </cac:OrderLineReference>
+    <cac:DespatchLineReference>
+      <cbc:LineID>None</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>LINE-DESP</cbc:ID>
+      </cac:DocumentReference>
+    </cac:DespatchLineReference>
+    <cac:ReceiptLineReference>
+      <cbc:LineID>None</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>LINE-RECV</cbc:ID>
+      </cac:DocumentReference>
+    </cac:ReceiptLineReference>
+    <cac:BillingReference>
+      <cac:InvoiceDocumentReference>
+        <cbc:ID> </cbc:ID>
+      </cac:InvoiceDocumentReference>
+    </cac:BillingReference>
+    <cac:DocumentReference>
+      <cbc:ID>NOT-THE-OBJECT</cbc:ID>
+      <cbc:DocumentTypeCode>916</cbc:DocumentTypeCode>
+    </cac:DocumentReference>
+    <cac:DocumentReference>
+      <cbc:ID schemeID="AVE">LINE-OBJECT</cbc:ID>
+      <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+    </cac:DocumentReference>
+    <cac:Delivery>
+      <cac:DeliveryNoteDocumentReference>
+        <cbc:ID>LINE-DELN</cbc:ID>
+      </cac:DeliveryNoteDocumentReference>
+      <cac:DeliveryNoteLineReference>
+        <cbc:LineID>None</cbc:LineID>
+      </cac:DeliveryNoteLineReference>
+    </cac:Delivery>
+    <cac:Item>
+      <cbc:Description>  Item description  </cbc:Description>
+      <cbc:Name>Test item</cbc:Name>
+      <cac:CommodityClassification>
+        <cbc:ItemClassificationCode listID=" STI "> 12345 </cbc:ItemClassificationCode>
+      </cac:CommodityClassification>
+      <cac:CommodityClassification>
+        <cbc:ItemClassificationCode listID="STI"> </cbc:ItemClassificationCode>
+      </cac:CommodityClassification>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>20</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+      <cac:AdditionalItemProperty>
+        <cbc:Name> </cbc:Name>
+        <cbc:Value> </cbc:Value>
+      </cac:AdditionalItemProperty>
+      <cac:AdditionalItemProperty>
+        <cbc:Name>Colour</cbc:Name>
+        <cbc:Value>Red</cbc:Value>
+      </cac:AdditionalItemProperty>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="EUR">25.00</cbc:PriceAmount>
+      <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:Amount currencyID="EUR">5.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="EUR">30.00</cbc:BaseAmount>
+      </cac:AllowanceCharge>
+      <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:Amount currencyID="EUR">1.00</cbc:Amount>
+        <cbc:BaseAmount currencyID="EUR">26.00</cbc:BaseAmount>
+      </cac:AllowanceCharge>
+    </cac:Price>
+  </cac:CreditNoteLine>
+</CreditNote>

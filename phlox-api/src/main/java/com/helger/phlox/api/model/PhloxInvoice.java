@@ -286,7 +286,8 @@ public class PhloxInvoice
   }
 
   /**
-   * Get the value added tax point date code (BT-8).
+   * Get the value added tax point date code (BT-8). The readers deliver the code of UNTDID 2005 that
+   * the UBL binding uses; the CII readers map the UNTDID 2475 code of their binding to it.
    *
    * @return Value added tax point date code (BT-8). May be {@code null}.
    */

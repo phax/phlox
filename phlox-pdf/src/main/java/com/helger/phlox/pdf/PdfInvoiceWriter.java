@@ -18,14 +18,19 @@ package com.helger.phlox.pdf;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
 import org.jspecify.annotations.NonNull;
 
 import com.helger.annotation.WillClose;
 import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashSet;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsSet;
 import com.helger.en16931.basics.EEN16931Edition;
 import com.helger.pdflayout.PDFCreationException;
@@ -58,6 +63,10 @@ import com.helger.phlox.template.PhloxTemplate;
 /**
  * Renders a {@link PhloxInvoice} as a PDF using {@code ph-pdf-layout}. The content comes from a
  * template; if the render context has none, the default template is used.
+ * <p>
+ * phlox sets no limit on the size of its input, and PDF is the most expensive output: the layout of
+ * a note of 1 MB takes several seconds. An application that renders invoices from untrusted sources
+ * must cap the size of the XML before it reads it.
  *
  * @author Philip Helger
  */
@@ -107,7 +116,9 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
   }
 
   /**
-   * Create the footer with the attribution of the program. The text links to the phlox project.
+   * Create the footer with the attribution of the program. The text links to the phlox project. It
+   * is a part of the page layout, so it is on every page, right-aligned, and the rotation, the
+   * position and <code>repeatPerPage</code> of the spec have no effect.
    */
   @NonNull
   private static IPLRenderableObject <?> _createProgramFooter (@NonNull final PdfFontFamily aFamily,
@@ -209,8 +220,9 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
   }
 
   /**
-   * Embed the attached documents (BT-125 of BG-24) with the relationship <code>Supplement</code>. A
-   * missing or duplicate file name is replaced by a unique one.
+   * Embed the attached documents (BT-125 of BG-24) with the relationship <code>Supplement</code>.
+   * The file name and the MIME type come from the invoice, so they are reduced to a safe base name
+   * and a syntactically valid type. A missing or duplicate file name is replaced by a unique one.
    */
   private static void _addAttachments (@NonNull final PageLayoutPDF aPdf, @NonNull final PhloxInvoice aInvoice)
   {
@@ -226,14 +238,12 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
       if (aAttachment == null || aAttachment.getBinary () == null)
         continue;
 
-      String sFileName = StringHelper.isNotEmpty (aAttachment.getFilename ()) ? aAttachment.getFilename ()
-                                                                              : "attachment-" + nIndex;
+      String sFileName = PdfTextSupport.getSafeFileName (aAttachment.getFilename (), "attachment-" + nIndex);
       if (aUsedNames.contains (sFileName))
         sFileName = nIndex + "-" + sFileName;
       aUsedNames.add (sFileName);
 
-      final String sMimeType = StringHelper.isNotEmpty (aAttachment.getMimeCode ()) ? aAttachment.getMimeCode ()
-                                                                                    : "application/octet-stream";
+      final String sMimeType = PdfTextSupport.getSafeMimeType (aAttachment.getMimeCode ());
       final String sDescription = StringHelper.isNotEmpty (aDoc.getDescription ()) ? aDoc.getDescription ()
                                                                                    : aDoc.getReference ();
       aPdf.addAssociatedFile (new PdfAssociatedFile (aAttachment.getBinary (),
@@ -281,6 +291,26 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
     }
   }
 
+  /**
+   * Draw a watermark on the first page only. {@link PLTextWatermark} only knows all pages of a
+   * document, so the other pages leave the document for that time.
+   */
+  private static void _drawOnFirstPage (@NonNull final PDDocument aDoc,
+                                        @NonNull final PLTextWatermark aWatermark,
+                                        final boolean bCompress) throws IOException
+  {
+    final ICommonsList <PDPage> aOtherPages = new CommonsArrayList <> ();
+    for (final PDPage aPage : aDoc.getPages ())
+      aOtherPages.add (aPage);
+    aOtherPages.removeFirstOrNull ();
+
+    for (final PDPage aPage : aOtherPages)
+      aDoc.removePage (aPage);
+    aWatermark.drawOnAllPages (aDoc, bCompress);
+    for (final PDPage aPage : aOtherPages)
+      aDoc.addPage (aPage);
+  }
+
   @NonNull
   private PageLayoutPDF _build (@NonNull final PhloxInvoice aInvoice, @NonNull final PdfRenderContext aCtx)
   {
@@ -298,7 +328,13 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
     // The watermark is drawn behind the page content after all pages are laid out
     final WatermarkSpec aUW = aCtx.getUserWatermark ();
     if (aUW != null)
-      aPdf.addWatermark (_createWatermark (aCtx.getFontFamily (), aUW));
+    {
+      final PLTextWatermark aWatermark = _createWatermark (aCtx.getFontFamily (), aUW);
+      if (aUW.isRepeatPerPage ())
+        aPdf.addWatermark (aWatermark);
+      else
+        aPdf.setDocumentCustomizer (aDoc -> _drawOnFirstPage (aDoc, aWatermark, aPdf.isCompressPDF ()));
+    }
 
     // The attribution of the program is a link to the project, so it is part of the layout
     final WatermarkSpec aPW = PhloxProgramWatermark.getInstance ();

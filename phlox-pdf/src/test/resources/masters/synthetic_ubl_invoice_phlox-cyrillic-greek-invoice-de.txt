@@ -482,8 +482,8 @@ T p2 347.2 468.7 10.0 Roboto-Regular USt-Gesamtbetrag
 T p2 500.7 468.7 10.0 Roboto-Regular 0,00 €
 T p2 347.2 488.5 10.0 Roboto-Bold Bruttogesamtbetrag
 T p2 479.6 488.5 10.0 Roboto-Bold 3.102,50 €
-T p2 347.2 528.2 10.0 Roboto-Regular Zahlbar
-T p2 481.2 528.2 10.0 Roboto-Regular 3.102,50 €
+T p2 347.2 528.2 10.0 Roboto-Bold Zahlbar
+T p2 479.6 528.2 10.0 Roboto-Bold 3.102,50 €
 T p2 66.7 567.7 7.0 Roboto-Bold Zahlung
 T p2 66.7 585.0 10.0 Roboto-Bold Zahlungsart: Überweisung
 T p2 66.7 598.2 10.0 Roboto-Regular Credit transfer

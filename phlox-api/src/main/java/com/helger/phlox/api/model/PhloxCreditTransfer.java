@@ -138,4 +138,15 @@ public class PhloxCreditTransfer
     m_sPaymentMeansCode = sPaymentMeansCode;
     return this;
   }
+
+  /**
+   * Get the {@code true} when the account has no term of its own, i.e. every field but the payment
+   * means code is {@code null}.
+   *
+   * @return {@code true} when the account has no term of its own.
+   */
+  public boolean isEmpty ()
+  {
+    return m_sAccountIdentifier == null && m_sAccountName == null && m_sServiceProviderID == null;
+  }
 }

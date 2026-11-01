@@ -73,6 +73,7 @@
     <jmustache.version>1.16</jmustache.version>
     <commonmark.version>0.31.0</commonmark.version>
     <zxing.version>3.5.4</zxing.version>
+    <ph-forbidden-apis.version>1.1.1</ph-forbidden-apis.version>
   </properties>
 
   <dependencyManagement>
@@ -276,7 +277,7 @@
             <signaturesArtifact>
               <groupId>com.helger</groupId>
               <artifactId>ph-forbidden-apis</artifactId>
-              <version>1.1.1</version>
+              <version>${ph-forbidden-apis.version}</version>
               <type>jar</type>
               <path>forbidden-apis-java9.txt</path>
             </signaturesArtifact>

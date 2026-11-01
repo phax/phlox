@@ -36,6 +36,9 @@ import com.helger.collection.commons.ICommonsSet;
  * Statically determines which BTs a template source shows. Only a placeholder that prints a value
  * counts: {@code {{label:BT-x}}} prints the name of the term and {@code {{?BT-x}}} prints nothing.
  * The result depends on the template alone, not on the invoice or the locale.
+ * <p>
+ * The check does not look at conditions: a placeholder inside of {@code {{?BT-x}}} counts as shown,
+ * even though it stays hidden without BT-x.
  *
  * @author Philip Helger
  */

@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>phlox-cii</name>
   <description>phlox - CII source reader for EN 16931:2017 (D16B) and EN 16931:2026 (D25A)</description>
-  <url>https://github.com/phax/phlox/phlox-cii</url>
+  <url>https://github.com/phax/phlox/tree/main/phlox-cii</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>

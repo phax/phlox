@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>phlox-pdf</name>
   <description>phlox - PDF output writer using ph-pdf-layout</description>
-  <url>https://github.com/phax/phlox/phlox-pdf</url>
+  <url>https://github.com/phax/phlox/tree/main/phlox-pdf</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>
@@ -55,10 +55,24 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-pdf-layout</artifactId>
+      <exclusions>
+        <!-- Only ph-pdf-layout's own tests use it: not needed at runtime -->
+        <exclusion>
+          <groupId>de.redsix</groupId>
+          <artifactId>pdfcompare</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-pdf-layout-richtext</artifactId>
+      <exclusions>
+        <!-- Only ph-pdf-layout's own tests use it: not needed at runtime -->
+        <exclusion>
+          <groupId>de.redsix</groupId>
+          <artifactId>pdfcompare</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

@@ -3,12 +3,13 @@ Rechnung
 Snippet1
 ========
 
-Rechnungsdatum    13. November 2017
-Fälligkeitsdatum  1. Dezember 2017
-USt-Stichtag      1. Dezember 2017
-Rechnungswährung  EUR
-Käuferreferenz    0150abc
-Rechnungstyp      380 — Handelsrechnung
+Rechnungsdatum           13. November 2017
+Fälligkeitsdatum         1. Dezember 2017
+USt-Stichtag             1. Dezember 2017
+Rechnungswährung         EUR
+USt-Verrechnungswährung  SEK
+Käuferreferenz           0150abc
+Rechnungstyp             380 — Handelsrechnung
 
 --------------------------------------------------------------------------------
 

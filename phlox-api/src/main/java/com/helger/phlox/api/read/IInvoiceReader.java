@@ -27,7 +27,9 @@ import com.helger.phlox.api.model.PhloxInvoice;
  * {@code SRC} and populates a {@link PhloxInvoice}.
  * <p>
  * Reading is considered successful only when both: the returned model is non-{@code null} AND
- * the passed-in {@link ErrorList} does not contain any error entries. Warnings are tolerated.
+ * the passed-in {@link ErrorList} does not contain any error entries. Warnings are tolerated: they
+ * name input that was ignored or defaulted, for example a date that could not be parsed. The
+ * {@link ErrorList} contains the error of the XSD validation of the source, if there is one.
  *
  * @author Philip Helger
  * @param <SRC>

@@ -23,6 +23,10 @@ import org.commonmark.node.Node;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.annotation.style.ReturnsMutableCopy;
+import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.phlox.api.AbstractRenderContext;
 import com.helger.phlox.api.model.PhloxInvoice;
 
@@ -86,16 +90,38 @@ public final class PhloxTemplateAst
   }
 
   /**
-   * Get the CSS class attached to a block by a preceding {@code {{class:…}}} sentinel.
+   * Get the CSS classes attached to a block by the preceding {@code {{class:…}}} sentinels.
    *
    * @param aBlock
    *        The block node to look up. Never {@code null}.
-   * @return The CSS class or {@code null} if no sentinel was attached to the block.
+   * @return The CSS classes separated by a space, or {@code null} if no sentinel was attached to the
+   *         block.
    */
   @Nullable
   public String getBlockClass (@NonNull final Node aBlock)
   {
     return m_aBlockClassMap.get (aBlock);
+  }
+
+  /**
+   * Get the single CSS classes attached to a block by the preceding {@code {{class:…}}} sentinels.
+   *
+   * @param aBlock
+   *        The block node to look up. Never {@code null}.
+   * @return The CSS classes in the order of the template. Empty if no sentinel was attached to the
+   *         block. Never {@code null}.
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public ICommonsList <String> getBlockClasses (@NonNull final Node aBlock)
+  {
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
+    final String sClasses = m_aBlockClassMap.get (aBlock);
+    if (sClasses != null)
+      for (final String sClass : StringHelper.getExploded (' ', sClasses))
+        if (!sClass.isEmpty ())
+          ret.add (sClass);
+    return ret;
   }
 
   /**

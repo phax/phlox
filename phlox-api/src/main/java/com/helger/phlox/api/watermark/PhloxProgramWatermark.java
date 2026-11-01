@@ -30,6 +30,12 @@ import org.jspecify.annotations.Nullable;
  * <p>
  * The library is Apache-licensed: the watermark is overrideable by design and is not a DRM
  * mechanism.
+ * <p>
+ * The program watermark is a footer with a link, not a watermark like the user one, so the writers
+ * use only a part of the {@link WatermarkSpec}. All use the text. The PDF writer also uses the
+ * colour, the opacity and the font size, and always sets it right-aligned in the footer of every
+ * page. The HTML writer takes the look and the place from its stylesheet (class
+ * <code>watermark-program</code>). The plain-text writer writes the text as last line.
  *
  * @author Philip Helger
  */

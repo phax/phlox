@@ -419,6 +419,41 @@ public final class PdfBlockStyle
   }
 
   /**
+   * Combine this style with the style of a further class of the same block. The other style wins
+   * for all that it sets, and all else stays as it is here.
+   *
+   * @param aOther
+   *        The style to apply on top of this one. Never {@code null}.
+   * @return A new style. Never {@code null}.
+   */
+  @NonNull
+  public PdfBlockStyle getOverlaidWith (@NonNull final PdfBlockStyle aOther)
+  {
+    final Builder ret = toBuilder ();
+    if (aOther.m_aFillColor != null)
+      ret.fillColor (aOther.m_aFillColor);
+    if (aOther.m_aTextColor != null)
+      ret.textColor (aOther.m_aTextColor);
+    if (aOther.m_fPadding > 0)
+      ret.padding (aOther.m_fPadding);
+    if (aOther.m_aBorderTopColor != null)
+      ret.borderTopColor (aOther.m_aBorderTopColor);
+    if (aOther.m_aBorderBottomColor != null)
+      ret.borderBottomColor (aOther.m_aBorderBottomColor);
+    if (Float.compare (aOther.m_fBorderWidth, DEFAULT_BORDER_WIDTH) != 0)
+      ret.borderWidth (aOther.m_fBorderWidth);
+    if (aOther.m_aFontSize != null)
+      ret.fontSize (aOther.m_aFontSize);
+    if (aOther.m_bBold)
+      ret.bold (true);
+    if (aOther.m_aWidthPercent != null)
+      ret.widthPercent (aOther.m_aWidthPercent);
+    if (aOther.m_bKeepTogether)
+      ret.keepTogether (true);
+    return ret.build ();
+  }
+
+  /**
    * Create a style with a background colour only.
    *
    * @param aFillColor

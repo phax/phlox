@@ -23,6 +23,7 @@ import com.helger.phlox.api.AbstractRenderContext;
 import com.helger.phlox.theme.PhloxTheme;
 import com.helger.phlox.theme.PhloxThemeApplier;
 import com.helger.phlox.theme.PhloxThemeException;
+import com.helger.phlox.theme.PhloxThemeObject;
 
 /**
  * Plain-text specific render context. Adds the line width on top of the shared
@@ -80,9 +81,9 @@ public class TextRenderContext extends AbstractRenderContext <TextRenderContext>
   }
 
   /**
-   * Apply a theme. Only the <code>common</code> part applies to the plain-text output (language,
-   * formats, template, watermark, ...); colours, fonts and the <code>html</code> and
-   * <code>pdf</code> parts are ignored.
+   * Apply a theme. The <code>common</code> part (language, formats, template, watermark, ...) and
+   * the key <code>lineWidth</code> of the <code>text</code> part apply to the plain-text output;
+   * colours, fonts and the <code>html</code> and <code>pdf</code> parts are ignored.
    *
    * @param aTheme
    *        The theme. May not be {@code null}.
@@ -95,6 +96,18 @@ public class TextRenderContext extends AbstractRenderContext <TextRenderContext>
   {
     ValueEnforcer.notNull (aTheme, "Theme");
     PhloxThemeApplier.applyCommon (this, aTheme);
+
+    final PhloxThemeObject aText = aTheme.getText ();
+    aText.checkKeys ("lineWidth");
+    final Integer aLineWidth = aText.getInt ("lineWidth");
+    if (aLineWidth != null)
+    {
+      if (aLineWidth.intValue () < 0)
+        throw new PhloxThemeException ("Theme error at '" +
+                                       aText.getPath () +
+                                       ".lineWidth': the line width must not be negative");
+      setLineWidth (aLineWidth.intValue ());
+    }
     return this;
   }
 }

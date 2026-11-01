@@ -22,8 +22,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -330,7 +332,7 @@ public final class PhloxCliTest
     final Path aDefault = _tempFile (".html");
     assertEquals (0, _run ("-i", _copyInvoice ().toString (), "--watermark", "DRAFT", "-o", aDefault.toString ()));
     assertTrue (Files.readString (aDefault, StandardCharsets.UTF_8)
-                     .contains ("<div class=\"phlox-watermark-user\" style=\"color:rgba(128,128,128,0.1);transform:translate(-50%,-50%) rotate(-45.0deg);\" aria-hidden=\"true\">DRAFT</div>"));
+                     .contains ("<div class=\"phlox-watermark-user\" style=\"color:rgba(128,128,128,0.1);font-size:72.0pt;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45.0deg);\" aria-hidden=\"true\">DRAFT</div>"));
 
     // Explicit values
     final Path aExplicit = _tempFile (".html");
@@ -346,7 +348,7 @@ public final class PhloxCliTest
                         "-o",
                         aExplicit.toString ()));
     assertTrue (Files.readString (aExplicit, StandardCharsets.UTF_8)
-                     .contains ("<div class=\"phlox-watermark-user\" style=\"color:rgba(128,128,128,0.5);transform:translate(-50%,-50%) rotate(30.0deg);\" aria-hidden=\"true\">DRAFT</div>"));
+                     .contains ("<div class=\"phlox-watermark-user\" style=\"color:rgba(128,128,128,0.5);font-size:72.0pt;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(30.0deg);\" aria-hidden=\"true\">DRAFT</div>"));
   }
 
   /**
@@ -433,6 +435,110 @@ public final class PhloxCliTest
     aColour = _getOperandsBeforeText (aExplicit, "DRAFT", "rg");
     assertNotNull (aColour);
     assertEquals (128 / 255f, _getFloat (aColour, 0), 0.001);
+  }
+
+  @NonNull
+  private static String _loadSynthetic (@NonNull final String sFile) throws IOException
+  {
+    try (final InputStream aIS = new ClassPathResource (MockPhloxTestFiles.BASE_PATH +
+                                                        "synthetic/" +
+                                                        sFile).getInputStream ())
+    {
+      return new String (aIS.readAllBytes (), StandardCharsets.UTF_8);
+    }
+  }
+
+  /**
+   * Run the command line and keep what it prints to stderr.
+   */
+  @NonNull
+  private static String _runWithStderr (final int nExpectedExit, final String... aArgs)
+  {
+    final PrintStream aOldErr = System.err;
+    final ByteArrayOutputStream aErr = new ByteArrayOutputStream ();
+    System.setErr (new PrintStream (aErr, true, StandardCharsets.UTF_8));
+    try
+    {
+      assertEquals (nExpectedExit, _run (aArgs));
+    }
+    finally
+    {
+      System.setErr (aOldErr);
+    }
+    return aErr.toString (StandardCharsets.UTF_8);
+  }
+
+  @Test
+  public void testSniffSyntax ()
+  {
+    final String sUbl = "<Invoice xmlns='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'>" +
+                        "<Note>rsm:CrossIndustryInvoice urn:un:unece:uncefact:data:standard</Note></Invoice>";
+    assertEquals (PhloxCli.ESourceSyntax.UBL, PhloxCli._sniffSyntax (sUbl.getBytes (StandardCharsets.UTF_8)));
+    final String sCii = "<rsm:CrossIndustryInvoice xmlns:rsm='urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100' />";
+    assertEquals (PhloxCli.ESourceSyntax.CII, PhloxCli._sniffSyntax (sCii.getBytes (StandardCharsets.UTF_8)));
+    assertEquals (PhloxCli.ESourceSyntax.CII,
+                  PhloxCli._sniffSyntax ("<CrossIndustryInvoice />".getBytes (StandardCharsets.UTF_8)));
+    // A DOCTYPE stays refused, and the UBL reader reports the problem
+    assertEquals (PhloxCli.ESourceSyntax.UBL,
+                  PhloxCli._sniffSyntax ("<!DOCTYPE a [<!ENTITY b 'c'>]><CrossIndustryInvoice>&b;</CrossIndustryInvoice>".getBytes (StandardCharsets.UTF_8)));
+    assertEquals (PhloxCli.ESourceSyntax.UBL, PhloxCli._sniffSyntax ("no xml".getBytes (StandardCharsets.UTF_8)));
+  }
+
+  @Test
+  public void testUblNoteMentioningCiiIsReadAsUbl () throws IOException
+  {
+    final Path aIn = _tempFile (".xml");
+    final String sXml = _loadSynthetic ("ubl/invoice/phlox-reader-ubl21-invoice.xml");
+    Files.writeString (aIn,
+                       sXml.replace ("#AAI#Header note", "See rsm:CrossIndustryInvoice"),
+                       StandardCharsets.UTF_8);
+    final Path aOut = _tempFile (".txt");
+    assertEquals (0, _run ("-i", aIn.toString (), "-f", "TEXT", "-o", aOut.toString ()));
+    assertTrue (Files.readString (aOut, StandardCharsets.UTF_8).contains ("READER-UBL21"));
+  }
+
+  @Test
+  public void testReaderWarningsGoToStderr () throws IOException
+  {
+    final Path aIn = _tempFile (".xml");
+    final String sXml = _loadSynthetic ("cii/phlox-reader-d16b.xml").replace (">notadate<", ">not&#10;a date<");
+    Files.writeString (aIn, sXml, StandardCharsets.UTF_8);
+    final String sErr = _runWithStderr (0, "-i", aIn.toString (), "-f", "TEXT", "-o", _tempFile (".txt").toString ());
+    assertTrue (sErr, sErr.contains ("Could not parse CII date 'not_a date' with format code '102'"));
+    assertTrue (sErr, sErr.contains ("Unsupported CII date format code '610'"));
+  }
+
+  @Test
+  public void testXsdErrorGoesToStderr () throws IOException
+  {
+    final Path aIn = _tempFile (".xml");
+    final String sXml = _loadSynthetic ("ubl/invoice/phlox-reader-ubl21-invoice.xml");
+    Files.writeString (aIn,
+                       sXml.replace ("<cbc:DocumentCurrencyCode>", "<cbc:Nonsense>x</cbc:Nonsense><cbc:DocumentCurrencyCode>"),
+                       StandardCharsets.UTF_8);
+    final String sErr = _runWithStderr (1, "-i", aIn.toString (), "-f", "TEXT", "-o", _tempFile (".txt").toString ());
+    assertTrue (sErr, sErr.contains ("Failed to parse input"));
+    assertTrue (sErr, sErr.contains ("cvc-complex-type"));
+    assertTrue (sErr, sErr.contains ("Source could not be parsed as UBL 2.1"));
+  }
+
+  @Test
+  public void testNoEpcQrCodeForCreditNote () throws IOException
+  {
+    final String sXml = _loadSynthetic ("ubl/invoice/phlox-reader-ubl21-invoice.xml");
+
+    final Path aInvoice = _tempFile (".xml");
+    Files.writeString (aInvoice, sXml.replace (">381<", ">380<"), StandardCharsets.UTF_8);
+    final Path aInvoiceOut = _tempFile (".html");
+    assertEquals (0, _run ("-i", aInvoice.toString (), "-o", aInvoiceOut.toString ()));
+    assertTrue (Files.readString (aInvoiceOut, StandardCharsets.UTF_8).contains ("<img"));
+
+    // An Invoice root element with a credit note type code
+    final Path aCreditNote = _tempFile (".xml");
+    Files.writeString (aCreditNote, sXml, StandardCharsets.UTF_8);
+    final Path aCreditNoteOut = _tempFile (".html");
+    assertEquals (0, _run ("-i", aCreditNote.toString (), "-o", aCreditNoteOut.toString ()));
+    assertFalse (Files.readString (aCreditNoteOut, StandardCharsets.UTF_8).contains ("<img"));
   }
 
   @Test
@@ -651,5 +757,148 @@ public final class PhloxCliTest
       assertTrue (sXmp, sXmp.contains ("<pdfaid:conformance>A</pdfaid:conformance>"));
       assertNotNull (aDoc.getDocumentCatalog ().getStructureTreeRoot ());
     }
+  }
+
+  @NonNull
+  private static Path _themeWithWatermark () throws IOException
+  {
+    final Path aTheme = _tempFile (".json");
+    Files.writeString (aTheme,
+                       "{\"common\":{\"watermark\":{\"text\":\"THEME\",\"opacity\":0.5,\"rotation\":10,\"color\":\"#102030\",\"position\":\"top\",\"fontSize\":30}}}",
+                       StandardCharsets.UTF_8);
+    return aTheme;
+  }
+
+  @Test
+  public void testWatermarkTextMergesOverTheTheme () throws IOException
+  {
+    final Path aOut = _tempFile (".html");
+    assertEquals (0,
+                  _run ("-i",
+                        _copyInvoice ().toString (),
+                        "--theme",
+                        _themeWithWatermark ().toString (),
+                        "--watermark",
+                        "DRAFT",
+                        "-o",
+                        aOut.toString ()));
+    final String sHtml = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertTrue (sHtml, sHtml.contains (">DRAFT</div>"));
+    assertTrue (sHtml, sHtml.contains ("color:rgba(16,32,48,0.5)"));
+    assertTrue (sHtml, sHtml.contains ("font-size:30.0pt"));
+    assertTrue (sHtml, sHtml.contains ("top:4mm"));
+  }
+
+  @Test
+  public void testWatermarkOptionsApplyToTheThemeWatermark () throws IOException
+  {
+    final Path aOut = _tempFile (".html");
+    final Path aTheme = _tempFile (".json");
+    Files.writeString (aTheme, "{\"common\":{\"watermark\":{\"text\":\"THEME\",\"opacity\":0.5,\"rotation\":10}}}", StandardCharsets.UTF_8);
+    assertEquals (0,
+                  _run ("-i",
+                        _copyInvoice ().toString (),
+                        "--theme",
+                        aTheme.toString (),
+                        "--watermark-opacity",
+                        "0.25",
+                        "-o",
+                        aOut.toString ()));
+    final String sOpacity = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertTrue (sOpacity, sOpacity.contains (">THEME</div>"));
+    assertTrue (sOpacity, sOpacity.contains ("rgba(128,128,128,0.25)"));
+    assertTrue (sOpacity, sOpacity.contains ("rotate(10.0deg)"));
+
+    assertEquals (0,
+                  _run ("-i",
+                        _copyInvoice ().toString (),
+                        "--theme",
+                        aTheme.toString (),
+                        "--watermark-rotation",
+                        "20",
+                        "-o",
+                        aOut.toString ()));
+    final String sRotation = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertTrue (sRotation, sRotation.contains ("rgba(128,128,128,0.5)"));
+    assertTrue (sRotation, sRotation.contains ("rotate(20.0deg)"));
+
+    // There is nothing to change
+    assertEquals (2, _run ("-i", _copyInvoice ().toString (), "--watermark-opacity", "0.25", "-o", aOut.toString ()));
+  }
+
+  @Test
+  public void testLineWidth () throws IOException
+  {
+    final Path aTemplate = _tempFile (".ptpl");
+    Files.writeString (aTemplate, "aaaa bbbb cccc\n", StandardCharsets.UTF_8);
+    final Path aOut = _tempFile (".txt");
+    final String sInvoice = _copyInvoice ().toString ();
+    assertEquals (0, _run ("-i", sInvoice, "-f", "TEXT", "-t", aTemplate.toString (), "--line-width", "6", "-o", aOut.toString ()));
+    assertTrue (Files.readString (aOut, StandardCharsets.UTF_8).startsWith ("aaaa\nbbbb\ncccc\n"));
+
+    // The theme, and the option on top of it
+    final Path aTheme = _tempFile (".json");
+    Files.writeString (aTheme, "{\"text\":{\"lineWidth\":10}}", StandardCharsets.UTF_8);
+    assertEquals (0, _run ("-i", sInvoice, "-f", "TEXT", "-t", aTemplate.toString (), "--theme", aTheme.toString (), "-o", aOut.toString ()));
+    assertTrue (Files.readString (aOut, StandardCharsets.UTF_8).startsWith ("aaaa bbbb\ncccc\n"));
+    assertEquals (0,
+                  _run ("-i",
+                        sInvoice,
+                        "-f",
+                        "TEXT",
+                        "-t",
+                        aTemplate.toString (),
+                        "--theme",
+                        aTheme.toString (),
+                        "--line-width",
+                        "0",
+                        "-o",
+                        aOut.toString ()));
+    assertTrue (Files.readString (aOut, StandardCharsets.UTF_8).startsWith ("aaaa bbbb cccc\n"));
+
+    assertEquals (2, _run ("-i", sInvoice, "-f", "TEXT", "--line-width", "-1", "-o", aOut.toString ()));
+    assertEquals (2, _run ("-i", sInvoice, "-f", "HTML", "--line-width", "10", "-o", aOut.toString ()));
+  }
+
+  @Test
+  public void testUnsupportedLanguageIsAUsageError () throws IOException
+  {
+    final Path aOut = _tempFile (".html");
+    assertEquals (2, _run ("-i", _copyInvoice ().toString (), "-l", "xx", "-o", aOut.toString ()));
+    assertEquals (0, _run ("-i", _copyInvoice ().toString (), "-l", "de_AT", "-o", aOut.toString ()));
+  }
+
+  @Test
+  public void testFontsAreRefusedForText () throws IOException
+  {
+    final Path aOut = _tempFile (".txt");
+    final Path aInvoice = _copyInvoice ();
+    assertEquals (2, _run ("-i", aInvoice.toString (), "-f", "TEXT", "--font", aInvoice.toString (), "-o", aOut.toString ()));
+    assertEquals (2,
+                  _run ("-i",
+                        aInvoice.toString (),
+                        "-f",
+                        "TEXT",
+                        "--font-bold",
+                        aInvoice.toString (),
+                        "-o",
+                        aOut.toString ()));
+  }
+
+  @Test
+  public void testSniffOfMalformedInputLogsNothing ()
+  {
+    final PrintStream aOldErr = System.err;
+    final ByteArrayOutputStream aErr = new ByteArrayOutputStream ();
+    try (final PrintStream aNewErr = new PrintStream (aErr, true, StandardCharsets.UTF_8))
+    {
+      System.setErr (aNewErr);
+      assertEquals (PhloxCli.ESourceSyntax.UBL, PhloxCli._sniffSyntax ("<a><b>".getBytes (StandardCharsets.UTF_8)));
+    }
+    finally
+    {
+      System.setErr (aOldErr);
+    }
+    assertEquals ("", aErr.toString (StandardCharsets.UTF_8));
   }
 }

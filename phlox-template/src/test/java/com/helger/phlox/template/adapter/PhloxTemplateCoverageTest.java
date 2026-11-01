@@ -57,6 +57,8 @@ public final class PhloxTemplateCoverageTest
     assertFalse (_isMissing ("{{BT-1}}", "BT-1"));
     assertFalse (_isMissing ("{{ BG-22.BT-115 | amount }}", "BT-115"));
     assertFalse (_isMissing ("{{#BG-3}}{{BT-25}}{{/BG-3}}", "BT-25"));
+    assertFalse (_isMissing ("{{#BG-22}}{{BT-115}}{{/BG-22}}", "BT-115"));
+    assertFalse (_isMissing ("{{BT-84 | codespan}}", "BT-84"));
     assertFalse (_isMissing ("{{..BT-126}}", "BT-126"));
     assertTrue (_isMissing ("{{label:BT-1}}", "BT-1"));
     assertTrue (_isMissing ("{{?BT-1}}x{{/BT-1}}", "BT-1"));

@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>phlox-text</name>
   <description>phlox - plain-text output writer</description>
-  <url>https://github.com/phax/phlox/phlox-text</url>
+  <url>https://github.com/phax/phlox/tree/main/phlox-text</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>

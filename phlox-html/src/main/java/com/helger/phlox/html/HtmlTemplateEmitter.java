@@ -52,6 +52,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.css.property.CCSSProperties;
+import com.helger.css.property.CSSPropertyFree;
+import com.helger.css.property.ECSSProperty;
+import com.helger.css.property.ICSSProperty;
 import com.helger.html.hc.IHCNodeWithChildren;
 import com.helger.html.hc.html.IHCElement;
 import com.helger.html.hc.html.embedded.HCImg;
@@ -80,6 +83,7 @@ import com.helger.html.hc.html.textlevel.HCEM;
 import com.helger.html.hc.html.textlevel.HCS;
 import com.helger.html.hc.html.textlevel.HCStrong;
 import com.helger.html.hc.impl.HCTextNode;
+import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
@@ -106,6 +110,10 @@ public final class HtmlTemplateEmitter extends
 
   private static final Pattern BR_TAG = Pattern.compile ("<br\\s*/?>", Pattern.CASE_INSENSITIVE);
 
+  // The constants of CCSSProperties only know numbers for these two and warn about "none"
+  private static final ICSSProperty MAX_HEIGHT = new CSSPropertyFree (ECSSProperty.MAX_HEIGHT);
+  private static final ICSSProperty MAX_WIDTH = new CSSPropertyFree (ECSSProperty.MAX_WIDTH);
+
   private final HtmlRenderContext m_aCtx;
 
   /**
@@ -124,8 +132,7 @@ public final class HtmlTemplateEmitter extends
                           @NonNull final Node aNode,
                           @NonNull final IHCElement <?> aElement)
   {
-    final String sBlockClass = aAst.getBlockClass (aNode);
-    if (sBlockClass != null)
+    for (final String sBlockClass : aAst.getBlockClasses (aNode))
       aElement.addClass (HtmlDocumentSupport.cls (m_aCtx.getCssClassPrefix () + sBlockClass));
   }
 
@@ -146,7 +153,9 @@ public final class HtmlTemplateEmitter extends
           aImage.getDestination ().startsWith (PhloxTemplatePostParser.QRCODE_URL_PREFIX))
       {
         // Nothing to show for an attachment or QR code that could not be resolved
-        LOGGER.warn ("Template image '" + aImage.getDestination () + "' could not be resolved - skipping it");
+        LOGGER.warn ("Template image '" +
+                     PhloxLogHelper.sanitise (aImage.getDestination ()) +
+                     "' could not be resolved - skipping it");
         return null;
       }
       sSrc = aImage.getDestination ();
@@ -161,8 +170,8 @@ public final class HtmlTemplateEmitter extends
     {
       // The explicit height wins over the limits of the logo class
       aImg.addStyle (CCSSProperties.HEIGHT.newValue (nHeightPx + "px"));
-      aImg.addStyle (CCSSProperties.MAX_HEIGHT.newValue ("none"));
-      aImg.addStyle (CCSSProperties.MAX_WIDTH.newValue ("none"));
+      aImg.addStyle (MAX_HEIGHT.newValue ("none"));
+      aImg.addStyle (MAX_WIDTH.newValue ("none"));
     }
     return aImg;
   }
@@ -285,9 +294,14 @@ public final class HtmlTemplateEmitter extends
       aTarget.addChild (aImg);
   }
 
-  private static void _emitCodeBlock (@NonNull final String sLiteral, @NonNull final IHCNodeWithChildren <?> aTarget)
+  private void _emitCodeBlock (@NonNull final PhloxTemplateAst aAst,
+                               @NonNull final Node aBlock,
+                               @NonNull final String sLiteral,
+                               @NonNull final IHCNodeWithChildren <?> aTarget)
   {
-    aTarget.addChild (new HCPre ().addChild (new HCCode ().addChild (sLiteral)));
+    final HCPre aPre = new HCPre ();
+    _addClass (aAst, aBlock, aPre);
+    aTarget.addChild (aPre.addChild (new HCCode ().addChild (sLiteral)));
   }
 
   @Override
@@ -444,7 +458,7 @@ public final class HtmlTemplateEmitter extends
                                        @NonNull final FencedCodeBlock aBlock,
                                        @NonNull final IHCNodeWithChildren <?> aTarget)
   {
-    _emitCodeBlock (aBlock.getLiteral (), aTarget);
+    _emitCodeBlock (aAst, aBlock, aBlock.getLiteral (), aTarget);
   }
 
   @Override
@@ -452,7 +466,7 @@ public final class HtmlTemplateEmitter extends
                                          @NonNull final IndentedCodeBlock aBlock,
                                          @NonNull final IHCNodeWithChildren <?> aTarget)
   {
-    _emitCodeBlock (aBlock.getLiteral (), aTarget);
+    _emitCodeBlock (aAst, aBlock, aBlock.getLiteral (), aTarget);
   }
 
   @Override

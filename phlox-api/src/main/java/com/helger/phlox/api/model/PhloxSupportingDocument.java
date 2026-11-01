@@ -138,4 +138,14 @@ public class PhloxSupportingDocument
     m_aAttachment = aAttachment;
     return this;
   }
+
+  /**
+   * Get the {@code true} when every field is {@code null}.
+   *
+   * @return {@code true} when every field is {@code null}.
+   */
+  public boolean isEmpty ()
+  {
+    return m_sReference == null && m_sDescription == null && m_sExternalLocation == null && m_aAttachment == null;
+  }
 }

@@ -80,7 +80,7 @@ public final class PhloxThemeReader
 
     final PhloxThemeVariables aVariables = new PhloxThemeVariables (aRaw);
     final PhloxTheme ret = new PhloxTheme (aVariables, aRoot, aBaseDir);
-    new PhloxThemeObject (aRoot, "", aVariables).checkKeys ("variables", "common", "html", "pdf");
+    new PhloxThemeObject (aRoot, "", aVariables).checkKeys ("variables", "common", "html", "pdf", "text");
     // Fail now and not only when the part is used: the values of the variables must be valid
     for (final String sName : aRaw.keySet ())
       ret.getVariable (sName);

@@ -35,8 +35,8 @@ import com.helger.json.IJsonObject;
 import com.helger.json.JsonObject;
 
 /**
- * The layout parameters of the HTML and the PDF output, read from a JSON file with
- * {@link PhloxThemeReader}. A theme has four optional parts:
+ * The layout parameters of the HTML, the PDF and the plain-text output, read from a JSON file with
+ * {@link PhloxThemeReader}. A theme has five optional parts:
  * <ul>
  * <li><code>variables</code> - named values like CSS custom properties. The name starts with
  * <code>--</code>, a value is used with <code>var(--name)</code> or <code>var(--name, fallback)</code>
@@ -44,13 +44,22 @@ import com.helger.json.JsonObject;
  * custom properties, so the stylesheet can use them. The colours of the default layout are the
  * variables {@link #VAR_INK}, {@link #VAR_MUTED}, {@link #VAR_FAINT}, {@link #VAR_RULE},
  * {@link #VAR_WASH}, {@link #VAR_ACCENT} and {@link #VAR_ACCENT_WASH}.</li>
- * <li><code>common</code> - the parameters of both outputs (language, formats, template, logo,
+ * <li><code>common</code> - the parameters of all outputs (language, formats, template, logo,
  * watermark), see {@link PhloxThemeApplier}.</li>
  * <li><code>html</code> - the parameters of the HTML output.</li>
  * <li><code>pdf</code> - the parameters of the PDF output.</li>
+ * <li><code>text</code> - the parameters of the plain-text output.</li>
  * </ul>
  * Every key that starts with <code>$</code> is a comment or other information for the reader of the
  * file and is ignored. A key that is not known is an error, so a typo is found.
+ * <p>
+ * A theme is trusted input: every file reference ({@link #resolveFile(String)},
+ * {@link #readBinary(String)}) may leave the folder of the theme, and a <code>classpath:</code>
+ * reference may name any resource. A logo reference such as <code>../../etc/hosts</code> therefore
+ * puts the content of that file into the output. An application that accepts themes from its users
+ * or tenants must check the file references of the theme itself; phlox has no base folder
+ * restriction.
+ * </p>
  *
  * @author Philip Helger
  */
@@ -146,7 +155,7 @@ public final class PhloxTheme
   }
 
   /**
-   * @return The parameters that are used by both outputs. Never <code>null</code>.
+   * @return The parameters that are used by all outputs. Never <code>null</code>.
    */
   @NonNull
   public PhloxThemeObject getCommon ()
@@ -173,7 +182,17 @@ public final class PhloxTheme
   }
 
   /**
-   * Resolve the reference to a file.
+   * @return The parameters of the plain-text output. Never <code>null</code>.
+   */
+  @NonNull
+  public PhloxThemeObject getText ()
+  {
+    return _getPart ("text");
+  }
+
+  /**
+   * Resolve the reference to a file. The result is not restricted to the folder of the theme, see
+   * the class documentation.
    *
    * @param sReference
    *        A path. A relative path is relative to the folder of the theme file, or to the current

@@ -36,8 +36,8 @@ public interface IPhloxLabelResolver
    *        {@code null}.
    * @param aLocale
    *        The target locale. Never {@code null}.
-   * @return The translated label, or the key itself if no translation exists in any bundle
-   *         (so the gap is visible in output).
+   * @return The translated label, or the English one if the language does not have the key, or the
+   *         key itself if no translation exists in any bundle (so the gap is visible in output).
    */
   @NonNull
   String getLabel (@NonNull String sKey, @NonNull Locale aLocale);

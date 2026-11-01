@@ -20,14 +20,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.awt.image.BufferedImage;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.CRC32;
+import java.util.zip.DeflaterOutputStream;
+
+import javax.imageio.ImageIO;
 
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.contentstream.operator.Operator;
@@ -38,6 +46,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.text.TextPosition;
 import org.junit.Test;
 
 import com.google.zxing.BinaryBitmap;
@@ -48,14 +57,19 @@ import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.qrcode.QRCodeReader;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
 import com.helger.base.string.StringHelper;
+import com.helger.base.wrapper.Wrapper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.io.file.SimpleFileIO;
+import com.helger.font.roboto.EFontResourceRoboto;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.pdflayout.base.PLColor;
+import com.helger.pdflayout.pdfa.EPdfALevel;
+import com.helger.phlox.api.PhloxRuntimeException;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.read.IInvoiceReader;
+import com.helger.phlox.api.watermark.WatermarkSpec;
 import com.helger.phlox.cii.CiiInvoiceReader;
 import com.helger.phlox.template.PhloxTemplate;
 import com.helger.phlox.testfiles.MockPhloxTestFiles;
@@ -128,7 +142,7 @@ public final class PdfTemplateEmitterTest
                       aBytes.length > 500 && aBytes[0] == '%' && aBytes[1] == 'P' && aBytes[2] == 'D' && aBytes[3] == 'F');
           final String sText = _text (aBytes);
           assertTrue ("Missing invoice number for " + aRes.getPath (), sText.contains (aModel.getNumber ()));
-          assertFalse ("Unresolved sentinel in " + aRes.getPath (), sText.contains ("[[PHLOX:"));
+          assertFalse ("Unresolved sentinel in " + aRes.getPath (), sText.contains ("PHLOX:"));
           assertFalse ("Unresolved placeholder in " + aRes.getPath (), sText.contains ("{{"));
 
           final String sOutputPath = "generated/template/" +
@@ -155,6 +169,22 @@ public final class PdfTemplateEmitterTest
       int nCount = 0;
       for (final Object aToken : new PDFStreamParser (aDoc.getPage (0)).parse ())
         if (aToken instanceof final Operator aOperator && "S".equals (aOperator.getName ()))
+          nCount++;
+      return nCount;
+    }
+    catch (final IOException ex)
+    {
+      throw new IllegalStateException ("Failed to read the PDF", ex);
+    }
+  }
+
+  private static int _fillOperators (final byte [] aPdf)
+  {
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      int nCount = 0;
+      for (final Object aToken : new PDFStreamParser (aDoc.getPage (0)).parse ())
+        if (aToken instanceof final Operator aOperator && "f".equals (aOperator.getName ()))
           nCount++;
       return nCount;
     }
@@ -321,11 +351,59 @@ public final class PdfTemplateEmitterTest
   public void testBlockStyleIsPartOfTheContext ()
   {
     final PdfRenderContext aCtx = new PdfRenderContext ();
-    assertNotNull (aCtx.getBlockStyle ("totals-due"));
+    assertNotNull (aCtx.getBlockStyle ("due"));
     assertEquals (null, aCtx.getBlockStyle ("unknown"));
     aCtx.putBlockStyle ("warn", new PdfBlockStyle (PLColor.YELLOW, PLColor.RED));
     assertEquals (PLColor.YELLOW, aCtx.getBlockStyle ("warn").getFillColor ());
     assertEquals (PLColor.RED, aCtx.getBlockStyle ("warn").getTextColor ());
+  }
+
+  @Test
+  public void testDataImage () throws IOException
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final BufferedImage aSource = new BufferedImage (8, 8, BufferedImage.TYPE_INT_RGB);
+    final NonBlockingByteArrayOutputStream aPng = new NonBlockingByteArrayOutputStream ();
+    ImageIO.write (aSource, "png", aPng);
+    final String sData = "data:image/png;base64," + Base64.getEncoder ().encodeToString (aPng.toByteArray ());
+
+    final byte [] aPdf = _render (aModel, PhloxTemplate.fromString ("before\n\n![Stamp](" + sData + ")\n"), Locale.ENGLISH);
+    int nImages = 0;
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      for (final COSName aName : aDoc.getPage (0).getResources ().getXObjectNames ())
+        if (aDoc.getPage (0).getResources ().getXObject (aName) instanceof PDImageXObject)
+          nImages++;
+    }
+    assertEquals (1, nImages);
+  }
+
+  @Test
+  public void testAllStylesOfABlockApply () throws Exception
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final PdfRenderContext aCtx = new PdfRenderContext ().setTemplate (PhloxTemplate.fromString ("{{class:big strong}}\n\nStyled\n"));
+    aCtx.putBlockStyle ("big", PdfBlockStyle.builder ().fontSize (30).build ());
+    aCtx.putBlockStyle ("strong", PdfBlockStyle.builder ().bold (true).build ());
+    final NonBlockingByteArrayOutputStream aBaos = new NonBlockingByteArrayOutputStream ();
+    new PdfInvoiceWriter ().writeTo (aModel, aCtx, aBaos);
+
+    final Wrapper <TextPosition> aFirst = new Wrapper <> ();
+    try (final PDDocument aDoc = Loader.loadPDF (aBaos.toByteArray ()))
+    {
+      new PDFTextStripper ()
+      {
+        @Override
+        protected void processTextPosition (final TextPosition aText)
+        {
+          if (aFirst.get () == null)
+            aFirst.set (aText);
+          super.processTextPosition (aText);
+        }
+      }.getText (aDoc);
+    }
+    assertEquals (30f, aFirst.get ().getFontSizeInPt (), 0.01f);
+    assertTrue (aFirst.get ().getFont ().getName (), aFirst.get ().getFont ().getName ().contains ("Bold"));
   }
 
   @Test
@@ -367,5 +445,423 @@ public final class PdfTemplateEmitterTest
           bFound = true;
       assertTrue (bFound);
     }
+  }
+
+  private static PhloxInvoice _example1 ()
+  {
+    return _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+  }
+
+  private static byte [] _render (final PdfRenderContext aCtx) throws Exception
+  {
+    final NonBlockingByteArrayOutputStream aBaos = new NonBlockingByteArrayOutputStream ();
+    new PdfInvoiceWriter ().writeTo (_example1 (), aCtx, aBaos);
+    return aBaos.toByteArray ();
+  }
+
+  private static byte [] _render (final String sTemplate) throws Exception
+  {
+    return _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate)));
+  }
+
+  private static int _pageCount (final byte [] aPdf) throws IOException
+  {
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      return aDoc.getNumberOfPages ();
+    }
+  }
+
+  private static String _pageText (final byte [] aPdf, final int nPage) throws IOException
+  {
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      final PDFTextStripper aStripper = new PDFTextStripper ();
+      aStripper.setStartPage (nPage);
+      aStripper.setEndPage (nPage);
+      return aStripper.getText (aDoc);
+    }
+  }
+
+  /** @return The first character of a text, with the font and the size it is drawn in. */
+  private static TextPosition _findChar (final byte [] aPdf, final String sChar) throws IOException
+  {
+    final Wrapper <TextPosition> ret = new Wrapper <> ();
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      new PDFTextStripper ()
+      {
+        @Override
+        protected void processTextPosition (final TextPosition aText)
+        {
+          if (ret.get () == null && sChar.equals (aText.getUnicode ()))
+            ret.set (aText);
+          super.processTextPosition (aText);
+        }
+      }.getText (aDoc);
+    }
+    assertNotNull ("Did not find " + sChar, ret.get ());
+    return ret.get ();
+  }
+
+  private static void _writePngChunk (final DataOutputStream aOut, final String sType, final byte [] aData) throws IOException
+  {
+    final byte [] aTypeBytes = sType.getBytes (StandardCharsets.ISO_8859_1);
+    final CRC32 aCRC = new CRC32 ();
+    aCRC.update (aTypeBytes);
+    aCRC.update (aData);
+    aOut.writeInt (aData.length);
+    aOut.write (aTypeBytes);
+    aOut.write (aData);
+    aOut.writeInt ((int) aCRC.getValue ());
+  }
+
+  /** @return A valid PNG start with the given size, but with hardly any pixel data. */
+  private static byte [] _createPngWithoutPixels (final int nWidth, final int nHeight) throws IOException
+  {
+    final NonBlockingByteArrayOutputStream aHeader = new NonBlockingByteArrayOutputStream ();
+    try (final DataOutputStream aOut = new DataOutputStream (aHeader))
+    {
+      aOut.writeInt (nWidth);
+      aOut.writeInt (nHeight);
+      // 8 bit truecolour with alpha
+      aOut.write (new byte [] { 8, 6, 0, 0, 0 });
+    }
+    final NonBlockingByteArrayOutputStream aPixels = new NonBlockingByteArrayOutputStream ();
+    try (final DeflaterOutputStream aOut = new DeflaterOutputStream (aPixels))
+    {
+      aOut.write (new byte [1000]);
+    }
+
+    final NonBlockingByteArrayOutputStream ret = new NonBlockingByteArrayOutputStream ();
+    try (final DataOutputStream aOut = new DataOutputStream (ret))
+    {
+      aOut.write (new byte [] { (byte) 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a });
+      _writePngChunk (aOut, "IHDR", aHeader.toByteArray ());
+      _writePngChunk (aOut, "IDAT", aPixels.toByteArray ());
+      _writePngChunk (aOut, "IEND", new byte [0]);
+    }
+    return ret.toByteArray ();
+  }
+
+  /** @return A complete PNG with 1 bit per pixel, so that it needs little memory. */
+  private static byte [] _createBlackAndWhitePng (final int nWidth, final int nHeight) throws IOException
+  {
+    final NonBlockingByteArrayOutputStream aHeader = new NonBlockingByteArrayOutputStream ();
+    try (final DataOutputStream aOut = new DataOutputStream (aHeader))
+    {
+      aOut.writeInt (nWidth);
+      aOut.writeInt (nHeight);
+      // 1 bit greyscale
+      aOut.write (new byte [] { 1, 0, 0, 0, 0 });
+    }
+    final NonBlockingByteArrayOutputStream aPixels = new NonBlockingByteArrayOutputStream ();
+    try (final DeflaterOutputStream aOut = new DeflaterOutputStream (aPixels))
+    {
+      // One filter byte per row
+      final byte [] aRow = new byte [1 + (nWidth + 7) / 8];
+      for (int i = 0; i < nHeight; ++i)
+        aOut.write (aRow);
+    }
+
+    final NonBlockingByteArrayOutputStream ret = new NonBlockingByteArrayOutputStream ();
+    try (final DataOutputStream aOut = new DataOutputStream (ret))
+    {
+      aOut.write (new byte [] { (byte) 0x89, 'P', 'N', 'G', 0x0d, 0x0a, 0x1a, 0x0a });
+      _writePngChunk (aOut, "IHDR", aHeader.toByteArray ());
+      _writePngChunk (aOut, "IDAT", aPixels.toByteArray ());
+      _writePngChunk (aOut, "IEND", new byte [0]);
+    }
+    return ret.toByteArray ();
+  }
+
+  private static int _imageCount (final byte [] aPdf) throws IOException
+  {
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      int nCount = 0;
+      for (final COSName aName : aDoc.getPage (0).getResources ().getXObjectNames ())
+        if (aDoc.getPage (0).getResources ().isImageXObject (aName))
+          nCount++;
+      return nCount;
+    }
+  }
+
+  /** @return The largest height any image is drawn with on the first page. */
+  private static float _maxImageHeight (final byte [] aPdf) throws IOException
+  {
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      float ret = 0;
+      final List <Object> aTokens = new PDFStreamParser (aDoc.getPage (0)).parse ();
+      for (int i = 6; i < aTokens.size (); ++i)
+        if (aTokens.get (i) instanceof final Operator aOp &&
+            "cm".equals (aOp.getName ()) &&
+            aTokens.get (i - 3) instanceof final COSNumber aScale)
+          ret = Math.max (ret, aScale.floatValue ());
+      return ret;
+    }
+  }
+
+  private static String _dataImage (final byte [] aImage)
+  {
+    return "![Pic](data:image/png;base64," + Base64.getEncoder ().encodeToString (aImage) + ")";
+  }
+
+  @Test (timeout = 20_000)
+  public void testRunOfSpacesIsLinear () throws Exception
+  {
+    // Took minutes in the regular expressions of the markup parser
+    final byte [] aPdf = _render ("Before" + StringHelper.getRepeated (' ', 200_000) + "After `code" + StringHelper.getRepeated (' ', 200_000) + "x`");
+    assertTrue (_text (aPdf).contains ("Before After code x"));
+  }
+
+  @Test
+  public void testBlocksHigherThanAPageAreSplit () throws Exception
+  {
+    final String sLong = StringHelper.getRepeated ('x', 40_000) + " THEEND";
+    final String sWords = StringHelper.getRepeated ("word ", 8_000) + "THEEND";
+    final PdfRenderContext aKeepCtx = new PdfRenderContext ().putBlockStyle ("keep", PdfBlockStyle.builder ().keepTogether (true).build ());
+
+    for (final String sTemplate : new String [] { "# " + sLong,
+                                                  "{{row:r}}\n\n{{group:a}}\n\n" + sLong + "\n\n{{end}}\n\n{{group:b}}\n\nb\n\n{{end}}\n\n{{end}}\n",
+                                                  "{{row:r}}\n\n{{group:a}}\n\n## " + sWords + "\n\n{{end}}\n\n{{end}}\n",
+                                                  "{{group:keep}}\n\n" + sWords + "\n\n{{end}}\n",
+                                                  "| A | B |\n|---|---|\n| " + sWords + " | b |\n",
+                                                  "| A | B |\n|---|---|\n| " + sLong + " | b |\n" })
+    {
+      final byte [] aPdf = _render (aKeepCtx.setTemplate (PhloxTemplate.fromString (sTemplate)));
+      assertTrue (_pageCount (aPdf) > 1);
+      assertTrue (sTemplate.substring (0, 16), _text (aPdf).contains ("THEEND"));
+    }
+  }
+
+  @Test
+  public void testBlockThatFitsIsKeptTogether () throws Exception
+  {
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("keep", PdfBlockStyle.builder ().keepTogether (true).build ());
+    final String sFill = StringHelper.getRepeated ("fill\n\n", 45);
+    final byte [] aPdf = _render (aCtx.setTemplate (PhloxTemplate.fromString (sFill +
+                                                                              "{{group:keep}}\n\nFIRSTLINE\n\nx\n\nx\n\nx\n\nx\n\nLASTLINE\n\n{{end}}\n")));
+    assertEquals (2, _pageCount (aPdf));
+    assertTrue (_pageText (aPdf, 2).contains ("FIRSTLINE"));
+    assertTrue (_pageText (aPdf, 2).contains ("LASTLINE"));
+  }
+
+  @Test
+  public void testCodeBlockUsesTheFontFamily () throws Exception
+  {
+    final PdfRenderContext aCtx = new PdfRenderContext ().setFontFamily (PdfFontFamily.of (EFontResourceRoboto.ROBOTO_NORMAL,
+                                                                                           EFontResourceRoboto.ROBOTO_BOLD,
+                                                                                           EFontResourceRoboto.ROBOTO_NORMAL_ITALIC,
+                                                                                           EFontResourceRoboto.ROBOTO_BOLD_ITALIC))
+                                                         .setPdfALevel (EPdfALevel.PDF_A_3B)
+                                                         .setTemplate (PhloxTemplate.fromString ("```\nZ\n```\n\n    indented\n"));
+    final byte [] aPdf = _render (aCtx);
+    assertTrue (_findChar (aPdf, "Z").getFont ().getName (), _findChar (aPdf, "Z").getFont ().getName ().contains ("Roboto"));
+    assertFalse (_fontNames (aPdf).toString (), _fontNames (aPdf).toString ().contains ("Courier"));
+
+    // Without a family it stays the monospace font of PDF
+    final byte [] aStandard = _render ("```\nZ\n```\n");
+    assertTrue (_findChar (aStandard, "Z").getFont ().getName ().contains ("Courier"));
+  }
+
+  @Test
+  public void testPageBreak () throws Exception
+  {
+    assertEquals (2, _pageCount (_render ("a\n\n{{pagebreak}}\n\nb\n")));
+
+    // A group of the top level is split
+    final byte [] aPdf = _render ("{{group:g}}\n\nFIRST\n\n{{pagebreak}}\n\nSECOND\n\n{{end}}\n");
+    assertEquals (2, _pageCount (aPdf));
+    assertTrue (_pageText (aPdf, 1).contains ("FIRST"));
+    assertTrue (_pageText (aPdf, 2).contains ("SECOND"));
+
+    // Both parts have the style of the group
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("g", PdfBlockStyle.builder ().fontSize (21).build ());
+    final byte [] aStyled = _render (aCtx.setTemplate (PhloxTemplate.fromString ("{{group:g}}\n\nX\n\n{{pagebreak}}\n\nY\n\n{{end}}\n")));
+    assertEquals (21f, _findChar (aStyled, "X").getFontSizeInPt (), 0.01f);
+    assertEquals (21f, _findChar (aStyled, "Y").getFontSizeInPt (), 0.01f);
+
+    // At the edges of a group no empty group is left
+    assertEquals (2, _pageCount (_render ("{{group:g}}\n\nFIRST\n\n{{pagebreak}}\n\n{{end}}\n\nnext\n")));
+
+    // Where it cannot work it is ignored
+    assertEquals (1, _pageCount (_render ("{{group:g}}\n\n{{group:h}}\n\na\n\n{{pagebreak}}\n\nb\n\n{{end}}\n\n{{end}}\n")));
+    assertEquals (1, _pageCount (_render ("{{row:r}}\n\n{{group:g}}\n\na\n\n{{pagebreak}}\n\nb\n\n{{end}}\n\n{{end}}\n")));
+  }
+
+  @Test
+  public void testGroupPassesTheTextStyleToItsBlocks () throws Exception
+  {
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("g",
+                                                                         PdfBlockStyle.builder ().fontSize (21).bold (true).build ());
+    final byte [] aPdf = _render (aCtx.setTemplate (PhloxTemplate.fromString ("{{group:g}}\n\nP\n\n| A | B |\n|---|---|\n| T | c |\n\n- L\n\n> Q\n\n### H\n\n{{end}}\n\nO\n")));
+    for (final String sChar : new String [] { "P", "T", "L", "Q" })
+    {
+      assertEquals (sChar, 21f, _findChar (aPdf, sChar).getFontSizeInPt (), 0.01f);
+      assertTrue (sChar, _findChar (aPdf, sChar).getFont ().getName ().contains ("Bold"));
+    }
+    // A heading keeps its size
+    assertEquals (11f, _findChar (aPdf, "H").getFontSizeInPt (), 0.01f);
+    // And the group ends with the group
+    assertEquals (10f, _findChar (aPdf, "O").getFontSizeInPt (), 0.01f);
+    assertFalse (_findChar (aPdf, "O").getFont ().getName ().contains ("Bold"));
+  }
+
+  @Test
+  public void testAmountDueIsBoldInTheDefaultTemplate () throws Exception
+  {
+    final byte [] aPdf = _render (new PdfRenderContext ().setLocale (Locale.ENGLISH));
+    final Wrapper <Boolean> aFound = new Wrapper <> (Boolean.FALSE);
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      new PDFTextStripper ()
+      {
+        @Override
+        protected void writeString (final String sText, final List <TextPosition> aPositions) throws IOException
+        {
+          // The amount due of the example
+          if (sText.contains ("Amount due") && aPositions.get (0).getFont ().getName ().contains ("Bold"))
+            aFound.set (Boolean.TRUE);
+          super.writeString (sText, aPositions);
+        }
+      }.getText (aDoc);
+    }
+    assertTrue (_text (aPdf), aFound.get ().booleanValue ());
+  }
+
+  @Test
+  public void testBlockStylesOfBlocks () throws Exception
+  {
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("s", PdfBlockStyle.builder ().fontSize (21).build ());
+    for (final String sTemplate : new String [] { "{{class:s}}\n| A | B |\n|---|---|\n| X | c |\n",
+                                                  "{{class:s}}\n- X\n",
+                                                  "{{class:s}}\n1. X\n",
+                                                  "{{class:s}}\n> X\n",
+                                                  "{{class:s}}\n```\nX\n```\n" })
+      assertEquals (sTemplate,
+                    21f,
+                    _findChar (_render (aCtx.setTemplate (PhloxTemplate.fromString (sTemplate))), "X").getFontSizeInPt (),
+                    0.01f);
+  }
+
+  @Test
+  public void testBlockStyleDecoratesTablesListsQuotesAndRows () throws Exception
+  {
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("s", PdfBlockStyle.fill (PLColor.YELLOW));
+    final int nPlain = _fillOperators (_render ("{{row:other}}\n\n{{group:a}}\n\nX\n\n{{end}}\n\n{{end}}\n"));
+    for (final String sTemplate : new String [] { "{{class:s}}\n| A | B |\n|---|---|\n| X | c |\n",
+                                                  "{{class:s}}\n- X\n",
+                                                  "{{class:s}}\n> X\n",
+                                                  "{{row:s}}\n\n{{group:a}}\n\nX\n\n{{end}}\n\n{{end}}\n" })
+    {
+      final int nFilled = _fillOperators (_render (aCtx.setTemplate (PhloxTemplate.fromString (sTemplate))));
+      assertTrue (sTemplate + " has " + nFilled + " fills", nFilled > 0);
+    }
+    assertEquals (0, nPlain);
+  }
+
+  @Test
+  public void testTableRowStyle () throws Exception
+  {
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("s",
+                                                                         PdfBlockStyle.builder ()
+                                                                                      .fontSize (21)
+                                                                                      .padding (9)
+                                                                                      .build ());
+    final byte [] aStyled = _render (aCtx.setTemplate (PhloxTemplate.fromString ("| A | B |\n|---|---|\n{{class:s}}\n| X | c |\n| Y | d |\n")));
+    assertEquals (21f, _findChar (aStyled, "X").getFontSizeInPt (), 0.01f);
+    assertEquals (10f, _findChar (aStyled, "Y").getFontSizeInPt (), 0.01f);
+
+    // The padding moves the next row down
+    final byte [] aPlain = _render (aCtx.putBlockStyle ("s", PdfBlockStyle.builder ().fontSize (21).build ()));
+    final float fPlain = _findChar (aPlain, "Y").getY () - _findChar (aPlain, "X").getY ();
+    final float fStyled = _findChar (aStyled, "Y").getY () - _findChar (aStyled, "X").getY ();
+    assertEquals (6f, fStyled - fPlain, 0.5f);
+  }
+
+  @Test
+  public void testInlineHtmlIsShownAsText () throws Exception
+  {
+    final String sText = _text (_render ("Before <span>inner</span> after<br>next"));
+    assertTrue (sText, sText.contains ("Before <span>inner</span> after"));
+    assertFalse (sText, sText.contains ("<br>"));
+    assertTrue (sText, sText.contains ("next"));
+  }
+
+  @Test
+  public void testImageWithHugeDimensionsIsSkipped () throws Exception
+  {
+    // A few bytes that would need 3.6 GB when decoded
+    final String sText = _text (_render ("Text\n\n" + _dataImage (_createPngWithoutPixels (30_000, 30_000)) + "\n\nAfter\n"));
+    assertTrue (sText, sText.contains ("After"));
+  }
+
+  @Test
+  public void testImageAboveThePixelLimitIsNotDecoded () throws Exception
+  {
+    assertEquals (1, _imageCount (_render (_dataImage (_createBlackAndWhitePng (100, 100)) + "\n\nAfter\n")));
+    // 36 million pixels, a little above the limit
+    assertEquals (0, _imageCount (_render (_dataImage (_createBlackAndWhitePng (6000, 6000)) + "\n\nAfter\n")));
+  }
+
+  @Test
+  public void testDamagedImagesAreSkipped () throws Exception
+  {
+    // The header is valid, most pixels are missing
+    final String sTruncated = _text (_render ("Text\n\n" + _dataImage (_createPngWithoutPixels (10, 10)) + "\n\nAfter\n"));
+    assertTrue (sTruncated, sTruncated.contains ("After"));
+    final String sGarbage = _text (_render ("Text\n\n" + _dataImage (new byte [] { 1, 2, 3 }) + "\n\nAfter\n"));
+    assertTrue (sGarbage, sGarbage.contains ("After"));
+  }
+
+  @Test
+  public void testVeryTallImageFitsThePage () throws Exception
+  {
+    final BufferedImage aImage = new BufferedImage (10, 8000, BufferedImage.TYPE_INT_RGB);
+    final NonBlockingByteArrayOutputStream aBaos = new NonBlockingByteArrayOutputStream ();
+    assertTrue (ImageIO.write (aImage, "png", aBaos));
+    final byte [] aPdf = _render (_dataImage (aBaos.toByteArray ()) + "\n");
+    assertEquals (1, _pageCount (aPdf));
+    final float fHeight = _maxImageHeight (aPdf);
+    assertTrue (Float.toString (fHeight), fHeight > 100f && fHeight < PdfRenderContext.DEFAULT_PAGE_SIZE.getHeight ());
+  }
+
+  @Test
+  public void testTemplateWithoutPdfContentHasAClearError () throws Exception
+  {
+    for (final String sTemplate : new String [] { "![Gone](attachment:logo)\n",
+                                                  "![Svg](data:image/svg+xml;base64,PHN2Zy8+)\n" })
+      try
+      {
+        _render (sTemplate);
+        fail ();
+      }
+      catch (final PhloxRuntimeException ex)
+      {
+        assertTrue (ex.getMessage (), ex.getMessage ().contains ("no content"));
+      }
+  }
+
+  @Test
+  public void testUserWatermarkOnFirstPageOnly () throws Exception
+  {
+    final String sTemplate = "one\n\n{{pagebreak}}\n\ntwo\n\n{{pagebreak}}\n\nthree\n";
+    final byte [] aAll = _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate))
+                                                         .setUserWatermark (WatermarkSpec.text ("STAMP")));
+    assertEquals (3, _pageCount (aAll));
+    assertTrue (_pageText (aAll, 1).contains ("STAMP"));
+    assertTrue (_pageText (aAll, 3).contains ("STAMP"));
+
+    final byte [] aFirst = _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate))
+                                                           .setUserWatermark (WatermarkSpec.text ("STAMP").setRepeatPerPage (false)));
+    assertEquals (3, _pageCount (aFirst));
+    assertTrue (_pageText (aFirst, 1).contains ("STAMP"));
+    assertFalse (_pageText (aFirst, 2).contains ("STAMP"));
+    assertFalse (_pageText (aFirst, 3).contains ("STAMP"));
+    // The order of the pages stays
+    assertTrue (_pageText (aFirst, 2).contains ("two"));
+    assertTrue (_pageText (aFirst, 3).contains ("three"));
   }
 }

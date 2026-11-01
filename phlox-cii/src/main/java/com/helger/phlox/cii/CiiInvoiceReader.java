@@ -45,6 +45,10 @@ import un.unece.uncefact.data.standard.cii.d25a.CrossIndustryInvoiceType;
  * behaviour of the public constructor) therefore uses BT-24 (Specification identifier) and fails
  * with an error if it is missing or not an EN 16931 identifier. The explicit factories skip the
  * detection.
+ * <p>
+ * The reader sets no limit on the size of its input. An application that reads invoices from
+ * untrusted sources must cap the size of the XML before it calls the reader: the time and the memory
+ * of reading and rendering grow with it.
  *
  * @author Philip Helger
  */
@@ -204,7 +208,7 @@ public class CiiInvoiceReader implements IInvoiceReader <InputStream>
     {
       case EN2017:
       {
-        final un.unece.uncefact.data.standard.crossindustryinvoice._100.CrossIndustryInvoiceType aCii = new CIID16BCrossIndustryInvoiceTypeMarshaller ().read (aDoc);
+        final un.unece.uncefact.data.standard.crossindustryinvoice._100.CrossIndustryInvoiceType aCii = AbstractCiiInvoiceReader.unmarshal (new CIID16BCrossIndustryInvoiceTypeMarshaller (), aDoc, aErrors);
         if (aCii == null)
         {
           aErrors.add (SingleError.builderError ().errorText ("Source could not be parsed as CII D16B").build ());
@@ -214,7 +218,7 @@ public class CiiInvoiceReader implements IInvoiceReader <InputStream>
       }
       case EN2026:
       {
-        final CrossIndustryInvoiceType aCii = new CIID25ACrossIndustryInvoiceTypeMarshaller ().read (aDoc);
+        final CrossIndustryInvoiceType aCii = AbstractCiiInvoiceReader.unmarshal (new CIID25ACrossIndustryInvoiceTypeMarshaller (), aDoc, aErrors);
         if (aCii == null)
         {
           aErrors.add (SingleError.builderError ().errorText ("Source could not be parsed as CII D25A").build ());

@@ -18,6 +18,7 @@ package com.helger.phlox.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
@@ -41,6 +42,24 @@ public final class PhloxFormatOptionsTest
     assertNull (aOpts.getAmountFractionDigits ());
     assertEquals (PhloxFormatOptions.DEFAULT_PERCENT_FRACTION_DIGITS, aOpts.getPercentFractionDigits ());
     assertEquals (PhloxFormatOptions.DEFAULT_NEGATIVE_STYLE, aOpts.getNegativeStyle ());
+  }
+
+  @Test
+  public void testClone ()
+  {
+    final PhloxFormatOptions aOpts = new PhloxFormatOptions ().setDateStyle (FormatStyle.LONG)
+                                                              .setAmountFractionDigits (Integer.valueOf (3))
+                                                              .setPercentFractionDigits (4)
+                                                              .setNegativeStyle (ENegativeStyle.PARENTHESES);
+    final PhloxFormatOptions aClone = aOpts.getClone ();
+    assertNotSame (aOpts, aClone);
+    assertEquals (FormatStyle.LONG, aClone.getDateStyle ());
+    assertEquals (Integer.valueOf (3), aClone.getAmountFractionDigits ());
+    assertEquals (4, aClone.getPercentFractionDigits ());
+    assertEquals (ENegativeStyle.PARENTHESES, aClone.getNegativeStyle ());
+
+    aClone.setPercentFractionDigits (1);
+    assertEquals (4, aOpts.getPercentFractionDigits ());
   }
 
   @Test

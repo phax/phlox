@@ -241,7 +241,8 @@ public abstract class AbstractRenderContext <IMPLTYPE extends AbstractRenderCont
 
   /**
    * Copy all base fields from another context into this one. Used by subclass static factories
-   * (e.g. {@code PdfRenderContext.copyFrom(...)}) to share settings across formats.
+   * (e.g. {@code PdfRenderContext.copyFrom(...)}) to share settings across formats. The format
+   * options are copied by value, so changing them here does not change the source.
    *
    * @param aSource
    *        The source context to copy from.
@@ -251,7 +252,7 @@ public abstract class AbstractRenderContext <IMPLTYPE extends AbstractRenderCont
   public IMPLTYPE copyBaseFieldsFrom (@NonNull final AbstractRenderContext <?> aSource)
   {
     m_aLocale = aSource.m_aLocale;
-    m_aFormatOptions = aSource.m_aFormatOptions;
+    m_aFormatOptions = aSource.m_aFormatOptions.getClone ();
     m_aLogo = aSource.m_aLogo;
     m_aLabelResolver = aSource.m_aLabelResolver;
     m_bAnnotateBtIDs = aSource.m_bAnnotateBtIDs;

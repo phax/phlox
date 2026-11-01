@@ -22,9 +22,11 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.annotation.style.VisibleForTesting;
 import com.helger.base.string.StringReplace;
 import com.helger.codelists.unit.UnitCodes;
 import com.helger.collection.commons.CommonsHashMap;
@@ -33,6 +35,7 @@ import com.helger.en16931.basics.codelist.EEN16931AllowanceReasonCode;
 import com.helger.en16931.basics.codelist.EEN16931ChargeReasonCode;
 import com.helger.en16931.basics.codelist.EEN16931CountryCode;
 import com.helger.en16931.basics.codelist.EEN16931CurrencyCode;
+import com.helger.en16931.basics.codelist.EEN16931DueDateTypeCode;
 import com.helger.en16931.basics.codelist.EEN16931EASCode;
 import com.helger.en16931.basics.codelist.EEN16931ICDCode;
 import com.helger.en16931.basics.codelist.EEN16931InvoiceTypeCode;
@@ -42,12 +45,13 @@ import com.helger.en16931.basics.codelist.EEN16931ReferenceQualifierCode;
 import com.helger.en16931.basics.codelist.EEN16931TaxCategoryCode;
 import com.helger.en16931.basics.codelist.EEN16931TextSubjectCode;
 import com.helger.en16931.basics.codelist.EEN16931VATEXCode;
+import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.text.display.IHasDisplayText;
 
 /**
  * Default {@link IPhloxLabelResolver}. The labels of the BG/BT and the section titles come from the
- * {@link ResourceBundle} {@code phlox-labels} of the {@code phlox-api} classpath. The names of the
- * values of a code list come from the code lists themselves: the enums of {@code en16931-basics}
+ * {@link ResourceBundle} {@code phlox-labels} of the {@code phlox-api} classpath, and a key that a
+ * language does not have falls back to English. The names of the values of a code list come from the code lists themselves: the enums of {@code en16931-basics}
  * and the unit codes of {@code ph-codelists-unit}. They know the languages that exist for their
  * list and fall back to English, so the translations are maintained once for all projects. A code
  * that is in none of the lists is shown as the code itself.
@@ -95,6 +99,44 @@ public final class DefaultPhloxLabelResolver implements IPhloxLabelResolver
     }
   }
 
+  /**
+   * Check if the labels exist in the language of a locale. Any other locale falls back to English.
+   *
+   * @param aLocale
+   *        The locale to check. Never {@code null}.
+   * @return {@code true} if phlox has labels in that language.
+   */
+  public static boolean isSupportedLocale (@NonNull final Locale aLocale)
+  {
+    final ResourceBundle.Control aControl = ResourceBundle.Control.getNoFallbackControl (ResourceBundle.Control.FORMAT_PROPERTIES);
+    try
+    {
+      ResourceBundle.getBundle (BUNDLE_LABELS, aLocale, aControl);
+      return true;
+    }
+    catch (final MissingResourceException ex)
+    {
+      return false;
+    }
+  }
+
+  /**
+   * Find the entry of BT-8. The code list of the standard is UNTDID 2005 and the UBL binding uses
+   * it; the CII binding uses codes of UNTDID 2475. Both have the same three meanings.
+   */
+  @Nullable
+  private static IHasDisplayText _findVatPointDateCode (@NonNull final String sCode)
+  {
+    EEN16931DueDateTypeCode eCode = EEN16931DueDateTypeCode.getFromUBLCodeOrNull (sCode);
+    if (eCode == null)
+      eCode = EEN16931DueDateTypeCode.getFromCIICodeOrNull (sCode);
+    if (eCode == null)
+      return null;
+    // The list has English names only
+    final String sName = eCode.getUBLDisplayName ();
+    return aLocale -> sName;
+  }
+
   static
   {
     CODE_LISTS.put ("allowancereason", EEN16931AllowanceReasonCode::getFromIDOrNull);
@@ -110,22 +152,39 @@ public final class DefaultPhloxLabelResolver implements IPhloxLabelResolver
     CODE_LISTS.put ("referencequalifier", EEN16931ReferenceQualifierCode::getFromIDOrNull);
     CODE_LISTS.put ("unit", UnitCodes::getFromIDOrNull);
     CODE_LISTS.put ("vatcategory", EEN16931TaxCategoryCode::getFromIDOrNull);
+    CODE_LISTS.put ("vatpointdate", DefaultPhloxLabelResolver::_findVatPointDateCode);
     // The lookup of the VATEX codes ignores the case, like the EN 16931 Schematron rule BR-CL-22
     CODE_LISTS.put ("vatexemption", EEN16931VATEXCode::getFromIDOrNull);
+  }
+
+  /**
+   * Look up a key in the bundle of the locale, then in the English bundle.
+   *
+   * @param sBaseName
+   *        The base name of the resource bundle. Never <code>null</code>.
+   * @param sKey
+   *        The key. Never <code>null</code>.
+   * @param aLocale
+   *        The target locale. Never <code>null</code>.
+   * @return The label or the key itself if none of the two bundles has it.
+   */
+  @NonNull
+  @VisibleForTesting
+  static String getLabel (@NonNull final String sBaseName, @NonNull final String sKey, @NonNull final Locale aLocale)
+  {
+    final ResourceBundle aBundle = _getBundle (sBaseName, aLocale);
+    if (aBundle.containsKey (sKey))
+      return aBundle.getString (sKey);
+
+    LOGGER.warn ("No label for key '" + PhloxLogHelper.sanitise (sKey) + "' in locale '" + aLocale + "'");
+    final ResourceBundle aEnglish = _getBundle (sBaseName, Locale.ENGLISH);
+    return aEnglish.containsKey (sKey) ? aEnglish.getString (sKey) : sKey;
   }
 
   @NonNull
   public String getLabel (@NonNull final String sKey, @NonNull final Locale aLocale)
   {
-    try
-    {
-      return _getBundle (BUNDLE_LABELS, aLocale).getString (sKey);
-    }
-    catch (final MissingResourceException ex)
-    {
-      LOGGER.warn ("No label for key '" + sKey + "' in locale '" + aLocale + "'");
-      return sKey;
-    }
+    return getLabel (BUNDLE_LABELS, sKey, aLocale);
   }
 
   @NonNull
@@ -144,7 +203,11 @@ public final class DefaultPhloxLabelResolver implements IPhloxLabelResolver
         return ret;
     }
 
-    LOGGER.warn ("No label for code list key '" + sListKey + "." + sCode + "' in locale '" + aLocale + "'");
+    LOGGER.warn ("No label for code list key '" +
+                 PhloxLogHelper.sanitise (sListKey + "." + sCode) +
+                 "' in locale '" +
+                 aLocale +
+                 "'");
     return sCode;
   }
 }

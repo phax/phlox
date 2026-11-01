@@ -5,45 +5,51 @@ G p1 sc 0.00 0.00 0.00
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
 G p1 m 56.69 725.85
-G p1 l 281.16 725.85
+G p1 l 326.30 725.85
 G p1 S
-G p1 m 281.16 725.85
+G p1 m 326.30 725.85
 G p1 l 538.58 725.85
 G p1 S
 G p1 m 56.69 707.79
-G p1 l 281.16 707.79
+G p1 l 326.30 707.79
 G p1 S
-G p1 m 281.16 707.79
+G p1 m 326.30 707.79
 G p1 l 538.58 707.79
 G p1 S
 G p1 m 56.69 689.73
-G p1 l 281.16 689.73
+G p1 l 326.30 689.73
 G p1 S
-G p1 m 281.16 689.73
+G p1 m 326.30 689.73
 G p1 l 538.58 689.73
 G p1 S
 G p1 m 56.69 671.67
-G p1 l 281.16 671.67
+G p1 l 326.30 671.67
 G p1 S
-G p1 m 281.16 671.67
+G p1 m 326.30 671.67
 G p1 l 538.58 671.67
 G p1 S
 G p1 m 56.69 653.61
-G p1 l 281.16 653.61
+G p1 l 326.30 653.61
 G p1 S
-G p1 m 281.16 653.61
+G p1 m 326.30 653.61
 G p1 l 538.58 653.61
 G p1 S
 G p1 m 56.69 635.55
-G p1 l 281.16 635.55
+G p1 l 326.30 635.55
 G p1 S
-G p1 m 281.16 635.55
+G p1 m 326.30 635.55
 G p1 l 538.58 635.55
+G p1 S
+G p1 m 56.69 617.49
+G p1 l 326.30 617.49
+G p1 S
+G p1 m 326.30 617.49
+G p1 l 538.58 617.49
 G p1 S
 G p1 SC 0.14 0.36 0.39
 G p1 w 1.50
-G p1 m 56.69 626.55
-G p1 l 538.58 626.55
+G p1 m 56.69 608.49
+G p1 l 538.58 608.49
 G p1 S
 G p1 sc 0.40 0.44 0.52
 G p1 sc 0.00 0.00 0.00
@@ -52,8 +58,8 @@ G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.50 0.50 0.50
 G p1 w 2.00
-G p1 m 57.69 483.42
-G p1 l 57.69 467.86
+G p1 m 57.69 465.36
+G p1 l 57.69 449.80
 G p1 S
 G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
@@ -62,8 +68,8 @@ G p1 sc 0.40 0.44 0.52
 G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
 G p1 w 0.75
-G p1 m 56.69 455.48
-G p1 l 538.58 455.48
+G p1 m 56.69 437.42
+G p1 l 538.58 437.42
 G p1 S
 G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
@@ -448,17 +454,17 @@ G p3 m 474.78 528.59
 G p3 l 530.58 528.59
 G p3 S
 G p3 sc 0.14 0.36 0.39
-G p3 re 336.19 482.28 202.39 34.06
+G p3 re 336.19 481.94 202.39 34.40
 G p3 f
-G p3 m 344.19 490.53
-G p3 l 427.07 490.53
+G p3 m 344.19 490.19
+G p3 l 427.07 490.19
 G p3 S
 G p3 sc 1.00 1.00 1.00
-G p3 m 427.07 490.53
-G p3 l 530.58 490.53
+G p3 m 427.07 490.19
+G p3 l 530.58 490.19
 G p3 S
 G p3 sc 0.91 0.95 0.95
-G p3 re 56.69 369.17 481.89 105.11
+G p3 re 56.69 368.83 481.89 105.11
 G p3 f
 G p3 sc 0.40 0.44 0.52
 G p3 sc 0.00 0.00 0.00
@@ -473,62 +479,64 @@ G p3 sc 0.83 0.83 0.83
 T p1 56.7 66.8 8.0 Helvetica-Bold Rechnung
 T p1 56.7 92.2 18.0 Helvetica-Bold Snippet1
 T p1 59.7 112.8 10.0 Helvetica Rechnungsdatum
-T p1 284.2 112.8 10.0 Helvetica 13. November 2017
+T p1 329.3 112.8 10.0 Helvetica 13. November 2017
 T p1 59.7 130.8 10.0 Helvetica Fälligkeitsdatum
-T p1 284.2 130.8 10.0 Helvetica 1. Dezember 2017
+T p1 329.3 130.8 10.0 Helvetica 1. Dezember 2017
 T p1 59.7 148.9 10.0 Helvetica USt-Stichtag
-T p1 284.2 148.9 10.0 Helvetica 1. Dezember 2017
+T p1 329.3 148.9 10.0 Helvetica 1. Dezember 2017
 T p1 59.7 167.0 10.0 Helvetica Rechnungswährung
-T p1 284.2 167.0 10.0 Helvetica EUR
-T p1 59.7 185.0 10.0 Helvetica Käuferreferenz
-T p1 284.2 185.0 10.0 Helvetica 0150abc
-T p1 59.7 203.1 10.0 Helvetica Rechnungstyp
-T p1 284.2 203.1 10.0 Helvetica 380 — Handelsrechnung
-T p1 56.7 230.0 7.0 Helvetica-Bold Verkäufer
-T p1 56.7 247.1 11.0 Helvetica-Bold SupplierOfficialName Ltd
-T p1 56.7 260.9 8.0 Helvetica SupplierTradingName Ltd.
-T p1 56.7 276.5 10.0 Helvetica Main street 1
-T p1 56.7 288.0 10.0 Helvetica Postbox 123
-T p1 56.7 299.6 10.0 Helvetica GB 123 EW London
-T p1 56.7 311.2 10.0 Helvetica Vereinigtes Königreich
-T p1 56.7 325.0 8.0 Helvetica Kennung Verkäufer: 99887766
-T p1 56.7 334.8 8.0 Helvetica USt-IdNr. Verkäufer: GB1232434
-T p1 56.7 344.6 8.0 Helvetica Rechtliche Registrierungs-ID Verkäufer: GB983294
-T p1 56.7 354.5 8.0 Helvetica Elektronische Adresse Verkäufer: 0088:7300010000001
-T p1 64.7 370.0 10.0 Helvetica AdditionalLegalInformation
-T p1 297.6 230.0 7.0 Helvetica-Bold Käufer
-T p1 297.6 247.1 11.0 Helvetica-Bold Buyer Official Name
-T p1 297.6 260.9 8.0 Helvetica BuyerTradingName AS
-T p1 297.6 276.5 10.0 Helvetica Hovedgatan 32
-T p1 297.6 288.0 10.0 Helvetica Po box 878
-T p1 297.6 299.6 10.0 Helvetica 456 34 Stockholm, Södermalm
-T p1 297.6 311.2 10.0 Helvetica Schweden
-T p1 297.6 325.0 8.0 Helvetica Kennung Käufer: 0002:4598375937
-T p1 297.6 334.8 8.0 Helvetica USt-IdNr. Käufer: SE4598375937
-T p1 297.6 344.6 8.0 Helvetica Rechtliche Registrierungs-ID Käufer: 0183:39937423947
-T p1 297.6 354.5 8.0 Helvetica Elektronische Adresse Käufer: 0002:4598375937
-T p1 297.6 364.3 8.0 Helvetica Lisa Johnson · 23434234 · lj@buyer.se
-T p1 56.7 400.7 7.0 Helvetica-Bold Lieferung
-T p1 56.7 417.8 11.0 Helvetica-Bold Delivery party Name
-T p1 56.7 433.4 10.0 Helvetica Delivery street 2
-T p1 56.7 444.9 10.0 Helvetica Building 56
-T p1 56.7 456.5 10.0 Helvetica Gate 15
-T p1 56.7 468.0 10.0 Helvetica 21234 Stockholm, Södermalm
-T p1 56.7 479.6 10.0 Helvetica Schweden
-T p1 56.7 493.4 8.0 Helvetica Kennung Lieferort: 0088:7300010000001
-T p1 56.7 503.2 8.0 Helvetica Tatsächliches Lieferdatum: 1. November 2017
-T p1 56.7 528.8 8.0 Helvetica-Bold RECHNUNGSZEITRAUM
-T p1 56.7 543.3 10.0 Helvetica 1. Dezember 2017 — 31. Dezember 2017
-T p1 56.7 564.8 8.0 Helvetica-Bold REFERENZEN
-T p1 56.7 579.4 10.0 Helvetica •
-T p1 66.7 579.7 10.0 Helvetica-Bold Vertragsreferenz: framework no 1
-T p1 56.7 595.3 10.0 Helvetica •
-T p1 66.7 595.6 10.0 Helvetica-Bold Referenzobjekt-Kennung: ABT:DR35141
-T p1 56.7 611.2 10.0 Helvetica •
-T p1 66.7 611.5 10.0 Helvetica-Bold Buchungsreferenz Käufer: 4025:123:4343
-T p1 56.7 637.1 8.0 Helvetica-Bold ANMERKUNGEN
-T p1 56.7 651.6 10.0 Helvetica Please note we have a new phone number: 22 22 22 22
-T p1 56.7 673.1 8.0 Helvetica-Bold RECHNUNGSPOSITIONEN
+T p1 329.3 167.0 10.0 Helvetica EUR
+T p1 59.7 185.0 10.0 Helvetica USt-Verrechnungswährung
+T p1 329.3 185.0 10.0 Helvetica SEK
+T p1 59.7 203.1 10.0 Helvetica Käuferreferenz
+T p1 329.3 203.1 10.0 Helvetica 0150abc
+T p1 59.7 221.1 10.0 Helvetica Rechnungstyp
+T p1 329.3 221.1 10.0 Helvetica 380 — Handelsrechnung
+T p1 56.7 248.1 7.0 Helvetica-Bold Verkäufer
+T p1 56.7 265.2 11.0 Helvetica-Bold SupplierOfficialName Ltd
+T p1 56.7 279.0 8.0 Helvetica SupplierTradingName Ltd.
+T p1 56.7 294.5 10.0 Helvetica Main street 1
+T p1 56.7 306.1 10.0 Helvetica Postbox 123
+T p1 56.7 317.7 10.0 Helvetica GB 123 EW London
+T p1 56.7 329.2 10.0 Helvetica Vereinigtes Königreich
+T p1 56.7 343.1 8.0 Helvetica Kennung Verkäufer: 99887766
+T p1 56.7 352.9 8.0 Helvetica USt-IdNr. Verkäufer: GB1232434
+T p1 56.7 362.7 8.0 Helvetica Rechtliche Registrierungs-ID Verkäufer: GB983294
+T p1 56.7 372.5 8.0 Helvetica Elektronische Adresse Verkäufer: 0088:7300010000001
+T p1 64.7 388.1 10.0 Helvetica AdditionalLegalInformation
+T p1 297.6 248.1 7.0 Helvetica-Bold Käufer
+T p1 297.6 265.2 11.0 Helvetica-Bold Buyer Official Name
+T p1 297.6 279.0 8.0 Helvetica BuyerTradingName AS
+T p1 297.6 294.5 10.0 Helvetica Hovedgatan 32
+T p1 297.6 306.1 10.0 Helvetica Po box 878
+T p1 297.6 317.7 10.0 Helvetica 456 34 Stockholm, Södermalm
+T p1 297.6 329.2 10.0 Helvetica Schweden
+T p1 297.6 343.1 8.0 Helvetica Kennung Käufer: 0002:4598375937
+T p1 297.6 352.9 8.0 Helvetica USt-IdNr. Käufer: SE4598375937
+T p1 297.6 362.7 8.0 Helvetica Rechtliche Registrierungs-ID Käufer: 0183:39937423947
+T p1 297.6 372.5 8.0 Helvetica Elektronische Adresse Käufer: 0002:4598375937
+T p1 297.6 382.4 8.0 Helvetica Lisa Johnson · 23434234 · lj@buyer.se
+T p1 56.7 418.8 7.0 Helvetica-Bold Lieferung
+T p1 56.7 435.9 11.0 Helvetica-Bold Delivery party Name
+T p1 56.7 451.4 10.0 Helvetica Delivery street 2
+T p1 56.7 463.0 10.0 Helvetica Building 56
+T p1 56.7 474.5 10.0 Helvetica Gate 15
+T p1 56.7 486.1 10.0 Helvetica 21234 Stockholm, Södermalm
+T p1 56.7 497.7 10.0 Helvetica Schweden
+T p1 56.7 511.5 8.0 Helvetica Kennung Lieferort: 0088:7300010000001
+T p1 56.7 521.3 8.0 Helvetica Tatsächliches Lieferdatum: 1. November 2017
+T p1 56.7 546.8 8.0 Helvetica-Bold RECHNUNGSZEITRAUM
+T p1 56.7 561.4 10.0 Helvetica 1. Dezember 2017 — 31. Dezember 2017
+T p1 56.7 582.9 8.0 Helvetica-Bold REFERENZEN
+T p1 56.7 597.5 10.0 Helvetica •
+T p1 66.7 597.8 10.0 Helvetica-Bold Vertragsreferenz: framework no 1
+T p1 56.7 613.4 10.0 Helvetica •
+T p1 66.7 613.7 10.0 Helvetica-Bold Referenzobjekt-Kennung: ABT:DR35141
+T p1 56.7 629.3 10.0 Helvetica •
+T p1 66.7 629.6 10.0 Helvetica-Bold Buchungsreferenz Käufer: 4025:123:4343
+T p1 56.7 655.1 8.0 Helvetica-Bold ANMERKUNGEN
+T p1 56.7 669.7 10.0 Helvetica Please note we have a new phone number: 22 22 22 22
+T p1 56.7 691.2 8.0 Helvetica-Bold RECHNUNGSPOSITIONEN
 T p1 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
 T p2 60.5 68.6 7.0 Helvetica-Bold NR.
 T p2 79.5 68.6 7.0 Helvetica-Bold BESCHREIBUNG
@@ -688,20 +696,20 @@ T p3 480.3 280.4 10.0 Helvetica-Bold 7.125,00 €
 T p3 347.2 298.5 10.0 Helvetica Bereits bezahlter Betrag
 T p3 482.6 298.5 10.0 Helvetica -1.000,00 
 T p3 522.0 310.1 10.0 Helvetica €
-T p3 347.2 348.1 10.0 Helvetica Zahlbar
-T p3 480.3 348.1 10.0 Helvetica 6.125,00 €
-T p3 66.7 386.5 7.0 Helvetica-Bold Zahlung
-T p3 66.7 402.4 10.0 Helvetica-Bold Zahlungsart: Überweisung
-T p3 66.7 414.3 10.0 Helvetica Credit transfer
-T p3 66.7 426.2 10.0 Helvetica-Oblique Verwendungszweck: Snippet1
-T p3 66.7 439.2 7.0 Helvetica-Bold Überweisung
-T p3 66.7 454.7 10.0 Helvetica •
-T p3 76.7 454.7 10.0 Helvetica AccountName — IBAN32423940 (BIC BIC324098)
-T p3 56.7 494.2 8.0 Helvetica-Bold ZAHLUNGSBEDINGUNGEN
-T p3 56.7 508.8 10.0 Helvetica Payment within 10 days, 2% discount
-T p3 56.7 530.3 8.0 Helvetica-Bold UNTERSTÜTZENDE DOKUMENTE
-T p3 56.7 544.9 10.0 Helvetica •
-T p3 66.7 545.2 10.0 Helvetica-Bold ts12345 — Technical specification (www.techspec.no)
-T p3 56.7 561.9 7.0 Helvetica Spezifikationskennung: urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0 · Geschäftsprozesstyp:
-T p3 56.7 570.6 7.0 Helvetica urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
+T p3 347.2 348.5 10.0 Helvetica-Bold Zahlbar
+T p3 480.3 348.5 10.0 Helvetica-Bold 6.125,00 €
+T p3 66.7 386.9 7.0 Helvetica-Bold Zahlung
+T p3 66.7 402.8 10.0 Helvetica-Bold Zahlungsart: Überweisung
+T p3 66.7 414.7 10.0 Helvetica Credit transfer
+T p3 66.7 426.6 10.0 Helvetica-Oblique Verwendungszweck: Snippet1
+T p3 66.7 439.5 7.0 Helvetica-Bold Überweisung
+T p3 66.7 455.1 10.0 Helvetica •
+T p3 76.7 455.1 10.0 Helvetica AccountName — IBAN32423940 (BIC BIC324098)
+T p3 56.7 494.6 8.0 Helvetica-Bold ZAHLUNGSBEDINGUNGEN
+T p3 56.7 509.1 10.0 Helvetica Payment within 10 days, 2% discount
+T p3 56.7 530.7 8.0 Helvetica-Bold UNTERSTÜTZENDE DOKUMENTE
+T p3 56.7 545.2 10.0 Helvetica •
+T p3 66.7 545.6 10.0 Helvetica-Bold ts12345 — Technical specification (www.techspec.no)
+T p3 56.7 562.2 7.0 Helvetica Spezifikationskennung: urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0 · Geschäftsprozesstyp:
+T p3 56.7 570.9 7.0 Helvetica urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
 T p3 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox

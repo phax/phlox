@@ -24,9 +24,10 @@
 {{?BT-166}}| {{label:BT-166}} | {{BT-166}} |
 {{/BT-166}}{{?BT-9}}| {{label:BT-9}} | {{BT-9 | date:long}} |
 {{/BT-9}}{{?BT-7}}| {{label:BT-7}} | {{BT-7 | date:long}} |
-{{/BT-7}}{{?BT-8}}| {{label:BT-8}} | {{BT-8}} |
+{{/BT-7}}{{?BT-8}}| {{label:BT-8}} | {{BT-8 | code:vatpointdate}} |
 {{/BT-8}}{{?BT-5}}| {{label:BT-5}} | {{BT-5}} |
-{{/BT-5}}{{?BT-167}}| {{label:BT-167}} | {{BT-167}}{{?BT-167-2}} ({{BT-167-2}} -> {{BT-167-1}}){{/BT-167-2}} |
+{{/BT-5}}{{?BT-6}}| {{label:BT-6}} | {{BT-6}} |
+{{/BT-6}}{{?BT-167}}| {{label:BT-167}} | {{BT-167}}{{?BT-167-2}} ({{BT-167-2}} -> {{BT-167-1}}){{/BT-167-2}} |
 {{/BT-167}}{{?BT-10}}| {{label:BT-10}} | {{BT-10}} |
 {{/BT-10}}{{?BT-3}}| {{label:BT-3}} | {{BT-3}} — {{BT-3 | code:doctype}} |
 {{/BT-3}}
@@ -36,7 +37,7 @@
 
 {{group:head-logo}}
 
-![Logo](attachment:logo)
+![{{label:image.alt.logo}}](attachment:logo)
 
 {{end}}
 {{/logo}}
@@ -74,8 +75,8 @@
 {{/BG-4.BT-31}}{{?BG-4.BT-32}}{{label:BT-32}}: {{BG-4.BT-32}}{{?BG-4.BT-32-1}} ({{BG-4.BT-32-1}}){{/BG-4.BT-32-1}}
 {{/BG-4.BT-32}}{{?BG-4.BT-30}}{{label:BT-30}}: {{BG-4.BT-30}}
 {{/BG-4.BT-30}}{{?BG-4.BT-34}}{{label:BT-34}}: {{BG-4.BT-34}}
-{{/BG-4.BT-34}}{{?BG-4.BG-6.BT-41}}{{BG-4.BG-6.BT-41}}{{?BG-4.BG-6.BT-42}} · {{BG-4.BG-6.BT-42}}{{/BG-4.BG-6.BT-42}}{{?BG-4.BG-6.BT-43}} · [{{BG-4.BG-6.BT-43}}](mailto:{{BG-4.BG-6.BT-43}}){{/BG-4.BG-6.BT-43}}
-{{/BG-4.BG-6.BT-41}}
+{{/BG-4.BT-34}}{{#BG-4.BG-6}}{{?BT-41}}{{BT-41}}{{?BT-42}} · {{/BT-42}}{{^BT-42}}{{?BT-43}} · {{/BT-43}}{{/BT-42}}{{/BT-41}}{{?BT-42}}{{BT-42}}{{?BT-43}} · {{/BT-43}}{{/BT-42}}{{?BT-43}}[{{BT-43}}](mailto:{{BT-43}}){{/BT-43}}
+{{/BG-4.BG-6}}
 {{?BG-4.BT-33}}
 
 > {{BG-4.BT-33}}
@@ -108,8 +109,8 @@
 {{/BG-7.BT-46}}{{?BG-7.BT-48}}{{label:BT-48}}: {{BG-7.BT-48}}
 {{/BG-7.BT-48}}{{?BG-7.BT-47}}{{label:BT-47}}: {{BG-7.BT-47}}
 {{/BG-7.BT-47}}{{?BG-7.BT-49}}{{label:BT-49}}: {{BG-7.BT-49}}
-{{/BG-7.BT-49}}{{?BG-7.BG-9.BT-56}}{{BG-7.BG-9.BT-56}}{{?BG-7.BG-9.BT-57}} · {{BG-7.BG-9.BT-57}}{{/BG-7.BG-9.BT-57}}{{?BG-7.BG-9.BT-58}} · [{{BG-7.BG-9.BT-58}}](mailto:{{BG-7.BG-9.BT-58}}){{/BG-7.BG-9.BT-58}}
-{{/BG-7.BG-9.BT-56}}
+{{/BG-7.BT-49}}{{#BG-7.BG-9}}{{?BT-56}}{{BT-56}}{{?BT-57}} · {{/BT-57}}{{^BT-57}}{{?BT-58}} · {{/BT-58}}{{/BT-57}}{{/BT-56}}{{?BT-57}}{{BT-57}}{{?BT-58}} · {{/BT-58}}{{/BT-57}}{{?BT-58}}[{{BT-58}}](mailto:{{BT-58}}){{/BT-58}}
+{{/BG-7.BG-9}}
 
 {{end}}
 {{end}}
@@ -272,7 +273,7 @@
 
 | {{label:section.lines.column.number}} | {{label:section.lines.column.description}} | {{label:section.lines.column.quantity}} | {{label:section.lines.column.unitprice}} | {{label:section.lines.column.vat}} | {{label:section.lines.column.linetotal}} |
 |---:|---|---:|---:|---:|---:|
-{{#BG-25}}| {{BT-126}} | **{{BG-31.BT-153}}**{{?BG-31.BT-154}}<br>{{BG-31.BT-154}}{{/BG-31.BT-154}}{{?BG-31.BT-155}}<br>*{{label:BT-155}}: {{BG-31.BT-155}}*{{/BG-31.BT-155}}{{?BG-31.BT-156}}<br>*{{label:BT-156}}: {{BG-31.BT-156}}*{{/BG-31.BT-156}}{{?BG-31.BT-157}}<br>*{{label:BT-157}}: {{BG-31.BT-157}}*{{/BG-31.BT-157}}{{?BG-31.BT-158}}<br>*{{label:BT-158}}: {{BG-31.BT-158}}*{{/BG-31.BT-158}}{{?BG-31.BT-159}}<br>*{{label:BT-159}}: {{BG-31.BT-159 | code:country}}*{{/BG-31.BT-159}}{{#BG-31.BG-32}}<br>*{{BT-160}}{{?BT-211}} ({{BT-211}}){{/BT-211}}: {{BT-161}}{{?BT-212}} {{BT-212}}{{/BT-212}}*{{/BG-31.BG-32}} | {{BT-129}} {{BT-130 | code:unit}} | {{BG-29.BT-146 | amount}}{{?BG-29.BT-148}}<br>*{{label:BT-148}}: {{BG-29.BT-148 | amount}}*{{/BG-29.BT-148}}{{?BG-29.BT-147}}<br>*{{label:BT-147}}: {{BG-29.BT-147 | amount}}*{{/BG-29.BT-147}}{{?BG-29.BT-149-if-not-one}}<br>*{{label:BT-149}}: {{BG-29.BT-149-if-not-one}} {{BG-29.BT-150 | code:unit}}*{{/BG-29.BT-149-if-not-one}} | {{BG-30.BT-151 | code:vatcategory}} {{BG-30.BT-152 | percent}} | {{BT-131 | amount}} |
+{{#BG-25}}| {{BT-126}} | **{{BG-31.BT-153}}**{{?BG-31.BT-154}}<br>{{BG-31.BT-154}}{{/BG-31.BT-154}}{{?BG-31.BT-155}}<br>*{{label:BT-155}}: {{BG-31.BT-155}}*{{/BG-31.BT-155}}{{?BG-31.BT-156}}<br>*{{label:BT-156}}: {{BG-31.BT-156}}*{{/BG-31.BT-156}}{{?BG-31.BT-157}}<br>*{{label:BT-157}}: {{BG-31.BT-157}}*{{/BG-31.BT-157}}{{?BG-31.BT-158}}<br>*{{label:BT-158}}: {{BG-31.BT-158}}{{?BG-31.BT-158-2}} ({{label:BT-158-2}}: {{BG-31.BT-158-2}}){{/BG-31.BT-158-2}}*{{/BG-31.BT-158}}{{?BG-31.BT-159}}<br>*{{label:BT-159}}: {{BG-31.BT-159 | code:country}}*{{/BG-31.BT-159}}{{#BG-31.BG-32}}<br>*{{BT-160}}{{?BT-211}} ({{BT-211}}){{/BT-211}}: {{BT-161}}{{?BT-212}} {{BT-212}}{{/BT-212}}*{{/BG-31.BG-32}} | {{BT-129}} {{BT-130 | code:unit}} | {{BG-29.BT-146 | amount}}{{?BG-29.BT-148}}<br>*{{label:BT-148}}: {{BG-29.BT-148 | amount}}*{{/BG-29.BT-148}}{{?BG-29.BT-147}}<br>*{{label:BT-147}}: {{BG-29.BT-147 | amount}}*{{/BG-29.BT-147}}{{?BG-29.BT-149-if-not-one}}<br>*{{label:BT-149}}: {{BG-29.BT-149-if-not-one}} {{BG-29.BT-150 | code:unit}}*{{/BG-29.BT-149-if-not-one}} | {{BG-30.BT-151 | code:vatcategory}} {{BG-30.BT-152 | percent}} | {{BT-131 | amount}} |
 {{/BG-25}}
 
 {{?line_allowances_present}}
@@ -513,7 +514,7 @@
 {{label:BG-17}}
 
 {{#BG-16.BG-17}}
-- {{?BT-85}}{{BT-85}} — {{/BT-85}}`{{BT-84}}`{{?BT-86}} (BIC {{BT-86}}){{/BT-86}}
+- {{?BT-85}}{{BT-85}} — {{/BT-85}}{{BT-84 | codespan}}{{?BT-86}} (BIC {{BT-86}}){{/BT-86}}
 {{/BG-16.BG-17}}
 {{/BG-16.BG-17}}
 
@@ -534,9 +535,9 @@
 
 {{label:BG-19}}
 
-{{?BG-16.BG-19.BT-89}}- {{label:BT-89}}: `{{BG-16.BG-19.BT-89}}`
+{{?BG-16.BG-19.BT-89}}- {{label:BT-89}}: {{BG-16.BG-19.BT-89 | codespan}}
 {{/BG-16.BG-19.BT-89}}{{?BG-16.BG-19.BT-90}}- {{label:BT-90}}: {{BG-16.BG-19.BT-90}}
-{{/BG-16.BG-19.BT-90}}{{?BG-16.BG-19.BT-91}}- {{label:BT-91}}: `{{BG-16.BG-19.BT-91}}`
+{{/BG-16.BG-19.BT-90}}{{?BG-16.BG-19.BT-91}}- {{label:BT-91}}: {{BG-16.BG-19.BT-91 | codespan}}
 {{/BG-16.BG-19.BT-91}}{{?BG-16.BG-19.BT-215}}- {{label:BT-215}}: {{BG-16.BG-19.BT-215}}
 {{/BG-16.BG-19.BT-215}}{{?BG-16.BG-19.BT-216}}- {{label:BT-216}}: {{BG-16.BG-19.BT-216}}
 {{/BG-16.BG-19.BT-216}}

@@ -31,9 +31,9 @@ import com.samskivert.mustache.Template;
 
 /**
  * Locale-baked, JMustache-compiled template — the artifact produced by stages 0 and 0a of the
- * pipeline (see {@code wiki/Template-Processing.md} § Pipeline overview). One
+ * pipeline (see the wiki page Template-Processing, section "Pipeline overview"). One
  * {@link PhloxLocalizedTemplate} is reusable across many invoices that share the same
- * {@code (template, locale, label-resolver)} key.
+ * {@code (template, locale, label-resolver, annotation)} key.
  * <p>
  * Immutable after construction and safe to share across threads. Held by {@link PhloxTemplate}
  * inside a ph-cache instance; callers who want explicit control can obtain a localized variant via
@@ -58,7 +58,7 @@ public final class PhloxLocalizedTemplate
   }
 
   /**
-   * Get the locale-baked source — the {@code .ptpl} text after stage 0. Kept for diagnostics /.
+   * Get the locale-baked source — the {@code .ptpl} text after stage 0.
    *
    * @return The locale-baked source — the {@code .ptpl} text after stage 0. Kept for diagnostics /
    *         snapshot tests; never the runtime render path.

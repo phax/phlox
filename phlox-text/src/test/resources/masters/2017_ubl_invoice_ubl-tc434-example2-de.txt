@@ -5,7 +5,7 @@ TOSL108
 
 Rechnungsdatum     30. Juni 2013
 Fälligkeitsdatum   20. Juli 2013
-USt-Stichtagscode  3
+USt-Stichtagscode  Invoice document issue date time
 Rechnungswährung   NOK
 Rechnungstyp       380 — Handelsrechnung
 

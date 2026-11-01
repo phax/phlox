@@ -60,16 +60,21 @@ import com.samskivert.mustache.Template;
  * {@link #fromFile(File)}, {@link #getDefault()}); each instance holds the raw {@code .ptpl} source
  * plus a shared commonmark-java {@link Parser}.
  * <p>
- * Every factory checks at load time whether the template shows all BTs of the model. What happens
- * if it does not is defined by {@link EPhloxTemplateCoverageMode}; the factories without a mode use
+ * Every factory rejects a template with an unknown placeholder or modifier and checks whether the
+ * template shows all BTs of the model. What happens if it does not is defined by
+ * {@link EPhloxTemplateCoverageMode}; the factories without a mode use
  * {@link #DEFAULT_COVERAGE_MODE}.
  * <p>
  * The locale-dependent work (label substitution + JMustache compile) is deferred to
- * {@link #localize(Locale, IPhloxLabelResolver)}, which is backed by a ph-cache keyed by
- * {@code (locale, resolver identity)}. The cache makes repeat renders in the same locale a single
- * map lookup — see {@code wiki/Template-Processing.md} § Threading and caching.
+ * {@link #localize(Locale, IPhloxLabelResolver, boolean)}, which is backed by a ph-cache keyed by
+ * {@code (locale, resolver identity, annotation)}. The cache makes repeat renders in the same
+ * locale a single map lookup — see the wiki page Template-Processing, section "Threading and
+ * caching".
  * <p>
- * Instances are immutable after construction and safe to use concurrently from many threads.
+ * Instances are immutable after construction and safe to use concurrently from many threads. Create
+ * a template once and reuse it: each instance has its own cache, and ph-cache registers the
+ * statistics of that cache in a static manager that keeps them for the lifetime of the JVM. A
+ * server that creates a template per request therefore slowly leaks memory.
  *
  * @author Philip Helger
  */
@@ -78,7 +83,8 @@ public final class PhloxTemplate implements IPhloxTemplate
   /**
    * Cache key for the localize step. Locale uses value equality (so {@code Locale.GERMAN} and
    * {@code new Locale("de")} hit the same entry); the resolver uses reference identity, so callers
-   * must reuse the same resolver instance to hit the cache. The default resolver
+   * must reuse the same resolver instance to hit the cache. The annotation of the labels is part of
+   * the key, because the labels are baked into the localized template. The default resolver
    * ({@link com.helger.phlox.api.i18n.DefaultPhloxLabelResolver#INSTANCE}) is process-wide, so
    * default usage naturally hits.
    */
@@ -86,11 +92,15 @@ public final class PhloxTemplate implements IPhloxTemplate
   {
     private final Locale m_aLocale;
     private final IPhloxLabelResolver m_aResolver;
+    private final boolean m_bAnnotateBtIDs;
 
-    CacheKey (@NonNull final Locale aLocale, @NonNull final IPhloxLabelResolver aResolver)
+    CacheKey (@NonNull final Locale aLocale,
+              @NonNull final IPhloxLabelResolver aResolver,
+              final boolean bAnnotateBtIDs)
     {
       m_aLocale = aLocale;
       m_aResolver = aResolver;
+      m_bAnnotateBtIDs = bAnnotateBtIDs;
     }
 
     @NonNull
@@ -105,6 +115,11 @@ public final class PhloxTemplate implements IPhloxTemplate
       return m_aResolver;
     }
 
+    boolean annotateBtIDs ()
+    {
+      return m_bAnnotateBtIDs;
+    }
+
     @Override
     public boolean equals (final Object o)
     {
@@ -115,7 +130,9 @@ public final class PhloxTemplate implements IPhloxTemplate
       final CacheKey rhs = (CacheKey) o;
       // Locale uses value equality; resolver is compared by identity on purpose so that
       // callers swapping in a fresh resolver instance get a fresh cache entry.
-      return EqualsHelper.equals (m_aLocale, rhs.m_aLocale) && m_aResolver == rhs.m_aResolver;
+      return EqualsHelper.equals (m_aLocale, rhs.m_aLocale) &&
+             m_aResolver == rhs.m_aResolver &&
+             m_bAnnotateBtIDs == rhs.m_bAnnotateBtIDs;
     }
 
     @Override
@@ -123,13 +140,17 @@ public final class PhloxTemplate implements IPhloxTemplate
     {
       return new HashCodeGenerator (this).append (m_aLocale)
                                          .append (System.identityHashCode (m_aResolver))
+                                         .append (m_bAnnotateBtIDs)
                                          .getHashCode ();
     }
 
     @Override
     public String toString ()
     {
-      return new ToStringGenerator (null).append ("Locale", m_aLocale).append ("Resolver", m_aResolver).getToString ();
+      return new ToStringGenerator (null).append ("Locale", m_aLocale)
+                                         .append ("Resolver", m_aResolver)
+                                         .append ("AnnotateBtIDs", m_bAnnotateBtIDs)
+                                         .getToString ();
     }
   }
 
@@ -161,7 +182,10 @@ public final class PhloxTemplate implements IPhloxTemplate
   @NonNull
   private PhloxLocalizedTemplate _buildLocalized (@NonNull final CacheKey aKey)
   {
-    final String sBaked = PhloxInvoiceMustacheContext.preprocess (m_sSource, aKey.locale (), aKey.resolver ());
+    final String sBaked = PhloxInvoiceMustacheContext.preprocess (m_sSource,
+                                                                  aKey.locale (),
+                                                                  aKey.resolver (),
+                                                                  aKey.annotateBtIDs ());
     final Template aTemplate;
     try
     {
@@ -176,7 +200,7 @@ public final class PhloxTemplate implements IPhloxTemplate
     }
     catch (final MustacheException ex)
     {
-      throw new PhloxTemplateException (EStage.SUBSTITUTE, null, "JMustache compile failed: " + ex.getMessage (), ex);
+      throw new PhloxTemplateException (EStage.LOAD, null, "JMustache compile failed: " + ex.getMessage (), ex);
     }
     return new PhloxLocalizedTemplate (sBaked, aTemplate, m_aCMParser);
   }
@@ -187,6 +211,7 @@ public final class PhloxTemplate implements IPhloxTemplate
   {
     m_sSource = sSource;
     m_sDisplayName = sDisplayName;
+    PhloxInvoiceMustacheContext.checkTags (sSource);
     m_aMissingBTs = PhloxTemplateCoverage.getMissingBTs (sSource);
     m_aCMParser = Parser.builder ().extensions (COMMONMARK_EXTENSIONS).build ();
     m_aLocalizeCache = ProviderCache.<CacheKey, PhloxLocalizedTemplate> builder ()
@@ -203,9 +228,11 @@ public final class PhloxTemplate implements IPhloxTemplate
    * {@link #DEFAULT_COVERAGE_MODE}.
    *
    * @param sSource
-   *        Raw template text. Must be valid {@code .ptpl} per the grammar in
-   *        {@code wiki/Template-Language.md}.
+   *        Raw template text. Must be valid {@code .ptpl} per the grammar on the wiki page
+   *        Template-Language.
    * @return A fresh {@link PhloxTemplate} ready to be localized.
+   * @throws PhloxTemplateException
+   *         when the template has an unknown placeholder or modifier.
    */
   @NonNull
   public static PhloxTemplate fromString (@NonNull final String sSource)
@@ -217,13 +244,14 @@ public final class PhloxTemplate implements IPhloxTemplate
    * Build a template from a raw {@code .ptpl} source string.
    *
    * @param sSource
-   *        Raw template text. Must be valid {@code .ptpl} per the grammar in
-   *        {@code wiki/Template-Language.md}.
+   *        Raw template text. Must be valid {@code .ptpl} per the grammar on the wiki page
+   *        Template-Language.
    * @param eCoverageMode
    *        What to do if the template does not show all BTs.
    * @return A fresh {@link PhloxTemplate} ready to be localized.
    * @throws PhloxTemplateException
-   *         when the mode is {@link EPhloxTemplateCoverageMode#REJECT} and BTs are missing.
+   *         when the template has an unknown placeholder or modifier, or when the mode is
+   *         {@link EPhloxTemplateCoverageMode#REJECT} and BTs are missing.
    */
   @NonNull
   public static PhloxTemplate fromString (@NonNull final String sSource,
@@ -240,7 +268,8 @@ public final class PhloxTemplate implements IPhloxTemplate
    *        Classpath path, relative to the classloader's root.
    * @return A fresh {@link PhloxTemplate} built from the resource contents.
    * @throws PhloxTemplateException
-   *         when the resource does not exist or cannot be read.
+   *         when the resource does not exist or cannot be read, or the template has an unknown
+   *         placeholder or modifier.
    */
   @NonNull
   public static PhloxTemplate fromClasspath (@NonNull final String sPath)
@@ -258,7 +287,8 @@ public final class PhloxTemplate implements IPhloxTemplate
    *        What to do if the template does not show all BTs.
    * @return A fresh {@link PhloxTemplate} built from the resource contents.
    * @throws PhloxTemplateException
-   *         when the resource does not exist or cannot be read, or when the mode is
+   *         when the resource does not exist or cannot be read, when the template has an unknown
+   *         placeholder or modifier, or when the mode is
    *         {@link EPhloxTemplateCoverageMode#REJECT} and BTs are missing.
    */
   @NonNull
@@ -267,17 +297,17 @@ public final class PhloxTemplate implements IPhloxTemplate
   {
     final ClassPathResource aRes = new ClassPathResource (sPath);
     if (!aRes.exists ())
-      throw new PhloxTemplateException (EStage.SUBSTITUTE, sPath, "classpath template not found: " + sPath);
+      throw new PhloxTemplateException (EStage.LOAD, sPath, "classpath template not found: " + sPath);
 
     try (final InputStream aIS = aRes.getInputStream ())
     {
       if (aIS == null)
-        throw new PhloxTemplateException (EStage.SUBSTITUTE, sPath, "classpath template has no stream: " + sPath);
+        throw new PhloxTemplateException (EStage.LOAD, sPath, "classpath template has no stream: " + sPath);
       return new PhloxTemplate (new String (aIS.readAllBytes (), StandardCharsets.UTF_8), sPath, eCoverageMode);
     }
     catch (final IOException ex)
     {
-      throw new PhloxTemplateException (EStage.SUBSTITUTE, sPath, "failed to read classpath template", ex);
+      throw new PhloxTemplateException (EStage.LOAD, sPath, "failed to read classpath template", ex);
     }
   }
 
@@ -289,7 +319,8 @@ public final class PhloxTemplate implements IPhloxTemplate
    *        Source file; must exist and be readable.
    * @return A fresh {@link PhloxTemplate} built from the file's contents.
    * @throws PhloxTemplateException
-   *         when the file cannot be opened or read.
+   *         when the file cannot be opened or read, or the template has an unknown placeholder or
+   *         modifier.
    */
   @NonNull
   public static PhloxTemplate fromFile (@NonNull final File aFile)
@@ -306,7 +337,8 @@ public final class PhloxTemplate implements IPhloxTemplate
    *        What to do if the template does not show all BTs.
    * @return A fresh {@link PhloxTemplate} built from the file's contents.
    * @throws PhloxTemplateException
-   *         when the file cannot be opened or read, or when the mode is
+   *         when the file cannot be opened or read, when the template has an unknown placeholder or
+   *         modifier, or when the mode is
    *         {@link EPhloxTemplateCoverageMode#REJECT} and BTs are missing.
    */
   @NonNull
@@ -319,12 +351,12 @@ public final class PhloxTemplate implements IPhloxTemplate
     }
     catch (final IOException ex)
     {
-      throw new PhloxTemplateException (EStage.SUBSTITUTE, aFile.getPath (), "failed to read template file", ex);
+      throw new PhloxTemplateException (EStage.LOAD, aFile.getPath (), "failed to read template file", ex);
     }
   }
 
   /**
-   * Get the default template shipped in this module — a single language-independent.
+   * Get the default template shipped in this module.
    *
    * @return The default template shipped in this module — a single language-independent
    *         {@code default.ptpl}. The writers use it when the render context has no template.
@@ -351,9 +383,28 @@ public final class PhloxTemplate implements IPhloxTemplate
 
   /**
    * Return a locale-baked, JMustache-compiled variant of this template. Subsequent calls with the
-   * same {@code (locale, resolver instance)} pair return the cached instance. The cache keys the
-   * resolver by reference identity, so callers using a custom resolver must reuse the same instance
-   * across calls to hit the cache.
+   * same arguments return the cached instance. The cache keys the resolver by reference identity,
+   * so callers using a custom resolver must reuse the same instance across calls to hit the cache.
+   *
+   * @param aLocale
+   *        Locale used for label lookups in stage 0.
+   * @param aResolver
+   *        Label resolver used for label lookups in stage 0.
+   * @param bAnnotateBtIDs
+   *        {@code true} to append the identifier to the labels of the BTs and BGs in stage 0.
+   * @return The cached or freshly built {@link PhloxLocalizedTemplate} for the given arguments.
+   */
+  @NonNull
+  public PhloxLocalizedTemplate localize (@NonNull final Locale aLocale,
+                                          @NonNull final IPhloxLabelResolver aResolver,
+                                          final boolean bAnnotateBtIDs)
+  {
+    return m_aLocalizeCache.getFromCache (new CacheKey (aLocale, aResolver, bAnnotateBtIDs));
+  }
+
+  /**
+   * Convenience overload — calls {@link #localize(Locale, IPhloxLabelResolver, boolean)} without
+   * annotating the labels.
    *
    * @param aLocale
    *        Locale used for label lookups in stage 0.
@@ -364,21 +415,21 @@ public final class PhloxTemplate implements IPhloxTemplate
   @NonNull
   public PhloxLocalizedTemplate localize (@NonNull final Locale aLocale, @NonNull final IPhloxLabelResolver aResolver)
   {
-    return m_aLocalizeCache.getFromCache (new CacheKey (aLocale, aResolver));
+    return localize (aLocale, aResolver, false);
   }
 
   /**
-   * Convenience overload — calls {@link #localize(Locale, IPhloxLabelResolver)} with the locale and
-   * label resolver pulled from {@code aCtx}.
+   * Convenience overload — calls {@link #localize(Locale, IPhloxLabelResolver, boolean)} with the
+   * locale, the label resolver and the annotation pulled from {@code aCtx}.
    *
    * @param aCtx
-   *        Render context whose locale and label resolver drive the localization.
+   *        Render context whose locale, label resolver and annotation drive the localization.
    * @return The cached or freshly built {@link PhloxLocalizedTemplate}.
    */
   @NonNull
   public PhloxLocalizedTemplate localize (@NonNull final AbstractRenderContext <?> aCtx)
   {
-    return localize (aCtx.getLocale (), aCtx.getLabelResolver ());
+    return localize (aCtx.getLocale (), aCtx.getLabelResolver (), aCtx.isAnnotateBtIDs ());
   }
 
   /**
@@ -389,7 +440,7 @@ public final class PhloxTemplate implements IPhloxTemplate
    *        Source invoice to substitute into the template.
    * @param aCtx
    *        Render context driving locale, label resolver, format options and image resolution.
-   * @return The post-processed {@link PhloxTemplateAst} ready for an emi1tter.
+   * @return The post-processed {@link PhloxTemplateAst} ready for an emitter.
    * @throws PhloxTemplateException
    *         when any stage fails (compile, execute, parse, post-pass).
    */

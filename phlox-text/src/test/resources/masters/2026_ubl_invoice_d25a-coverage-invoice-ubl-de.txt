@@ -4,7 +4,7 @@ D25A-COV-INV-1
 ==============
 
 Rechnungsdatum     15. Januar 2026
-USt-Stichtagscode  3
+USt-Stichtagscode  Invoice document issue date time
 Rechnungswährung   EUR
 Rechnungstyp       380 — Handelsrechnung
 

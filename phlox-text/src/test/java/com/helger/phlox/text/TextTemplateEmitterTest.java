@@ -244,4 +244,31 @@ public final class TextTemplateEmitterTest
     assertEquals ("[Code]", _render ("![Code](qrcode:abc \"height-px:80\")"));
     assertEquals ("Before", _render ("Before\n\n![Gone](qrcode:)"));
   }
+
+  @Test
+  public void testControlCharactersAreRemoved ()
+  {
+    final String sBad = "\u0007\u0008\u001B[31m\u007F\u0085\u009B\u202A\u202B\u202C\u202D\u202E\u2066\u2067\u2068\u2069";
+    final String sClean = "[31m";
+    assertEquals ("a" + sClean + "b", _render ("a" + sBad + "b"));
+    assertEquals ("a" + sClean + "b", _render ("`a" + sBad + "b`"));
+    assertEquals ("a" + sClean + "b", _render ("```\na" + sBad + "b\n```"));
+    assertEquals ("a" + sClean + "b", _render ("    a" + sBad + "b"));
+    assertEquals ("x <s a='" + sClean + "'> y", _render ("x <s a='" + sBad + "'> y"));
+    assertEquals ("<div>" + sClean + "</div>", _render ("<div>" + sBad + "</div>"));
+    assertEquals ("t (https://a.example/" + sClean + ")", _render ("[t](<https://a.example/" + sBad + ">)"));
+    // The width of a column does not count them
+    assertEquals ("A   B\n--  -\nab  c", _render ("| A | B |\n|---|---|\n| a" + sBad.substring (0, 2) + "b | c |"));
+    assertEquals ("*** " + sClean + " ***\n\nx",
+                  _render ("x", new TextRenderContext ().setUserWatermark (WatermarkSpec.text (sBad))));
+  }
+
+  @Test
+  public void testLineFeedTabAndMarksStay ()
+  {
+    assertEquals ("a\tb", _render ("```\na\tb\n```"));
+    assertEquals ("a\nb", _render ("```\na\nb\n```"));
+    assertEquals ("a\u200Eb\u200Fc", _render ("a\u200Eb\u200Fc"));
+    assertEquals ("\u05D0\u05D1 \u00E4", _render ("\u05D0\u05D1 \u00E4"));
+  }
 }

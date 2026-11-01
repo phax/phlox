@@ -23,6 +23,7 @@ Belgien
 USt-IdNr. Verkäufer: BE0000000196
 Rechtliche Registrierungs-ID Verkäufer: 0000000196
 Elektronische Adresse Verkäufer: 0201:0000000196
+john.doole@mysuppliercompany.be
 
 Käufer
 
@@ -37,6 +38,7 @@ Belgien
 USt-IdNr. Käufer: BE0000000295
 Rechtliche Registrierungs-ID Käufer: 0000000295
 Elektronische Adresse Käufer: 0201:0000000295
+pete.smith@mycustomercompany.be
 
 --------------------------------------------------------------------------------
 

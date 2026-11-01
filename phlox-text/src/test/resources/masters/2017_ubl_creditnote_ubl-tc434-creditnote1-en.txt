@@ -23,6 +23,7 @@ Belgium
 Seller VAT identifier: BE0000000196
 Seller legal registration identifier: 0000000196
 Seller electronic address: 0201:0000000196
+john.doole@mysuppliercompany.be
 
 Buyer
 
@@ -37,6 +38,7 @@ Belgium
 Buyer VAT identifier: BE0000000295
 Buyer legal registration identifier: 0000000295
 Buyer electronic address: 0201:0000000295
+pete.smith@mycustomercompany.be
 
 --------------------------------------------------------------------------------
 

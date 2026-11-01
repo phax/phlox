@@ -17,20 +17,14 @@
 package com.helger.phlox.cii;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.helger.diagnostics.error.SingleError;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931Edition;
+import com.helger.en16931.basics.codelist.EN16931CodeLists;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxBuyer;
@@ -62,6 +56,7 @@ import com.helger.phlox.api.model.PhloxSeller;
 import com.helger.phlox.api.model.PhloxSellerTaxRepresentative;
 import com.helger.phlox.api.model.PhloxSupportingDocument;
 import com.helger.phlox.api.model.PhloxVatBreakdown;
+import com.helger.phlox.api.read.PhloxReaderHelper;
 
 import un.unece.uncefact.data.standard.crossindustryinvoice._100.CrossIndustryInvoiceType;
 import un.unece.uncefact.data.standard.qualifieddatatype._100.AllowanceChargeReasonCodeType;
@@ -120,80 +115,6 @@ import un.unece.uncefact.data.standard.unqualifieddatatype._100.TextType;
  */
 final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
 {
-  private static final Logger LOGGER = LoggerFactory.getLogger (CiiD16BInvoiceReader.class);
-
-  // EN 16931 credit-note type codes per Validation Artifacts 1.3.x. Mirrors the set used by
-  // en16931-cii2ubl. A non-credit-note code is treated as INVOICE only if it is also present
-  // in INVOICE_TYPE_CODES; unknown codes are reported as a warning.
-  private static final Set <String> CREDIT_NOTE_TYPE_CODES = Set.of ("81",
-                                                                     "83",
-                                                                     "261",
-                                                                     "262",
-                                                                     "296",
-                                                                     "308",
-                                                                     "381",
-                                                                     "396",
-                                                                     "420",
-                                                                     "458",
-                                                                     "532");
-
-  // EN 16931 invoice type codes per Validation Artifacts 1.3.15 (sync with en16931-cii2ubl).
-  private static final Set <String> INVOICE_TYPE_CODES = Set.of ("71",
-                                                                 "80",
-                                                                 "81",
-                                                                 "82",
-                                                                 "84",
-                                                                 "102",
-                                                                 "130",
-                                                                 "202",
-                                                                 "203",
-                                                                 "204",
-                                                                 "211",
-                                                                 "218",
-                                                                 "219",
-                                                                 "295",
-                                                                 "325",
-                                                                 "326",
-                                                                 "331",
-                                                                 "380",
-                                                                 "382",
-                                                                 "383",
-                                                                 "384",
-                                                                 "385",
-                                                                 "386",
-                                                                 "387",
-                                                                 "388",
-                                                                 "389",
-                                                                 "390",
-                                                                 "393",
-                                                                 "394",
-                                                                 "395",
-                                                                 "456",
-                                                                 "457",
-                                                                 "471",
-                                                                 "472",
-                                                                 "473",
-                                                                 "500",
-                                                                 "501",
-                                                                 "502",
-                                                                 "503",
-                                                                 "527",
-                                                                 "553",
-                                                                 "575",
-                                                                 "623",
-                                                                 "633",
-                                                                 "751",
-                                                                 "780",
-                                                                 "817",
-                                                                 "870",
-                                                                 "875",
-                                                                 "876",
-                                                                 "877",
-                                                                 "935");
-
-  // Default date format code per EN 16931 (UN/EDIFACT DTM 2379).
-  private static final String DEFAULT_DATE_FORMAT_CODE = "102";
-
   CiiD16BInvoiceReader ()
   {}
 
@@ -241,7 +162,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
       if (aNet.getBasisQuantity () != null)
       {
         aOut.setBaseQuantity (aNet.getBasisQuantity ().getValue ());
-        aOut.setBaseQuantityUnit (aNet.getBasisQuantity ().getUnitCode ());
+        aOut.setBaseQuantityUnit (str (aNet.getBasisQuantity ().getUnitCode ()));
       }
     }
     final TradePriceType aGross = aLTA.getGrossPriceProductTradePrice ();
@@ -309,6 +230,18 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
   }
 
   @Nullable
+  private static PhloxIdentifier _identifier (@Nullable final IDType aID)
+  {
+    return aID == null ? null : new PhloxIdentifier (_idValue (aID), str (aID.getSchemeID ()));
+  }
+
+  private static void _addIdentifier (@Nullable final IDType aID, @NonNull final List <PhloxIdentifier> aTarget)
+  {
+    if (_idValue (aID) != null)
+      aTarget.add (_identifier (aID));
+  }
+
+  @Nullable
   private static String _text (@Nullable final TextType aT)
   {
     return aT == null ? null : str (aT.getValue ());
@@ -319,15 +252,15 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
   {
     final PhloxPayee aOut = new PhloxPayee ();
     aOut.setName (_text (aTP.getName ()));
-    if (!aTP.getID ().isEmpty ())
-      aOut.setIdentifier (new PhloxIdentifier (aTP.getID ().get (0).getValue (), aTP.getID ().get (0).getSchemeID ()));
+    // BT-60 — like the deliver to location, only ram:GlobalID has a scheme identifier
+    if (!aTP.getGlobalID ().isEmpty ())
+      aOut.setIdentifier (_identifier (aTP.getGlobalID ().get (0)));
     else
-      if (!aTP.getGlobalID ().isEmpty ())
-        aOut.setIdentifier (new PhloxIdentifier (aTP.getGlobalID ().get (0).getValue (),
-                                                 aTP.getGlobalID ().get (0).getSchemeID ()));
+      if (!aTP.getID ().isEmpty ())
+        aOut.setIdentifier (_identifier (aTP.getID ().get (0)));
     final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
     if (aLO != null && aLO.getID () != null)
-      aOut.setLegalRegistration (new PhloxIdentifier (aLO.getID ().getValue (), aLO.getID ().getSchemeID ()));
+      aOut.setLegalRegistration (_identifier (aLO.getID ()));
     return aOut;
   }
 
@@ -341,7 +274,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     aOut.setCity (_text (aAddr.getCityName ()));
     aOut.setPostCode (_codeValue (aAddr.getPostcodeCode ()));
     if (aAddr.getCountryID () != null)
-      aOut.setCountryCode (aAddr.getCountryID ().getValue ());
+      aOut.setCountryCode (str (aAddr.getCountryID ().getValue ()));
     if (!aAddr.getCountrySubDivisionName ().isEmpty ())
       aOut.setCountrySubdivision (_text (aAddr.getCountrySubDivisionName ().get (0)));
     return aOut;
@@ -353,8 +286,8 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     final PhloxSellerTaxRepresentative aOut = new PhloxSellerTaxRepresentative ();
     aOut.setName (_text (aTP.getName ()));
     for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
-      if (aTR.getID () != null && "VA".equalsIgnoreCase (aTR.getID ().getSchemeID ()))
-        aOut.setVatIdentifier (aTR.getID ().getValue ());
+      if (aTR.getID () != null && "VA".equalsIgnoreCase (str (aTR.getID ().getSchemeID ())))
+        aOut.setVatIdentifier (str (aTR.getID ().getValue ()));
     if (aTP.getPostalTradeAddress () != null)
       aOut.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
     return aOut;
@@ -364,12 +297,14 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
   private static PhloxContact _readContact (@NonNull final TradeContactType aTC)
   {
     final PhloxContact aOut = new PhloxContact ();
-    aOut.setName (_text (aTC.getPersonName ()));
+    // BT-41 / BT-56 — PersonName or DepartmentName
+    final String sPersonName = _text (aTC.getPersonName ());
+    aOut.setName (sPersonName != null ? sPersonName : _text (aTC.getDepartmentName ()));
     if (aTC.getTelephoneUniversalCommunication () != null)
       aOut.setTelephone (_text (aTC.getTelephoneUniversalCommunication ().getCompleteNumber ()));
     if (aTC.getEmailURIUniversalCommunication () != null &&
         aTC.getEmailURIUniversalCommunication ().getURIID () != null)
-      aOut.setEmail (aTC.getEmailURIUniversalCommunication ().getURIID ().getValue ());
+      aOut.setEmail (str (aTC.getEmailURIUniversalCommunication ().getURIID ().getValue ()));
     return aOut;
   }
 
@@ -381,23 +316,23 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     {
       aSeller.setTradingName (_text (aLO.getTradingBusinessName ())); // BT-28
       if (aLO.getID () != null)
-        aSeller.setLegalRegistration (new PhloxIdentifier (aLO.getID ().getValue (), aLO.getID ().getSchemeID ()));
+        aSeller.setLegalRegistration (_identifier (aLO.getID ()));
     }
     // BT-29
     for (final IDType aID : aTP.getID ())
-      aSeller.identifiers ().add (new PhloxIdentifier (aID.getValue (), aID.getSchemeID ()));
+      _addIdentifier (aID, aSeller.identifiers ());
     for (final IDType aID : aTP.getGlobalID ())
-      aSeller.identifiers ().add (new PhloxIdentifier (aID.getValue (), aID.getSchemeID ()));
+      _addIdentifier (aID, aSeller.identifiers ());
     // BT-31 / BT-32 via SpecifiedTaxRegistration schemeID
     for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
       if (aTR.getID () != null)
       {
-        final String sScheme = aTR.getID ().getSchemeID ();
+        final String sScheme = str (aTR.getID ().getSchemeID ());
         if ("VA".equalsIgnoreCase (sScheme))
-          aSeller.setVatIdentifier (aTR.getID ().getValue ());
+          aSeller.setVatIdentifier (str (aTR.getID ().getValue ()));
         else
-          if ("FC".equalsIgnoreCase (sScheme))
-            aSeller.setTaxRegistration (aTR.getID ().getValue ());
+          if ("FC".equalsIgnoreCase (sScheme) && aSeller.getTaxRegistration () == null)
+            aSeller.setTaxRegistration (_idValue (aTR.getID ()));
       }
     // BT-33
     if (!aTP.getDescription ().isEmpty ())
@@ -406,8 +341,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     for (final UniversalCommunicationType aUC : aTP.getURIUniversalCommunication ())
       if (aUC.getURIID () != null)
       {
-        aSeller.setElectronicAddress (new PhloxIdentifier (aUC.getURIID ().getValue (),
-                                                           aUC.getURIID ().getSchemeID ()));
+        aSeller.setElectronicAddress (_identifier (aUC.getURIID ()));
         break;
       }
     // BG-5
@@ -426,19 +360,19 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     {
       aBuyer.setTradingName (_text (aLO.getTradingBusinessName ()));
       if (aLO.getID () != null)
-        aBuyer.setLegalRegistration (new PhloxIdentifier (aLO.getID ().getValue (), aLO.getID ().getSchemeID ()));
+        aBuyer.setLegalRegistration (_identifier (aLO.getID ()));
     }
     for (final IDType aID : aTP.getID ())
-      aBuyer.identifiers ().add (new PhloxIdentifier (aID.getValue (), aID.getSchemeID ()));
+      _addIdentifier (aID, aBuyer.identifiers ());
     for (final IDType aID : aTP.getGlobalID ())
-      aBuyer.identifiers ().add (new PhloxIdentifier (aID.getValue (), aID.getSchemeID ()));
+      _addIdentifier (aID, aBuyer.identifiers ());
     for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
-      if (aTR.getID () != null && "VA".equalsIgnoreCase (aTR.getID ().getSchemeID ()))
-        aBuyer.setVatIdentifier (aTR.getID ().getValue ());
+      if (aTR.getID () != null && "VA".equalsIgnoreCase (str (aTR.getID ().getSchemeID ())))
+        aBuyer.setVatIdentifier (str (aTR.getID ().getValue ()));
     for (final UniversalCommunicationType aUC : aTP.getURIUniversalCommunication ())
       if (aUC.getURIID () != null)
       {
-        aBuyer.setElectronicAddress (new PhloxIdentifier (aUC.getURIID ().getValue (), aUC.getURIID ().getSchemeID ()));
+        aBuyer.setElectronicAddress (_identifier (aUC.getURIID ()));
         break;
       }
     if (aTP.getPostalTradeAddress () != null)
@@ -499,13 +433,13 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     if (!aRD.getName ().isEmpty ())
       aOut.setDescription (_text (aRD.getName ().get (0)));
     if (aRD.getURIID () != null)
-      aOut.setExternalLocation (aRD.getURIID ().getValue ());
+      aOut.setExternalLocation (str (aRD.getURIID ().getValue ()));
     if (!aRD.getAttachmentBinaryObject ().isEmpty ())
     {
       final PhloxAttachment aBin = new PhloxAttachment ();
       aBin.setBinary (aRD.getAttachmentBinaryObject ().get (0).getValue ());
-      aBin.setMimeCode (aRD.getAttachmentBinaryObject ().get (0).getMimeCode ());
-      aBin.setFilename (aRD.getAttachmentBinaryObject ().get (0).getFilename ());
+      aBin.setMimeCode (str (aRD.getAttachmentBinaryObject ().get (0).getMimeCode ()));
+      aBin.setFilename (str (aRD.getAttachmentBinaryObject ().get (0).getFilename ()));
       aOut.setAttachment (aBin);
     }
     return aOut;
@@ -519,20 +453,20 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
       aOut.setName (_text (aP.getName ().get (0)));
     aOut.setDescription (_text (aP.getDescription ()));
     if (aP.getSellerAssignedID () != null)
-      aOut.setSellerItemID (aP.getSellerAssignedID ().getValue ());
+      aOut.setSellerItemID (str (aP.getSellerAssignedID ().getValue ()));
     if (aP.getBuyerAssignedID () != null)
-      aOut.setBuyerItemID (aP.getBuyerAssignedID ().getValue ());
+      aOut.setBuyerItemID (str (aP.getBuyerAssignedID ().getValue ()));
     if (aP.getGlobalID () != null)
-      aOut.setStandardItemID (new PhloxIdentifier (aP.getGlobalID ().getValue (), aP.getGlobalID ().getSchemeID ()));
+      aOut.setStandardItemID (_identifier (aP.getGlobalID ()));
     if (aP.getOriginTradeCountry () != null && aP.getOriginTradeCountry ().getID () != null)
-      aOut.setCountryOfOrigin (aP.getOriginTradeCountry ().getID ().getValue ());
+      aOut.setCountryOfOrigin (str (aP.getOriginTradeCountry ().getID ().getValue ()));
     for (final ProductClassificationType aPC : aP.getDesignatedProductClassification ())
-      if (aPC.getClassCode () != null)
+      if (aPC.getClassCode () != null && str (aPC.getClassCode ().getValue ()) != null)
       {
         final PhloxItemClassification aIC = new PhloxItemClassification ();
-        aIC.setCode (aPC.getClassCode ().getValue ());
-        aIC.setListID (aPC.getClassCode ().getListID ());
-        aIC.setListVersionID (aPC.getClassCode ().getListVersionID ());
+        aIC.setCode (str (aPC.getClassCode ().getValue ()));
+        aIC.setListID (str (aPC.getClassCode ().getListID ()));
+        aIC.setListVersionID (str (aPC.getClassCode ().getListVersionID ()));
         aOut.classifications ().add (aIC);
       }
     for (final ProductCharacteristicType aPC : aP.getApplicableProductCharacteristic ())
@@ -546,85 +480,32 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
   }
 
   /**
-   * Map UN/EDIFACT DTM 2379 format codes to {@link DateTimeFormatter} patterns. Mirrors
-   * {@code AbstractCIIToUBLConverter.getDatePattern(...)} in en16931-cii2ubl. Returns {@code null}
-   * for unsupported codes.
-   */
-  @Nullable
-  private static String _patternFor (@NonNull final String sFormatCode)
-  {
-    return switch (sFormatCode)
-    {
-      case "2" -> "ddMMuu";
-      case "3" -> "MMdduu";
-      case "4" -> "ddMMuuuu";
-      case "101" -> "uuMMdd";
-      case "102" -> "uuuuMMdd";
-      case "103" -> "YYwwee";
-      case "105" -> "uuDDD";
-      default -> null;
-    };
-  }
-
-  /**
-   * Parse a date string according to its UN/EDIFACT 2379 format code. Returns {@code null} when the
-   * value or pattern cannot be resolved; logs a warning for unsupported format codes so operators
-   * notice the data loss.
-   */
-  @Nullable
-  private static LocalDate _parseFormatted (@Nullable final String sValue, @Nullable final String sFormat)
-  {
-    if (sValue == null || sValue.isEmpty ())
-      return null;
-
-    final String sFormatOrDefault = sFormat == null || sFormat.isEmpty () ? DEFAULT_DATE_FORMAT_CODE : sFormat;
-    final String sPattern = _patternFor (sFormatOrDefault);
-    if (sPattern == null)
-    {
-      LOGGER.warn ("Unsupported CII date format code '" + sFormatOrDefault + "' on value '" + sValue + "'");
-      return null;
-    }
-    try
-    {
-      return LocalDate.parse (sValue, DateTimeFormatter.ofPattern (sPattern, Locale.ROOT));
-    }
-    catch (final DateTimeParseException ex)
-    {
-      LOGGER.warn ("Could not parse CII date '" + sValue + "' with pattern '" + sPattern + "'");
-      return null;
-    }
-  }
-
-  /**
-   * Returns the {@code getValue()} of any CII code type. CII has dozens of qualified subtypes
-   * (TaxCategoryCodeType, DocumentCodeType, ...), none of which share a Java base. Reflection keeps
-   * the helper code small and avoids declaring 20 overloads.
-   */
-  /**
    * Parse a CII {@code DateTimeType} into a {@link LocalDate}. Reads the {@code @format} attribute
    * on the inner {@code DateTimeString} and dispatches to the right pattern; missing format
    * defaults to "102" (yyyyMMdd) per EN 16931.
    */
   @Nullable
-  private static LocalDate _dateTime (@Nullable final DateTimeType aDT)
+  private static LocalDate _dateTime (@Nullable final DateTimeType aDT, @NonNull final ErrorList aErrors)
   {
     if (aDT == null || aDT.getDateTimeString () == null)
       return null;
 
-    return _parseFormatted (aDT.getDateTimeString ().getValue (), aDT.getDateTimeString ().getFormat ());
+    return parseFormattedDate (aDT.getDateTimeString ().getValue (), aDT.getDateTimeString ().getFormat (), aErrors);
   }
 
   @NonNull
-  private static PhloxInvoicingPeriod _readPeriod (@NonNull final SpecifiedPeriodType aSP)
+  private static PhloxInvoicingPeriod _readPeriod (@NonNull final SpecifiedPeriodType aSP,
+                                                   @NonNull final ErrorList aErrors)
   {
     final PhloxInvoicingPeriod aOut = new PhloxInvoicingPeriod ();
-    aOut.setStartDate (_dateTime (aSP.getStartDateTime ()));
-    aOut.setEndDate (_dateTime (aSP.getEndDateTime ()));
+    aOut.setStartDate (_dateTime (aSP.getStartDateTime (), aErrors));
+    aOut.setEndDate (_dateTime (aSP.getEndDateTime (), aErrors));
     return aOut;
   }
 
   @NonNull
-  private static PhloxInvoiceLine _readLine (@NonNull final SupplyChainTradeLineItemType aLine)
+  private static PhloxInvoiceLine _readLine (@NonNull final SupplyChainTradeLineItemType aLine,
+                                             @NonNull final ErrorList aErrors)
   {
     final PhloxInvoiceLine aOut = new PhloxInvoiceLine ();
     final DocumentLineDocumentType aLD = aLine.getAssociatedDocumentLineDocument ();
@@ -643,14 +524,14 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
       aOut.setPrice (_readPrice (aLTA));
       if (aLTA.getBuyerOrderReferencedDocument () != null &&
           aLTA.getBuyerOrderReferencedDocument ().getLineID () != null)
-        aOut.setPurchaseOrderLineRef (aLTA.getBuyerOrderReferencedDocument ().getLineID ().getValue ());
+        aOut.setPurchaseOrderLineRef (str (aLTA.getBuyerOrderReferencedDocument ().getLineID ().getValue ()));
     }
     final LineTradeDeliveryType aLTD = aLine.getSpecifiedLineTradeDelivery ();
     if (aLTD != null && aLTD.getBilledQuantity () != null)
     {
       final QuantityType aQ = aLTD.getBilledQuantity ();
       aOut.setQuantity (aQ.getValue ());
-      aOut.setQuantityUnit (aQ.getUnitCode ());
+      aOut.setQuantityUnit (str (aQ.getUnitCode ()));
     }
     final LineTradeSettlementType aLTS = aLine.getSpecifiedLineTradeSettlement ();
     if (aLTS != null)
@@ -666,7 +547,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
         aOut.setAccountingCost (_idValue (aLTS.getReceivableSpecifiedTradeAccountingAccount ().get (0).getID ()));
       if (aLTS.getBillingSpecifiedPeriod () != null)
       {
-        final PhloxInvoicingPeriod aP = _readPeriod (aLTS.getBillingSpecifiedPeriod ());
+        final PhloxInvoicingPeriod aP = _readPeriod (aLTS.getBillingSpecifiedPeriod (), aErrors);
         if (!aP.isEmpty ())
           aOut.setPeriod (aP);
       }
@@ -675,7 +556,8 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
         if ("130".equals (_codeValue (aRD.getTypeCode ())) && aRD.getIssuerAssignedID () != null)
         {
           final String sScheme = _codeValue (aRD.getReferenceTypeCode ());
-          aOut.setObjectIdentifier (new PhloxIdentifier (aRD.getIssuerAssignedID ().getValue (), sScheme));
+          aOut.setObjectIdentifier (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()), sScheme));
+          break;
         }
       // BG-30 — line VAT
       for (final TradeTaxType aTT : aLTS.getApplicableTradeTax ())
@@ -725,48 +607,28 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
    * used.
    */
   @Nullable
-  private static LocalDate _dateOnly (@Nullable final DateType aDT)
+  private static LocalDate _dateOnly (@Nullable final DateType aDT, @NonNull final ErrorList aErrors)
   {
     if (aDT == null)
       return null;
 
     if (aDT.getDateString () != null)
-      return _parseFormatted (aDT.getDateString ().getValue (), aDT.getDateString ().getFormat ());
+      return parseFormattedDate (aDT.getDateString ().getValue (), aDT.getDateString ().getFormat (), aErrors);
     return aDT.getDateLocal ();
   }
 
   /**
    * Parse a CII {@code FormattedDateTimeType} (qualified namespace) into a {@link LocalDate}.
-   * Format codes follow the same UN/EDIFACT 2379 dispatch as {@link #_dateTime(DateTimeType)}.
+   * Format codes follow the same UN/EDIFACT 2379 dispatch as {@link #_dateTime(DateTimeType, ErrorList)}.
    */
   @Nullable
-  private static LocalDate _formattedDateTime (@Nullable final FormattedDateTimeType aFDT)
+  private static LocalDate _formattedDateTime (@Nullable final FormattedDateTimeType aFDT,
+                                               @NonNull final ErrorList aErrors)
   {
     if (aFDT == null || aFDT.getDateTimeString () == null)
       return null;
 
-    return _parseFormatted (aFDT.getDateTimeString ().getValue (), aFDT.getDateTimeString ().getFormat ());
-  }
-
-  /**
-   * Resolve the BT-3 type code into a document kind. Codes in {@link #CREDIT_NOTE_TYPE_CODES}
-   * become {@link EPhloxDocumentKind#CREDIT_NOTE}; codes in {@link #INVOICE_TYPE_CODES} become
-   * {@link EPhloxDocumentKind#INVOICE}; anything else defaults to {@code INVOICE} and adds a
-   * warning to the error list. Mirrors the validation behaviour of en16931-cii2ubl.
-   */
-  @NonNull
-  private static EPhloxDocumentKind _resolveKind (@Nullable final String sTypeCode, @NonNull final ErrorList aErrors)
-  {
-    if (sTypeCode == null || sTypeCode.isEmpty ())
-      return EPhloxDocumentKind.INVOICE;
-    if (CREDIT_NOTE_TYPE_CODES.contains (sTypeCode))
-      return EPhloxDocumentKind.CREDIT_NOTE;
-    if (INVOICE_TYPE_CODES.contains (sTypeCode))
-      return EPhloxDocumentKind.INVOICE;
-    aErrors.add (SingleError.builderWarn ()
-                            .errorText ("Unknown BT-3 invoice type code '" + sTypeCode + "' — defaulting to INVOICE")
-                            .build ());
-    return EPhloxDocumentKind.INVOICE;
+    return parseFormattedDate (aFDT.getDateTimeString ().getValue (), aFDT.getDateTimeString ().getFormat (), aErrors);
   }
 
   /**
@@ -792,106 +654,122 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     return aSB.length () == 0 ? null : aSB.toString ();
   }
 
+  private static void _readPaymentTerms (@NonNull final List <TradePaymentTermsType> aTerms,
+                                         @NonNull final PhloxInvoice aModel)
+  {
+    // BT-20 — one entry per ram:SpecifiedTradePaymentTerms, like the other readers
+    for (final TradePaymentTermsType aPT : aTerms)
+    {
+      final String sText = _joinTexts (aPT.getDescription ());
+      if (sText != null)
+        aModel.paymentTerms ().add (new PhloxPaymentTerms ().setText (sText));
+    }
+  }
+
   private static void _readPaymentInstructions (@NonNull final HeaderTradeSettlementType aHTS,
-                                                @NonNull final PhloxInvoice aModel)
+                                                @NonNull final PhloxInvoice aModel,
+                                                @NonNull final ErrorList aErrors)
   {
     final List <TradeSettlementPaymentMeansType> aMeans = aHTS.getSpecifiedTradeSettlementPaymentMeans ();
     final List <TradePaymentTermsType> aTerms = aHTS.getSpecifiedTradePaymentTerms ();
-    if (aMeans.isEmpty () && aTerms.isEmpty ())
+
+    // BT-20
+    _readPaymentTerms (aTerms, aModel);
+
+    // BT-9 — payment due date (in CII for both Invoice and Credit Note)
+    for (final TradePaymentTermsType aPT : aTerms)
+      if (aPT.getDueDateDateTime () != null)
+      {
+        aModel.setPaymentDueDate (_dateTime (aPT.getDueDateDateTime (), aErrors));
+        break;
+      }
+
+    if (aMeans.isEmpty () && aTerms.isEmpty () && aHTS.getPaymentReference ().isEmpty ())
       return;
 
     final PhloxPaymentInstructions aPI = new PhloxPaymentInstructions ();
+    // BT-83 — remittance information lives on the parent. Multiple references are joined
+    // with newlines so multi-part instructions (e.g. invoice number + PO reference) survive.
+    aPI.setRemittanceInformation (_joinTexts (aHTS.getPaymentReference ()));
     if (!aMeans.isEmpty ())
     {
       final TradeSettlementPaymentMeansType aM = aMeans.get (0);
       aPI.setPaymentMeansCode (_codeValue (aM.getTypeCode ()));
       if (!aM.getInformation ().isEmpty ())
         aPI.setPaymentMeansText (_text (aM.getInformation ().get (0)));
-      // BT-83 — remittance information lives on the parent. Multiple references are joined
-      // with newlines so multi-part instructions (e.g. invoice number + PO reference) survive.
-      aPI.setRemittanceInformation (_joinTexts (aHTS.getPaymentReference ()));
+    }
 
-      // BG-17 credit transfers across all payment means
-      for (final TradeSettlementPaymentMeansType aOne : aMeans)
-        if (aOne.getPayeePartyCreditorFinancialAccount () != null)
-        {
-          final CreditorFinancialAccountType aFA = aOne.getPayeePartyCreditorFinancialAccount ();
-          final PhloxCreditTransfer aCT = new PhloxCreditTransfer ();
-          aCT.setPaymentMeansCode (_codeValue (aOne.getTypeCode ()));
-          if (aFA.getIBANID () != null)
-            aCT.setAccountIdentifier (aFA.getIBANID ().getValue ());
-          else
-            if (aFA.getProprietaryID () != null)
-              aCT.setAccountIdentifier (aFA.getProprietaryID ().getValue ());
-          aCT.setAccountName (_text (aFA.getAccountName ()));
-          final CreditorFinancialInstitutionType aFI = aOne.getPayeeSpecifiedCreditorFinancialInstitution ();
-          if (aFI != null && aFI.getBICID () != null)
-            aCT.setServiceProviderID (aFI.getBICID ().getValue ());
+    // BG-17 / BG-18 may sit in any of the payment means, not only in the first one
+    boolean bDirectDebitMeans = false;
+    for (final TradeSettlementPaymentMeansType aOne : aMeans)
+    {
+      if (EN16931CodeLists.isPaymentMeansCodeDirectDebit (_codeValue (aOne.getTypeCode ())))
+        bDirectDebitMeans = true;
+
+      if (aOne.getPayeePartyCreditorFinancialAccount () != null)
+      {
+        final CreditorFinancialAccountType aFA = aOne.getPayeePartyCreditorFinancialAccount ();
+        final PhloxCreditTransfer aCT = new PhloxCreditTransfer ();
+        aCT.setPaymentMeansCode (_codeValue (aOne.getTypeCode ()));
+        // BT-84 — IBANID if applicable, ProprietaryID else
+        aCT.setAccountIdentifier (aFA.getIBANID () != null ? _idValue (aFA.getIBANID ())
+                                                           : _idValue (aFA.getProprietaryID ()));
+        aCT.setAccountName (_text (aFA.getAccountName ()));
+        final CreditorFinancialInstitutionType aFI = aOne.getPayeeSpecifiedCreditorFinancialInstitution ();
+        if (aFI != null)
+          aCT.setServiceProviderID (_idValue (aFI.getBICID ()));
+        if (!aCT.isEmpty ())
           aPI.creditTransfers ().add (aCT);
-        }
+      }
 
       // BG-18 — card
-      if (aM.getApplicableTradeSettlementFinancialCard () != null)
+      if (aPI.getPaymentCard () == null && aOne.getApplicableTradeSettlementFinancialCard () != null)
       {
         final PhloxPaymentCard aPC = new PhloxPaymentCard ();
-        aPC.setPan (_idValue (aM.getApplicableTradeSettlementFinancialCard ().getID ()));
-        aPC.setHolderName (_text (aM.getApplicableTradeSettlementFinancialCard ().getCardholderName ()));
+        aPC.setPan (_idValue (aOne.getApplicableTradeSettlementFinancialCard ().getID ()));
+        aPC.setHolderName (_text (aOne.getApplicableTradeSettlementFinancialCard ().getCardholderName ()));
         aPI.setPaymentCard (aPC);
       }
     }
 
-    // BG-19 + BT-89 + BT-91 from payment terms
-    boolean bHasDirectDebit = false;
+    // BG-19 + BT-89 .. BT-91. BT-89 is optional, so the direct debit is also recognised by the payer
+    // account or, for the creditor reference, by a direct debit payment means
+    final PhloxDirectDebit aDD = new PhloxDirectDebit ();
+    boolean bDirectDebit = false;
     for (final TradePaymentTermsType aPT : aTerms)
-      if (aPT.getDirectDebitMandateID () != null && !aPT.getDirectDebitMandateID ().isEmpty ())
+      if (!aPT.getDirectDebitMandateID ().isEmpty ())
       {
-        bHasDirectDebit = true;
-        final PhloxDirectDebit aDD = new PhloxDirectDebit ();
-        aDD.setMandateReferenceID (aPT.getDirectDebitMandateID ().get (0).getValue ());
-        // BT-91 from payer financial account
-        for (final TradeSettlementPaymentMeansType aM : aMeans)
-          if (aM.getPayerPartyDebtorFinancialAccount () != null)
-          {
-            final DebtorFinancialAccountType aFA = aM.getPayerPartyDebtorFinancialAccount ();
-            if (aFA.getIBANID () != null)
-              aDD.setDebitedAccountID (aFA.getIBANID ().getValue ());
-            break;
-          }
-        // BT-90 — creditor reference id
-        if (aHTS.getCreditorReferenceID () != null)
-          aDD.setBankAssignedCreditorID (aHTS.getCreditorReferenceID ().getValue ());
-        aPI.setDirectDebit (aDD);
+        aDD.setMandateReferenceID (_idValue (aPT.getDirectDebitMandateID ().get (0)));
+        bDirectDebit = true;
         break;
       }
-    if (!bHasDirectDebit && aHTS.getCreditorReferenceID () != null && aPI.getDirectDebit () == null)
+    // BT-91 from the payer financial account
+    for (final TradeSettlementPaymentMeansType aM : aMeans)
     {
-      // Some senders place creditor reference even without explicit mandate
-    }
-
-    // BT-9 — payment due date (in CII for both Invoice and Credit Note)
-    for (final TradePaymentTermsType aPT : aTerms)
-      if (aPT.getDueDateDateTime () != null)
+      final DebtorFinancialAccountType aFA = aM.getPayerPartyDebtorFinancialAccount ();
+      if (aFA != null)
       {
-        aModel.setPaymentDueDate (_dateTime (aPT.getDueDateDateTime ()));
+        // IBANID if applicable, ProprietaryID else
+        aDD.setDebitedAccountID (aFA.getIBANID () != null ? _idValue (aFA.getIBANID ())
+                                                          : _idValue (aFA.getProprietaryID ()));
+        bDirectDebit = true;
         break;
       }
-    // BT-20 — payment terms description
-    final StringBuilder aSb = new StringBuilder ();
-    for (final TradePaymentTermsType aPT : aTerms)
-      for (final TextType aT : aPT.getDescription ())
-      {
-        final String sV = _text (aT);
-        if (sV != null)
-        {
-          if (aSb.length () > 0)
-            aSb.append ('\n');
-          aSb.append (sV);
-        }
-      }
-    if (aSb.length () > 0)
-      aModel.paymentTerms ().add (new PhloxPaymentTerms ().setText (aSb.toString ()));
+    }
+    // BT-90 — creditor reference id
+    final String sCreditorID = _idValue (aHTS.getCreditorReferenceID ());
+    if (sCreditorID != null && (bDirectDebit || bDirectDebitMeans))
+    {
+      aDD.setBankAssignedCreditorID (sCreditorID);
+      bDirectDebit = true;
+    }
+    if (bDirectDebit)
+      aPI.setDirectDebit (aDD);
 
-    if (aPI.getPaymentMeansCode () != null || !aPI.creditTransfers ().isEmpty () || aPI.getDirectDebit () != null)
+    if (aPI.getPaymentMeansCode () != null ||
+        aPI.getRemittanceInformation () != null ||
+        !aPI.creditTransfers ().isEmpty () ||
+        aPI.getDirectDebit () != null)
       aModel.setPaymentInstructions (aPI);
   }
 
@@ -941,11 +819,11 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     if (aED != null)
     {
       aModel.setNumber (_idValue (aED.getID ()));
-      aModel.setIssueDate (_dateTime (aED.getIssueDateTime ()));
+      aModel.setIssueDate (_dateTime (aED.getIssueDateTime (), aErrors));
       // BT-3 — type code routing.
-      final String sTypeCode = aED.getTypeCodeValue ();
+      final String sTypeCode = str (aED.getTypeCodeValue ());
       aModel.setTypeCode (sTypeCode);
-      aModel.setKind (_resolveKind (sTypeCode, aErrors));
+      aModel.setKind (PhloxReaderHelper.getDocumentKind (sTypeCode, EPhloxDocumentKind.INVOICE, aErrors));
       // BG-1 — notes. Multiple Content lines per note are joined with newlines to preserve
       // every line; the EN 16931 model exposes a single BT-22 string per note.
       for (final NoteType aNote : aED.getIncludedNote ())
@@ -1003,11 +881,16 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
           if ("130".equals (sTypeCode))
           {
             final String sScheme = _codeValue (aRD.getReferenceTypeCode ());
-            aModel.setInvoicedObjectIdentifier (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()), sScheme));
+            if (_idValue (aRD.getIssuerAssignedID ()) != null)
+              aModel.setInvoicedObjectIdentifier (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()), sScheme));
           }
           else
-            if ("916".equals (sTypeCode) || sTypeCode == null)
-              aModel.supportingDocuments ().add (_readSupportingDocument (aRD));
+          {
+            // BG-24 — the binding has type code 916, UBL takes everything that is not BT-18
+            final PhloxSupportingDocument aDoc = _readSupportingDocument (aRD);
+            if (!aDoc.isEmpty ())
+              aModel.supportingDocuments ().add (aDoc);
+          }
       }
     }
 
@@ -1033,20 +916,20 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
           if (!aShipTo.getGlobalID ().isEmpty ())
           {
             final IDType aGID = aShipTo.getGlobalID ().get (0);
-            aDI.setLocationIdentifier (new PhloxIdentifier (aGID.getValue (), aGID.getSchemeID ()));
+            aDI.setLocationIdentifier (_identifier (aGID));
           }
           else
             if (!aShipTo.getID ().isEmpty ())
             {
               final IDType aID = aShipTo.getID ().get (0);
-              aDI.setLocationIdentifier (new PhloxIdentifier (aID.getValue (), aID.getSchemeID ()));
+              aDI.setLocationIdentifier (_identifier (aID));
             }
           if (aShipTo.getPostalTradeAddress () != null)
             aDI.setPostalAddress (_readAddress (aShipTo.getPostalTradeAddress ()));
         }
         final SupplyChainEventType aEvent = aHTD.getActualDeliverySupplyChainEvent ();
         if (aEvent != null)
-          aDI.setActualDeliveryDate (_dateTime (aEvent.getOccurrenceDateTime ()));
+          aDI.setActualDeliveryDate (_dateTime (aEvent.getOccurrenceDateTime (), aErrors));
         if (!aDI.isEmpty ())
           aModel.setDeliveryInformation (aDI);
       }
@@ -1057,17 +940,9 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
     {
       // BT-5 / BT-6
       if (aHTS.getInvoiceCurrencyCode () != null)
-        aModel.setCurrency (aHTS.getInvoiceCurrencyCode ().getValue ());
+        aModel.setCurrency (str (aHTS.getInvoiceCurrencyCode ().getValue ()));
       if (aHTS.getTaxCurrencyCode () != null)
-        aModel.setVatAccountingCurrency (aHTS.getTaxCurrencyCode ().getValue ());
-
-      // BT-83 — remittance information
-      if (!aHTS.getPaymentReference ().isEmpty ())
-        aModel.setBuyerAccountingReference (null); // BT-19 handled below
-      if (!aHTS.getPaymentReference ().isEmpty () && aModel.getPaymentInstructions () == null)
-      {
-        // Will set after PaymentInstructions populated
-      }
+        aModel.setVatAccountingCurrency (str (aHTS.getTaxCurrencyCode ().getValue ()));
 
       // BT-19 — buyer accounting reference
       final var aAcctList = aHTS.getReceivableSpecifiedTradeAccountingAccount ();
@@ -1084,7 +959,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
         final ReferencedDocumentType aRD = aHTS.getInvoiceReferencedDocument ();
         final PhloxPrecedingInvoiceRef aRef = new PhloxPrecedingInvoiceRef ();
         aRef.setNumber (_idValue (aRD.getIssuerAssignedID ()));
-        aRef.setIssueDate (_formattedDateTime (aRD.getFormattedIssueDateTime ()));
+        aRef.setIssueDate (_formattedDateTime (aRD.getFormattedIssueDateTime (), aErrors));
         if (aRef.getNumber () != null)
           aModel.precedingInvoiceRefs ().add (aRef);
       }
@@ -1092,7 +967,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
       // BG-14 — invoicing period
       if (aHTS.getBillingSpecifiedPeriod () != null)
       {
-        final PhloxInvoicingPeriod aP = _readPeriod (aHTS.getBillingSpecifiedPeriod ());
+        final PhloxInvoicingPeriod aP = _readPeriod (aHTS.getBillingSpecifiedPeriod (), aErrors);
         if (!aP.isEmpty ())
           aModel.setInvoicingPeriod (aP);
       }
@@ -1114,9 +989,9 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
 
         // BT-7 / BT-8 (carried on the first applicable trade tax)
         if (aModel.getVatPointDate () == null)
-          aModel.setVatPointDate (_dateOnly (aTT.getTaxPointDate ()));
+          aModel.setVatPointDate (_dateOnly (aTT.getTaxPointDate (), aErrors));
         if (aModel.getVatPointDateCode () == null)
-          aModel.setVatPointDateCode (_codeValue (aTT.getDueDateTypeCode ()));
+          aModel.setVatPointDateCode (EN16931CodeLists.mapDueDateTypeCodeCIIToUBL (_codeValue (aTT.getDueDateTypeCode ())));
       }
 
       // BG-20 + BG-21 — document-level allowances/charges
@@ -1129,7 +1004,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
       }
 
       // BG-16/17/18/19 + BT-9 + BT-20 — payment instructions and terms
-      _readPaymentInstructions (aHTS, aModel);
+      _readPaymentInstructions (aHTS, aModel, aErrors);
 
       // BG-22 — totals
       if (aHTS.getSpecifiedTradeSettlementHeaderMonetarySummation () != null)
@@ -1138,7 +1013,7 @@ final class CiiD16BInvoiceReader extends AbstractCiiInvoiceReader
 
     // BG-25 — lines
     for (final SupplyChainTradeLineItemType aLine : aSCTT.getIncludedSupplyChainTradeLineItem ())
-      aModel.lines ().add (_readLine (aLine));
+      aModel.lines ().add (_readLine (aLine, aErrors));
 
     return aModel;
   }

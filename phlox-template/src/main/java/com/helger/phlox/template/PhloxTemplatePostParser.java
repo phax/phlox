@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import org.commonmark.ext.gfm.tables.TableCell;
 import org.commonmark.ext.gfm.tables.TableRow;
 import org.commonmark.node.AbstractVisitor;
+import org.commonmark.node.Code;
 import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.node.Paragraph;
@@ -59,18 +60,22 @@ import com.helger.phlox.template.ast.PhloxPageBreakNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 
 /**
- * Walks the commonmark-java AST after parsing and performs the two phlox-specific transforms
- * described in {@code wiki/Template-Processing.md} § Stage 2:
+ * Walks the commonmark-java AST after parsing and performs the phlox-specific transforms described
+ * on the wiki page Template-Processing, section "Stage 2a":
  * <ol>
- * <li>Extracts {@code [[PHLOX:CLASS=name]]} sentinels from {@link Text} nodes and attaches the
+ * <li>Builds a {@link PhloxGroupNode} from the sentinels of {@code {{group:name}}},
+ * {@code {{row:name}}} and {@code {{end}}}.</li>
+ * <li>Extracts the sentinels of {@code {{class:name}}} from {@link Text} nodes and attaches the
  * class to the next sibling block via a {@code Map<Node, String>}.</li>
- * <li>Replaces {@code [[PHLOX:PAGEBREAK]]} sentinels with {@link PhloxPageBreakNode}.</li>
+ * <li>Replaces the sentinels of {@code {{pagebreak}}} with {@link PhloxPageBreakNode}.</li>
+ * <li>Drops all other sentinels with a warning.</li>
  * <li>Resolves {@link Image} {@code destination} URLs ({@code data:}, {@code attachment:logo},
  * {@code attachment:BG-24[i]}, {@code classpath:/…}, {@code qrcode:…}) into
  * {@link PhloxResolvedImage} entries.
  * Rejects {@code http:}, {@code https:}, {@code file:} schemes with
  * {@link PhloxTemplateException}.</li>
  * </ol>
+ * A sentinel only comes from a template, see {@link PhloxInvoiceMustacheContext#SENTINEL_MARKER}.
  *
  * @author Philip Helger
  */
@@ -82,12 +87,30 @@ public final class PhloxTemplatePostParser
   /** The height of a QR code without an explicit {@code height-px}. */
   public static final int DEFAULT_QRCODE_HEIGHT_PX = 120;
 
+  /**
+   * The maximum nesting of {@code {{group:name}}} and {@code {{row:name}}}. The layout effort of the
+   * PDF writer grows exponentially with the depth.
+   */
+  public static final int MAX_GROUP_DEPTH = 16;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PhloxTemplatePostParser.class);
 
-  private static final Pattern CLASS_SENTINEL = Pattern.compile ("\\[\\[PHLOX:CLASS=([^\\]]+)\\]\\]");
-  private static final Pattern GROUP_SENTINEL = Pattern.compile ("\\[\\[PHLOX:(GROUP|ROW)=([^\\]]+)\\]\\]");
+  private static final String MARKER = PhloxInvoiceMustacheContext.SENTINEL_CLASS_SUFFIX;
+  private static final Pattern CLASS_SENTINEL = Pattern.compile (PhloxInvoiceMustacheContext.SENTINEL_CLASS_PREFIX +
+                                                                 "([^" +
+                                                                 MARKER +
+                                                                 "]+)" +
+                                                                 MARKER);
+  private static final Pattern GROUP_SENTINEL = Pattern.compile (MARKER +
+                                                                 "PHLOX:(GROUP|ROW)=([^" +
+                                                                 MARKER +
+                                                                 "]+)" +
+                                                                 MARKER);
+  private static final Pattern ANY_SENTINEL = Pattern.compile (MARKER + "PHLOX:[^" + MARKER + "]*" + MARKER);
   private static final String END_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_END;
   private static final String PAGEBREAK_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_PAGEBREAK;
+  private static final String DATA_URL_PREFIX = "data:";
+  private static final int MAX_DATA_URL_DISPLAY_LENGTH = 40;
   private static final Pattern ATTACHMENT_BG24_PATTERN = Pattern.compile ("attachment:BG-24\\[(\\d+)\\]");
   // The image title holds the options of an image, e.g. ![alt](url "height-px:120")
   private static final Pattern HEIGHT_PX_TITLE = Pattern.compile ("height-px:([1-9][0-9]{0,4})");
@@ -96,6 +119,43 @@ public final class PhloxTemplatePostParser
   private final AbstractRenderContext <?> m_aContext;
   private final ICommonsMap <Node, String> m_aBlockClassMap = new CommonsHashMap <> ();
   private final ICommonsMap <Image, PhloxResolvedImage> m_aImageMap = new CommonsHashMap <> ();
+
+  /**
+   * Removes the sentinels that are left after the layout was built: a layout tag next to text or
+   * below the top level, and a class in a heading or a table cell. They have no effect.
+   */
+  private static final class StraySentinelRemover extends AbstractVisitor
+  {
+    @NonNull
+    private static String _getCleaned (@NonNull final String sText)
+    {
+      if (sText.indexOf (PhloxInvoiceMustacheContext.SENTINEL_MARKER) < 0)
+        return sText;
+      LOGGER.warn ("A template tag has no effect here: a group, row or end tag needs a top-level paragraph of its own, and a class tag a line in front of the block");
+      return ANY_SENTINEL.matcher (sText).replaceAll ("");
+    }
+
+    @Override
+    public void visit (final Text aText)
+    {
+      final String sCleaned = _getCleaned (aText.getLiteral ());
+      if (!sCleaned.isEmpty ())
+        aText.setLiteral (sCleaned);
+      else
+      {
+        final Node aParent = aText.getParent ();
+        aText.unlink ();
+        if (aParent instanceof Paragraph && aParent.getFirstChild () == null)
+          aParent.unlink ();
+      }
+    }
+
+    @Override
+    public void visit (final Code aCode)
+    {
+      aCode.setLiteral (_getCleaned (aCode.getLiteral ()));
+    }
+  }
 
   private final class ImageResolver extends AbstractVisitor
   {
@@ -350,6 +410,10 @@ public final class PhloxTemplatePostParser
         final Matcher aMatcher = GROUP_SENTINEL.matcher (sSentinel);
         if (aMatcher.matches ())
         {
+          if (aStack.size () >= MAX_GROUP_DEPTH)
+            throw new PhloxTemplateException (EStage.PARSE,
+                                              aMatcher.group (2),
+                                              "groups and rows are nested deeper than " + MAX_GROUP_DEPTH + " levels");
           final PhloxGroupNode aGroup = new PhloxGroupNode ("ROW".equals (aMatcher.group (1)));
           m_aBlockClassMap.put (aGroup, aMatcher.group (2).strip ());
           aCurrent.appendChild (aGroup);
@@ -415,12 +479,19 @@ public final class PhloxTemplatePostParser
     return null;
   }
 
-  /**
-   * Decode the text of a {@code qrcode:} URL. Only {@code %XX} is special, so unlike with
-   * <code>URLDecoder</code> a plus sign stays a plus sign.
-   */
+  /** @return The start of a <code>data:</code> URL, which may have any size, for a message. */
   @NonNull
-  private static String _percentDecode (@NonNull final String sEncoded, @NonNull final String sDest)
+  private static String _getShortened (@NonNull final String sDest)
+  {
+    return sDest.length () <= MAX_DATA_URL_DISPLAY_LENGTH ? sDest
+                                                          : sDest.substring (0, MAX_DATA_URL_DISPLAY_LENGTH) + "...";
+  }
+
+  /**
+   * Decode the text of a {@code qrcode:} URL or a {@code data:} URL. Only {@code %XX} is special, so
+   * unlike with <code>URLDecoder</code> a plus sign stays a plus sign.
+   */
+  private static byte @NonNull [] _percentDecode (@NonNull final String sEncoded, @NonNull final String sDest)
   {
     final byte [] aBytes = sEncoded.getBytes (StandardCharsets.UTF_8);
     try (final NonBlockingByteArrayOutputStream aOut = new NonBlockingByteArrayOutputStream (aBytes.length))
@@ -435,11 +506,11 @@ public final class PhloxTemplatePostParser
         final int nHigh = i + 2 < aBytes.length ? Character.digit (aBytes[i + 1], 16) : -1;
         final int nLow = i + 2 < aBytes.length ? Character.digit (aBytes[i + 2], 16) : -1;
         if (nHigh < 0 || nLow < 0)
-          throw new PhloxTemplateException (EStage.PARSE, sDest, "invalid percent encoding in the QR code text");
+          throw new PhloxTemplateException (EStage.PARSE, sDest, "invalid percent encoding in the image URL");
         aOut.write (nHigh * 16 + nLow);
         i += 2;
       }
-      return aOut.getAsString (StandardCharsets.UTF_8);
+      return aOut.toByteArray ();
     }
   }
 
@@ -450,7 +521,8 @@ public final class PhloxTemplatePostParser
   @Nullable
   private static PhloxResolvedImage _resolveQrCode (@NonNull final String sDest, @Nullable final String sAlt)
   {
-    final String sText = _percentDecode (sDest.substring (QRCODE_URL_PREFIX.length ()), sDest);
+    final String sText = new String (_percentDecode (sDest.substring (QRCODE_URL_PREFIX.length ()), sDest),
+                                     StandardCharsets.UTF_8);
     if (sText.isEmpty ())
       return null;
     final byte [] aPng = PhloxQrCodeGenerator.createPng (sText);
@@ -462,16 +534,45 @@ public final class PhloxTemplatePostParser
     return new PhloxResolvedImage (aPng, PhloxQrCodeGenerator.MIME_TYPE, null, sAlt);
   }
 
+  /**
+   * Decode a {@code data:} URL, so that the writers do not have to tell it from the other schemes.
+   */
+  @NonNull
+  private static PhloxResolvedImage _resolveDataUrl (@NonNull final String sDest, @Nullable final String sAlt)
+  {
+    final int nComma = sDest.indexOf (',');
+    if (nComma < 0)
+      throw new PhloxTemplateException (EStage.PARSE, _getShortened (sDest), "data: URL without a comma");
+    final String sMeta = sDest.substring (DATA_URL_PREFIX.length (), nComma);
+    final int nSemicolon = sMeta.indexOf (';');
+    final String sMime = nSemicolon < 0 ? sMeta : sMeta.substring (0, nSemicolon);
+    if (!sMime.toLowerCase (Locale.ROOT).startsWith ("image/"))
+      throw new PhloxTemplateException (EStage.PARSE, _getShortened (sDest), "data: URL is not an image");
+
+    final String sData = sDest.substring (nComma + 1);
+    final byte [] aBinary;
+    if (sMeta.toLowerCase (Locale.ROOT).endsWith (";base64"))
+      try
+      {
+        aBinary = Base64.getDecoder ().decode (sData);
+      }
+      catch (final IllegalArgumentException ex)
+      {
+        throw new PhloxTemplateException (EStage.PARSE, _getShortened (sDest), "data: URL has invalid Base64", ex);
+      }
+    else
+      aBinary = _percentDecode (sData, _getShortened (sDest));
+    if (aBinary.length == 0)
+      throw new PhloxTemplateException (EStage.PARSE, _getShortened (sDest), "data: URL has no content");
+    return new PhloxResolvedImage (aBinary, sMime, null, sAlt);
+  }
+
   @Nullable
   private PhloxResolvedImage _resolveImage (@NonNull final String sDest, @NonNull final Image aImage)
   {
     final String sAlt = _firstTextOf (aImage);
-    if (sDest.startsWith ("data:"))
-    {
-      // Pass-through: emitters consume the data URI verbatim. We do not eagerly decode here
-      // so HTML can stream the URI straight into the <img src> attribute.
-      return null;
-    }
+    if (sDest.startsWith (DATA_URL_PREFIX))
+      return _resolveDataUrl (sDest, sAlt);
     if (sDest.equals ("attachment:logo"))
     {
       final PhloxAttachment aLogo = m_aContext.getLogo ();
@@ -505,6 +606,10 @@ public final class PhloxTemplatePostParser
     if (sDest.startsWith ("classpath:"))
     {
       final String sPath = sDest.substring ("classpath:".length ());
+      // A custom template may build the URL from invoice data, so it must not reach other resources
+      final String sMime = _guessMime (sPath);
+      if (sMime == null)
+        throw new PhloxTemplateException (EStage.PARSE, sDest, "classpath resource is no png, jpg, jpeg, gif or svg image");
       final ClassPathResource aRes = new ClassPathResource (sPath);
       if (!aRes.exists ())
         throw new PhloxTemplateException (EStage.PARSE, sDest, "classpath resource does not exist: " + sPath);
@@ -512,7 +617,7 @@ public final class PhloxTemplatePostParser
       {
         if (aIS == null)
           throw new PhloxTemplateException (EStage.PARSE, sDest, "classpath resource has no stream");
-        return new PhloxResolvedImage (aIS.readAllBytes (), _guessMime (sPath), sPath, sAlt);
+        return new PhloxResolvedImage (aIS.readAllBytes (), sMime, sPath, sAlt);
       }
       catch (final IOException ex)
       {
@@ -530,23 +635,45 @@ public final class PhloxTemplatePostParser
                                       "unsupported image URL scheme; expected one of: data:, attachment:, classpath:, qrcode:");
   }
 
+  private static boolean _hasContentRecursive (@NonNull final Node aParent)
+  {
+    for (Node aChild = aParent.getFirstChild (); aChild != null; aChild = aChild.getNext ())
+    {
+      if (aChild instanceof PhloxGroupNode)
+      {
+        if (_hasContentRecursive (aChild))
+          return true;
+      }
+      else
+        if (!(aChild instanceof PhloxPageBreakNode))
+          return true;
+    }
+    return false;
+  }
+
   /**
-   * Run both post-passes against the document root.
+   * Run all post-passes against the document root.
    *
    * @param aRoot
    *        The document root. Never {@code null}.
+   * @throws PhloxTemplateException
+   *         when the document has no content, a group is nested too deeply or an image cannot be
+   *         resolved.
    */
   public void process (@NonNull final Node aRoot)
   {
     _buildGroups (aRoot);
     _processSentinels (aRoot);
+    aRoot.accept (new StraySentinelRemover ());
+    if (!_hasContentRecursive (aRoot))
+      throw new PhloxTemplateException (EStage.PARSE, null, "the template produced no content for this invoice");
     aRoot.accept (new ImageResolver ());
   }
 
   /**
-   * Get the sidecar map of block → CSS class assigned by {@code {{class:…}}} sentinels.
+   * Get the sidecar map of block → CSS classes assigned by {@code {{class:…}}} sentinels.
    *
-   * @return Sidecar map of block → CSS class assigned by {@code {{class:…}}} sentinels.
+   * @return Sidecar map of block → CSS classes, separated by a space.
    */
   @NonNull
   public Map <Node, String> getBlockClassMap ()

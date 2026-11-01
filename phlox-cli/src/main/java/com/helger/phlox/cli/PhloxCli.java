@@ -29,16 +29,20 @@ import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.w3c.dom.Document;
 
 import com.helger.base.io.nonblocking.NonBlockingBufferedInputStream;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayInputStream;
 import com.helger.base.io.nonblocking.NonBlockingByteArrayOutputStream;
+import com.helger.diagnostics.error.IError;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.pdflayout.PDFCreationException;
 import com.helger.pdflayout.pdfa.EPdfALevel;
 import com.helger.phlox.api.AbstractRenderContext;
 import com.helger.phlox.api.CPhloxVersion;
+import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.api.PhloxRuntimeException;
+import com.helger.phlox.api.i18n.DefaultPhloxLabelResolver;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.watermark.WatermarkSpec;
@@ -58,6 +62,9 @@ import com.helger.phlox.text.TextRenderContext;
 import com.helger.phlox.theme.PhloxTheme;
 import com.helger.phlox.theme.PhloxThemeReader;
 import com.helger.phlox.ubl.UblInvoiceReader;
+import com.helger.xml.sax.CollectingSAXErrorHandler;
+import com.helger.xml.serialize.read.DOMReader;
+import com.helger.xml.serialize.read.DOMReaderSettings;
 
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -75,6 +82,11 @@ import picocli.CommandLine;
           description = "Render EN 16931 electronic invoices (UBL / CII) to HTML, PDF or plain text.")
 public class PhloxCli implements Callable <Integer>
 {
+  private static final String ROOT_ELEMENT_CII = "CrossIndustryInvoice";
+
+  // An XSD error names the expected elements, so it is longer than a usual message
+  private static final int MAX_MESSAGE_LENGTH = 2000;
+
   /**
    * Provides the version for <code>--version</code> from {@link CPhloxVersion}, which the Maven
    * build fills from the project version.
@@ -140,7 +152,7 @@ public class PhloxCli implements Callable <Integer>
   String m_sEnVersion;
 
   @Option (names = { "-l", "--lang" },
-           description = "Output language code (e.g. 'en', 'de', 'es', 'fr', 'nl'). Default: the language of the theme or en.")
+           description = "Output language code: en, de, es, fr or nl, optionally with a country like de-AT. Default: the language of the theme or en.")
   String m_sLang;
 
   @Option (names = { "-t", "--template" },
@@ -153,7 +165,7 @@ public class PhloxCli implements Callable <Integer>
   EPhloxTemplateCoverageMode m_eTemplateCoverage;
 
   @Option (names = "--theme",
-           description = "A JSON file with the layout parameters of the HTML and PDF output (colours, fonts, page size, language, watermark, ...). The options of the command line override the theme.")
+           description = "A JSON file with the layout parameters of the HTML, PDF and TEXT output (colours, fonts, page size, line width, language, watermark, ...). The options of the command line override the theme.")
   Path m_aThemeFile;
 
   @Option (names = "--logo",
@@ -161,7 +173,7 @@ public class PhloxCli implements Callable <Integer>
   Path m_aLogoFile;
 
   @Option (names = "--font",
-           description = "Regular font file (TTF or OTF; WOFF and WOFF2 for HTML only) that replaces the default fonts in HTML and PDF. Needed for characters outside Western European languages, e.g. Cyrillic or Greek. The font is embedded into the output.")
+           description = "HTML and PDF only: regular font file (TTF or OTF; WOFF and WOFF2 for HTML only) that replaces the default fonts. Needed for characters outside Western European languages, e.g. Cyrillic or Greek. The font is embedded into the output.")
   Path m_aFontFile;
 
   @Option (names = "--font-bold", description = "Bold font file for --font. Default: the regular font.")
@@ -173,18 +185,21 @@ public class PhloxCli implements Callable <Integer>
   @Option (names = "--font-bold-italic", description = "Bold italic font file for --font. Default: the bold font.")
   Path m_aFontBoldItalicFile;
 
-  @Option (names = "--watermark", description = "Optional user watermark text (e.g. 'DRAFT').")
+  @Option (names = "--watermark",
+           description = "Optional user watermark text (e.g. 'DRAFT'). All other settings of a watermark in the theme stay.")
   String m_sWatermark;
 
   @Option (names = "--watermark-opacity",
-           description = "Watermark opacity 0.0-1.0. Default: 0.10.",
-           defaultValue = "0.10")
-  float m_fWatermarkOpacity;
+           description = "Watermark opacity 0.0-1.0, for --watermark or the watermark of the theme. Default: the theme or 0.10.")
+  Float m_aWatermarkOpacity;
 
   @Option (names = "--watermark-rotation",
-           description = "Watermark rotation in degrees. Default: -45.",
-           defaultValue = "-45")
-  float m_fWatermarkRotation;
+           description = "Watermark rotation in degrees, for --watermark or the watermark of the theme. Default: the theme or -45.")
+  Float m_aWatermarkRotation;
+
+  @Option (names = "--line-width",
+           description = "TEXT only: the width in characters at which paragraphs are wrapped; 0 for no wrapping. Default: the theme or 80.")
+  Integer m_aLineWidth;
 
   @Option (names = "--pdfa",
            description = "PDF only: create PDF/A at the given level: 2b, 2u, 3a, 3b or 3u. 3a is a tagged (accessible) PDF. PDF/A requires embedded fonts (--font or 'pdf.fonts' in the theme).")
@@ -253,9 +268,42 @@ public class PhloxCli implements Callable <Integer>
     }
   }
 
+  @NonNull
+  private Locale _getLocale ()
+  {
+    return Locale.forLanguageTag (m_sLang.replace ('_', '-'));
+  }
+
+  /**
+   * @return The watermark from the command line, on top of the settings of the theme.
+   */
+  @NonNull
+  private WatermarkSpec _mergeWatermark (@Nullable final WatermarkSpec aThemeWatermark)
+  {
+    final WatermarkSpec ret = WatermarkSpec.text (m_sWatermark != null ? m_sWatermark : aThemeWatermark.getText ());
+    if (aThemeWatermark != null)
+      ret.setOpacity (aThemeWatermark.getOpacity ())
+         .setRotation (aThemeWatermark.getRotation ())
+         .setColor (aThemeWatermark.getColor ())
+         .setPosition (aThemeWatermark.getPosition ())
+         .setFontSizePt (aThemeWatermark.getFontSizePt ())
+         .setRepeatPerPage (aThemeWatermark.isRepeatPerPage ());
+    if (m_aWatermarkOpacity != null)
+      ret.setOpacity (m_aWatermarkOpacity.floatValue ());
+    if (m_aWatermarkRotation != null)
+      ret.setRotation (m_aWatermarkRotation.floatValue ());
+    return ret;
+  }
+
   @Nullable
   private Integer _checkFonts ()
   {
+    if (m_eFormat == EOutputFormat.TEXT &&
+        (m_aFontFile != null || m_aFontBoldFile != null || m_aFontItalicFile != null || m_aFontBoldItalicFile != null))
+    {
+      System.err.println ("--font, --font-bold, --font-italic and --font-bold-italic require --format HTML or PDF");
+      return Integer.valueOf (2);
+    }
     if (m_aFontFile == null && (m_aFontBoldFile != null || m_aFontItalicFile != null || m_aFontBoldItalicFile != null))
     {
       System.err.println ("--font-bold, --font-italic and --font-bold-italic require --font");
@@ -287,7 +335,7 @@ public class PhloxCli implements Callable <Integer>
       if (m_aFontFile != null)
         aFontApplier.apply (aCtx);
       if (m_sLang != null)
-        aCtx.setLocale (Locale.forLanguageTag (m_sLang.replace ('_', '-')));
+        aCtx.setLocale (_getLocale ());
       if (m_sTemplate != null)
         aCtx.setTemplate (_loadTemplate (m_sTemplate, m_eTemplateCoverage));
       // The template of a theme is loaded without the coverage mode of the command line
@@ -306,10 +354,15 @@ public class PhloxCli implements Callable <Integer>
                                             .setMimeCode (_getMimeCode (sFilename))
                                             .setFilename (sFilename));
       }
-      if (m_sWatermark != null)
-        aCtx.setUserWatermark (WatermarkSpec.text (m_sWatermark)
-                                            .setOpacity (m_fWatermarkOpacity)
-                                            .setRotation (m_fWatermarkRotation));
+      if (m_sWatermark != null || m_aWatermarkOpacity != null || m_aWatermarkRotation != null)
+      {
+        if (m_sWatermark == null && aCtx.getUserWatermark () == null)
+        {
+          System.err.println ("--watermark-opacity and --watermark-rotation require --watermark or a watermark in the theme");
+          return Integer.valueOf (2);
+        }
+        aCtx.setUserWatermark (_mergeWatermark (aCtx.getUserWatermark ()));
+      }
     }
     catch (final PhloxRuntimeException | IOException | IllegalArgumentException ex)
     {
@@ -346,15 +399,27 @@ public class PhloxCli implements Callable <Integer>
     System.exit (nExit);
   }
 
-  /** Decide source syntax by sniffing the root element / namespace. */
-  static ESourceSyntax _sniffSyntax (final byte [] aBytes)
+  /**
+   * Decide the source syntax by the root element. Text that is not the root element, e.g. in a note
+   * of the invoice, has no influence. A source that is no XML goes to the UBL reader, which reports
+   * the error; so nothing is logged here, or the error would be there twice.
+   */
+  @NonNull
+  static ESourceSyntax _sniffSyntax (final byte @NonNull [] aBytes)
   {
-    final String sHead = new String (aBytes, StandardCharsets.UTF_8);
-    if (sHead.contains ("<CrossIndustryInvoice") ||
-        sHead.contains (":CrossIndustryInvoice") ||
-        sHead.contains ("uncefact:data:standard"))
+    final DOMReaderSettings aSettings = new DOMReaderSettings ().setErrorHandler (new CollectingSAXErrorHandler ());
+    aSettings.exceptionCallbacks ().removeAll ();
+    final Document aDoc = DOMReader.readXMLDOM (aBytes, aSettings);
+    if (aDoc != null && ROOT_ELEMENT_CII.equals (aDoc.getDocumentElement ().getLocalName ()))
       return ESourceSyntax.CII;
     return ESourceSyntax.UBL;
+  }
+
+  /** Print the messages of the reader. They can contain values of the invoice. */
+  private static void _printMessages (@NonNull final ErrorList aErrors)
+  {
+    for (final IError aError : aErrors)
+      System.err.println (PhloxLogHelper.sanitise (aError.getAsString (Locale.ROOT), MAX_MESSAGE_LENGTH));
   }
 
   /**
@@ -442,6 +507,21 @@ public class PhloxCli implements Callable <Integer>
       System.err.println ("--pdfa, --pdfua, --embed-source, --embed-attachments, --zugferd and --zugferd-profile require --format PDF");
       return Integer.valueOf (2);
     }
+    if (m_aLineWidth != null && m_eFormat != EOutputFormat.TEXT)
+    {
+      System.err.println ("--line-width requires --format TEXT");
+      return Integer.valueOf (2);
+    }
+    if (m_aLineWidth != null && m_aLineWidth.intValue () < 0)
+    {
+      System.err.println ("--line-width must not be negative");
+      return Integer.valueOf (2);
+    }
+    if (m_sLang != null && !DefaultPhloxLabelResolver.isSupportedLocale (_getLocale ()))
+    {
+      System.err.println ("Unsupported --lang '" + m_sLang + "'. Use en, de, es, fr or nl.");
+      return Integer.valueOf (2);
+    }
     if (m_bEmbedSource && m_bZugferd)
     {
       System.err.println ("Use either --embed-source or --zugferd");
@@ -480,9 +560,12 @@ public class PhloxCli implements Callable <Integer>
 
     if (aInvoice == null || aErrors.containsAtLeastOneError ())
     {
-      System.err.println ("Failed to parse input: " + aErrors);
+      System.err.println ("Failed to parse input:");
+      _printMessages (aErrors);
       return Integer.valueOf (1);
     }
+    // The warnings name input that was ignored or defaulted
+    _printMessages (aErrors);
 
     final PhloxTheme aTheme;
     if (m_aThemeFile == null)
@@ -538,12 +621,14 @@ public class PhloxCli implements Callable <Integer>
       if (m_eFormat == EOutputFormat.TEXT)
       {
         final TextRenderContext aCtx = new TextRenderContext ();
-        // Fonts have no meaning in plain text
+        // The font options are refused for plain text
         final Integer aError = _prepare (aCtx,
                                          aTheme == null ? null : (final TextRenderContext aTarget) -> aTarget.applyTheme (aTheme),
                                          aTarget -> {});
         if (aError != null)
           return aError;
+        if (m_aLineWidth != null)
+          aCtx.setLineWidth (m_aLineWidth.intValue ());
         final String sText;
         try
         {

@@ -28,6 +28,7 @@ import com.helger.datetime.xml.XMLOffsetTime;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931Edition;
+import com.helger.en16931.basics.codelist.EN16931CodeLists;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxBuyer;
@@ -64,6 +65,7 @@ import com.helger.phlox.api.model.PhloxSellerTaxRepresentative;
 import com.helger.phlox.api.model.PhloxSupportingDocument;
 import com.helger.phlox.api.model.PhloxThirdPartyCharge;
 import com.helger.phlox.api.model.PhloxVatBreakdown;
+import com.helger.phlox.api.read.PhloxReaderHelper;
 import com.helger.ubl25.UBL25Marshaller;
 import com.helger.xsds.ccts.cct.schemamodule.AmountType;
 
@@ -110,6 +112,7 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_25.Tax
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_25.TaxSubtotalType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_25.TaxTotalType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_25.BuyerReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_25.NoteType;
 import oasis.names.specification.ubl.schema.xsd.creditnote_25.CreditNoteType;
 import oasis.names.specification.ubl.schema.xsd.invoice_25.InvoiceType;
 
@@ -122,7 +125,7 @@ import oasis.names.specification.ubl.schema.xsd.invoice_25.InvoiceType;
 final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
 {
   /** UNTDID 5153 list identifier used to tell BT-177/BT-193 from the reason codes BT-105/BT-145. */
-  private static final String NON_VAT_TAX_CODE_LIST_ID = "5153";
+  private static final String NON_VAT_TAX_CODE_LIST_ID = EN16931CodeLists.NON_VAT_TAX_CODE_LIST_ID;
 
   Ubl25InvoiceReader ()
   {}
@@ -143,8 +146,9 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
                                 .build ());
   }
 
-  private static void _readAnnotations (@NonNull final List <AnnotationType> aAnnotations,
-                                        @NonNull final PhloxInvoice aModel)
+  private static void _readNotes (@NonNull final List <AnnotationType> aAnnotations,
+                                  @NonNull final List <NoteType> aLegacyNotes,
+                                  @NonNull final PhloxInvoice aModel)
   {
     // BG-1 — BT-21 subject code and BT-22 note
     for (final AnnotationType aAnnotation : aAnnotations)
@@ -152,12 +156,21 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       final String sSubjectCode = str (aAnnotation.getSubjectCodeValue ());
       // Repeated content is joined with newlines, like in CII
       final String sContent = str (joinNotes (aAnnotation.getAnnotationContent ()));
-      if (sSubjectCode != null || sContent != null)
+      if (sContent != null)
         aModel.invoiceNotes ().add (new PhloxInvoiceNote (sSubjectCode, sContent));
     }
+    // cbc:Note of the 2017 binding, for documents that still follow it
+    if (aModel.invoiceNotes ().isEmpty ())
+      for (final NoteType aNote : aLegacyNotes)
+      {
+        final PhloxInvoiceNote aOut = parseInvoiceNote (aNote.getValue ());
+        if (aOut != null)
+          aModel.invoiceNotes ().add (aOut);
+      }
   }
 
   private static void _readBuyerReferences (@NonNull final List <BuyerAssignedReferenceType> aRefs,
+                                            @Nullable final String sLegacyBuyerReference,
                                             @NonNull final PhloxInvoice aModel)
   {
     // BT-10 with BT-10-1 (UNTDID 1153 scheme identifier)
@@ -170,6 +183,13 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
         if (sValue != null)
           aModel.buyerReferences ().add (new PhloxIdentifier (sValue, sScheme));
       }
+    }
+    // cbc:BuyerReference of the 2017 binding, for documents that still follow it
+    if (aModel.buyerReferences ().isEmpty ())
+    {
+      final String sLegacy = str (sLegacyBuyerReference);
+      if (sLegacy != null)
+        aModel.buyerReferences ().add (new PhloxIdentifier (sLegacy, null));
     }
   }
 
@@ -245,10 +265,11 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       if (aBR.getInvoiceDocumentReference () != null)
       {
         final DocumentReferenceType aDR = aBR.getInvoiceDocumentReference ();
-        aModel.precedingInvoiceRefs ()
-              .add (new PhloxPrecedingInvoiceRef ().setNumber (str (aDR.getIDValue ()))
-                                                   .setIssueDate (d (aDR.getIssueDateValue ()))
-                                                   .setTypeCode (str (aDR.getDocumentTypeCodeValue ())));
+        final PhloxPrecedingInvoiceRef aRef = new PhloxPrecedingInvoiceRef ().setNumber (str (aDR.getIDValue ()))
+                                                                             .setIssueDate (d (aDR.getIssueDateValue ()))
+                                                                             .setTypeCode (str (aDR.getDocumentTypeCodeValue ()));
+        if (aRef.getNumber () != null)
+          aModel.precedingInvoiceRefs ().add (aRef);
       }
   }
 
@@ -283,7 +304,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     // BT-13 / BT-14
     if (aOrder != null)
     {
-      aModel.setPurchaseOrderReference (str (aOrder.getIDValue ()));
+      aModel.setPurchaseOrderReference (strWithoutFiller (aOrder.getIDValue ()));
       aModel.setSalesOrderReference (str (aOrder.getSalesOrderIDValue ()));
     }
     // BT-12 — contract reference
@@ -357,11 +378,10 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     }
     // BT-46 — identifiers
     for (final PartyIdentificationType aPI : aParty.getPartyIdentification ())
-      if (aPI.getID () != null)
-        aBuyer.identifiers ().add (identifier (aPI.getID ()));
+      addIdentifier (aPI.getID (), aBuyer.identifiers ());
     // BT-48 — VAT
     for (final PartyTaxSchemeType aPTS : aParty.getPartyTaxScheme ())
-      if (aPTS.getTaxScheme () != null && "VAT".equals (aPTS.getTaxScheme ().getIDValue ()))
+      if (aPTS.getTaxScheme () != null && "VAT".equals (str (aPTS.getTaxScheme ().getIDValue ())))
         aBuyer.setVatIdentifier (str (aPTS.getCompanyIDValue ()));
     // BT-49
     if (aParty.getEndpointID () != null)
@@ -391,20 +411,21 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       aSeller.setTradingName (str (aParty.getPartyName ().get (0).getNameValue ()));
     // BT-29
     for (final PartyIdentificationType aPI : aParty.getPartyIdentification ())
-      if (aPI.getID () != null && !SEPA_SCHEME_ID.equals (aPI.getID ().getSchemeID ()))
-        aSeller.identifiers ().add (identifier (aPI.getID ()));
-    // BT-31 (tax scheme "VAT") / BT-32 + BT-32-1 (tax scheme "LOC")
+      if (!isSepaCreditorID (aPI.getID ()))
+        addIdentifier (aPI.getID (), aSeller.identifiers ());
+    // BT-31 (tax scheme "VAT") / BT-32 + BT-32-1 (tax scheme "LOC", the 2017 binding: not "VAT")
     for (final PartyTaxSchemeType aPTS : aParty.getPartyTaxScheme ())
       if (aPTS.getTaxScheme () != null)
       {
-        if ("VAT".equals (aPTS.getTaxScheme ().getIDValue ()))
+        if ("VAT".equals (str (aPTS.getTaxScheme ().getIDValue ())))
           aSeller.setVatIdentifier (str (aPTS.getCompanyIDValue ()));
         else
-        {
-          aSeller.setTaxRegistration (str (aPTS.getCompanyIDValue ()));
-          if (aPTS.getCompanyID () != null)
-            aSeller.setTaxRegistrationSchemeID (str (aPTS.getCompanyID ().getSchemeID ()));
-        }
+          if (aSeller.getTaxRegistration () == null)
+          {
+            aSeller.setTaxRegistration (str (aPTS.getCompanyIDValue ()));
+            if (aPTS.getCompanyID () != null)
+              aSeller.setTaxRegistrationSchemeID (str (aPTS.getCompanyID ().getSchemeID ()));
+          }
       }
     // BT-34
     if (aParty.getEndpointID () != null)
@@ -425,14 +446,14 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     _readPartyCommon (aParty, aSeller);
   }
 
-  @Nullable
+  @NonNull
   private static PhloxPayee _readPayee (@NonNull final PartyType aParty)
   {
     final PhloxPayee aOut = new PhloxPayee ();
     if (!aParty.getPartyName ().isEmpty ())
       aOut.setName (str (aParty.getPartyName ().get (0).getNameValue ()));
     for (final PartyIdentificationType aPI : aParty.getPartyIdentification ())
-      if (aPI.getID () != null && !SEPA_SCHEME_ID.equals (aPI.getID ().getSchemeID ()))
+      if (aPI.getID () != null && !isSepaCreditorID (aPI.getID ()))
       {
         aOut.setIdentifier (identifier (aPI.getID ()));
         break;
@@ -453,7 +474,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (!aParty.getPartyName ().isEmpty ())
       aOut.setName (str (aParty.getPartyName ().get (0).getNameValue ()));
     for (final PartyTaxSchemeType aPTS : aParty.getPartyTaxScheme ())
-      if (aPTS.getTaxScheme () != null && "VAT".equals (aPTS.getTaxScheme ().getIDValue ()))
+      if (aPTS.getTaxScheme () != null && "VAT".equals (str (aPTS.getTaxScheme ().getIDValue ())))
         aOut.setVatIdentifier (str (aPTS.getCompanyIDValue ()));
     if (aParty.getPostalAddress () != null)
       aOut.setPostalAddress (_readAddress (aParty.getPostalAddress ()));
@@ -515,12 +536,12 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   {
     if (aPayee != null)
       for (final PartyIdentificationType aPI : aPayee.getPartyIdentification ())
-        if (aPI.getID () != null && SEPA_SCHEME_ID.equals (aPI.getID ().getSchemeID ()))
-          return aPI.getIDValue ();
+        if (isSepaCreditorID (aPI.getID ()))
+          return str (aPI.getIDValue ());
     if (aSupplier != null && aSupplier.getParty () != null)
       for (final PartyIdentificationType aPI : aSupplier.getParty ().getPartyIdentification ())
-        if (aPI.getID () != null && SEPA_SCHEME_ID.equals (aPI.getID ().getSchemeID ()))
-          return aPI.getIDValue ();
+        if (isSepaCreditorID (aPI.getID ()))
+          return str (aPI.getIDValue ());
     return null;
   }
 
@@ -545,20 +566,27 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     final PaymentMeansType aPM = aPaymentMeans.get (0);
     aOut.setPaymentMeansCode (str (aPM.getPaymentMeansCodeValue ()));
     if (aPM.getPaymentMeansCode () != null)
-      aOut.setPaymentMeansText (aPM.getPaymentMeansCode ().getName ());
+      aOut.setPaymentMeansText (str (aPM.getPaymentMeansCode ().getName ()));
     if (!aPM.getPaymentID ().isEmpty ())
       aOut.setRemittanceInformation (str (aPM.getPaymentID ().get (0).getValue ()));
 
     // BG-17 — credit transfers across ALL payment means
     for (final PaymentMeansType aOnePM : aPaymentMeans)
       if (aOnePM.getPayeeFinancialAccount () != null)
-        aOut.creditTransfers ().add (_readCreditTransfer (aOnePM.getPayeeFinancialAccount ()).setPaymentMeansCode (str (aOnePM.getPaymentMeansCodeValue ())));
+      {
+        final PhloxCreditTransfer aCT = _readCreditTransfer (aOnePM.getPayeeFinancialAccount ());
+        if (!aCT.isEmpty ())
+          aOut.creditTransfers ().add (aCT.setPaymentMeansCode (str (aOnePM.getPaymentMeansCodeValue ())));
+      }
 
     // BG-18 / BG-19 may sit in any of the payment means, not only in the first one
     PaymentMeansType aCardMeans = null;
     PaymentMeansType aMandateMeans = null;
+    boolean bDirectDebitMeans = false;
     for (final PaymentMeansType aOnePM : aPaymentMeans)
     {
+      if (EN16931CodeLists.isPaymentMeansCodeDirectDebit (str (aOnePM.getPaymentMeansCodeValue ())))
+        bDirectDebitMeans = true;
       if (aCardMeans == null && !aOnePM.getCardAccount ().isEmpty ())
         aCardMeans = aOnePM;
       if (aMandateMeans == null && aOnePM.getPaymentMandate () != null)
@@ -575,7 +603,9 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       aOut.setPaymentCard (aCard);
     }
 
-    // BG-19 — direct debit
+    // BG-19 — direct debit. BT-89 is optional, so BT-90 alone is a direct debit if a payment means
+    // says so
+    final String sCreditorID = _findSepaCreditorID (aSupplier, aPayee);
     if (aMandateMeans != null)
     {
       final PaymentMandateType aMandate = aMandateMeans.getPaymentMandate ();
@@ -593,9 +623,12 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       }
       // BT-90 — bank assigned creditor id (UBL: from supplier/payee PartyIdentification with SEPA
       // scheme)
-      aDD.setBankAssignedCreditorID (_findSepaCreditorID (aSupplier, aPayee));
+      aDD.setBankAssignedCreditorID (sCreditorID);
       aOut.setDirectDebit (aDD);
     }
+    else
+      if (sCreditorID != null && bDirectDebitMeans)
+        aOut.setDirectDebit (new PhloxDirectDebit ().setBankAssignedCreditorID (sCreditorID));
     return aOut;
   }
 
@@ -798,8 +831,8 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       {
         final PhloxAttachment aBin = new PhloxAttachment ();
         aBin.setBinary (aAtt.getEmbeddedDocumentBinaryObject ().getValue ());
-        aBin.setMimeCode (aAtt.getEmbeddedDocumentBinaryObject ().getMimeCode ());
-        aBin.setFilename (aAtt.getEmbeddedDocumentBinaryObject ().getFilename ());
+        aBin.setMimeCode (str (aAtt.getEmbeddedDocumentBinaryObject ().getMimeCode ()));
+        aBin.setFilename (str (aAtt.getEmbeddedDocumentBinaryObject ().getFilename ()));
         aOut.setAttachment (aBin);
       }
     }
@@ -811,14 +844,18 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   {
     // BT-18 (type code 130) and BG-24 (type code 916)
     for (final DocumentReferenceType aRef : aRefs)
-      if ("130".equals (aRef.getDocumentTypeCodeValue ()))
+      if (EN16931CodeLists.DOCUMENT_TYPE_CODE_OBJECT_DOCUMENT.equals (str (aRef.getDocumentTypeCodeValue ())))
       {
         // BT-18: Invoiced object identifier
         if (aRef.getID () != null)
           aModel.setInvoicedObjectIdentifier (identifier (aRef.getID ()));
       }
       else
-        aModel.supportingDocuments ().add (_readSupportingDocument (aRef));
+      {
+        final PhloxSupportingDocument aDoc = _readSupportingDocument (aRef);
+        if (!aDoc.isEmpty ())
+          aModel.supportingDocuments ().add (aDoc);
+      }
   }
 
   /**
@@ -872,8 +909,8 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (!aOrderLineRefs.isEmpty ())
     {
       final OrderLineReferenceType aOLR = aOrderLineRefs.get (0);
-      aOut.setPurchaseOrderLineRef (str (aOLR.getLineIDValue ()));
-      aOut.setSalesOrderLineReference (str (aOLR.getSalesOrderLineIDValue ()));
+      aOut.setPurchaseOrderLineRef (strWithoutFiller (aOLR.getLineIDValue ()));
+      aOut.setSalesOrderLineReference (strWithoutFiller (aOLR.getSalesOrderLineIDValue ()));
       if (aOLR.getOrderReference () != null)
       {
         aOut.setPurchaseOrderReference (str (aOLR.getOrderReference ().getIDValue ()));
@@ -884,7 +921,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (!aDespatchLineRefs.isEmpty ())
     {
       final LineReferenceType aLR = aDespatchLineRefs.get (0);
-      aOut.setDespatchAdviceLineReference (str (aLR.getLineIDValue ()));
+      aOut.setDespatchAdviceLineReference (strWithoutFiller (aLR.getLineIDValue ()));
       if (aLR.getDocumentReference () != null)
         aOut.setDespatchAdviceReference (str (aLR.getDocumentReference ().getIDValue ()));
     }
@@ -892,7 +929,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (!aReceiptLineRefs.isEmpty ())
     {
       final LineReferenceType aLR = aReceiptLineRefs.get (0);
-      aOut.setReceivingAdviceLineReference (str (aLR.getLineIDValue ()));
+      aOut.setReceivingAdviceLineReference (strWithoutFiller (aLR.getLineIDValue ()));
       if (aLR.getDocumentReference () != null)
         aOut.setReceivingAdviceReference (str (aLR.getDocumentReference ().getIDValue ()));
     }
@@ -903,7 +940,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       if (!aDelivery.getDeliveryNoteDocumentReference ().isEmpty ())
         aOut.setDeliveryNoteReference (str (aDelivery.getDeliveryNoteDocumentReference ().get (0).getIDValue ()));
       if (!aDelivery.getDeliveryNoteLineReference ().isEmpty ())
-        aOut.setDeliveryNoteLineReference (str (aDelivery.getDeliveryNoteLineReference ().get (0).getLineIDValue ()));
+        aOut.setDeliveryNoteLineReference (strWithoutFiller (aDelivery.getDeliveryNoteLineReference ().get (0).getLineIDValue ()));
       // BG-37 + BG-38 — line delivery information
       final PhloxLineDelivery aLineDelivery = _readLineDelivery (aDelivery);
       if (aLineDelivery != null)
@@ -925,7 +962,8 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
         aRef.setTypeCode (str (aDR.getDocumentTypeCodeValue ()));
         if (!aBR.getBillingReferenceLine ().isEmpty ())
           aRef.setLineReference (str (aBR.getBillingReferenceLine ().get (0).getIDValue ()));
-        aOut.precedingInvoiceRefs ().add (aRef);
+        if (aRef.getNumber () != null)
+          aOut.precedingInvoiceRefs ().add (aRef);
       }
   }
 
@@ -981,7 +1019,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (aPrice.getBaseQuantity () != null)
     {
       aOut.setBaseQuantity (aPrice.getBaseQuantity ().getValue ());
-      aOut.setBaseQuantityUnit (aPrice.getBaseQuantity ().getUnitCode ());
+      aOut.setBaseQuantityUnit (str (aPrice.getBaseQuantity ().getUnitCode ()));
     }
     for (final AllowanceChargeType aAC : aPrice.getAllowanceCharge ())
       if (aAC.getChargeIndicator () == null || !aAC.getChargeIndicator ().isValue ())
@@ -990,6 +1028,8 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
           aOut.setDiscount (aAC.getAmount ().getValue ());
         if (aAC.getBaseAmount () != null)
           aOut.setGrossPrice (aAC.getBaseAmount ().getValue ());
+        // BT-147 and BT-148 are 0..1, so the first discount counts, as in CII
+        break;
       }
     return aOut;
   }
@@ -999,7 +1039,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   {
     final PhloxItem aOut = new PhloxItem ();
     aOut.setName (firstText (aItem.getName ()));
-    aOut.setDescription (!aItem.getDescription ().isEmpty () ? aItem.getDescription ().get (0).getValue () : null);
+    aOut.setDescription (firstText (aItem.getDescription ()));
     if (aItem.getSellersItemIdentification () != null)
       aOut.setSellerItemID (str (aItem.getSellersItemIdentification ().getIDValue ()));
     if (aItem.getBuyersItemIdentification () != null)
@@ -1013,12 +1053,12 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (aItem.getOriginCountry () != null)
       aOut.setCountryOfOrigin (str (aItem.getOriginCountry ().getIdentificationCodeValue ()));
     for (final CommodityClassificationType aCC : aItem.getCommodityClassification ())
-      if (aCC.getItemClassificationCode () != null)
+      if (aCC.getItemClassificationCode () != null && str (aCC.getItemClassificationCode ().getValue ()) != null)
       {
         final PhloxItemClassification aIC = new PhloxItemClassification ();
-        aIC.setCode (aCC.getItemClassificationCode ().getValue ());
-        aIC.setListID (aCC.getItemClassificationCode ().getListID ());
-        aIC.setListVersionID (aCC.getItemClassificationCode ().getListVersionID ());
+        aIC.setCode (str (aCC.getItemClassificationCode ().getValue ()));
+        aIC.setListID (str (aCC.getItemClassificationCode ().getListID ()));
+        aIC.setListVersionID (str (aCC.getItemClassificationCode ().getListVersionID ()));
         aOut.classifications ().add (aIC);
       }
     for (final ItemPropertyType aIP : aItem.getAdditionalItemProperty ())
@@ -1038,7 +1078,8 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       else
         // BT-161a text value
         aAttr.setValue (str (aIP.getValueValue ()));
-      aOut.attributes ().add (aAttr);
+      if (aAttr.getName () != null || aAttr.getCode () != null || aAttr.getValue () != null)
+        aOut.attributes ().add (aAttr);
     }
     return aOut;
   }
@@ -1050,12 +1091,14 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
                                        @Nullable final ItemType aItem,
                                        @NonNull final PhloxInvoiceLine aOut)
   {
-    // BT-128
-    if (!aDocRefs.isEmpty () && aDocRefs.get (0).getID () != null)
-    {
-      final DocumentReferenceType aDR = aDocRefs.get (0);
-      aOut.setObjectIdentifier (identifier (aDR.getID ()));
-    }
+    // BT-128 — the document reference with type code 130 (BT-128-2)
+    for (final DocumentReferenceType aDR : aDocRefs)
+      if (aDR.getID () != null &&
+          EN16931CodeLists.DOCUMENT_TYPE_CODE_OBJECT_DOCUMENT.equals (str (aDR.getDocumentTypeCodeValue ())))
+      {
+        aOut.setObjectIdentifier (identifier (aDR.getID ()));
+        break;
+      }
     // BG-26
     if (!aPeriods.isEmpty ())
     {
@@ -1108,7 +1151,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (aLine.getInvoicedQuantity () != null)
     {
       aOut.setQuantity (aLine.getInvoicedQuantity ().getValue ());
-      aOut.setQuantityUnit (aLine.getInvoicedQuantity ().getUnitCode ());
+      aOut.setQuantityUnit (str (aLine.getInvoicedQuantity ().getUnitCode ()));
     }
     if (aLine.getLineExtensionAmount () != null)
       aOut.setNetAmount (aLine.getLineExtensionAmount ().getValue ());
@@ -1138,7 +1181,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     if (aLine.getCreditedQuantity () != null)
     {
       aOut.setQuantity (aLine.getCreditedQuantity ().getValue ());
-      aOut.setQuantityUnit (aLine.getCreditedQuantity ().getUnitCode ());
+      aOut.setQuantityUnit (str (aLine.getCreditedQuantity ().getUnitCode ()));
     }
     if (aLine.getLineExtensionAmount () != null)
       aOut.setNetAmount (aLine.getLineExtensionAmount ().getValue ());
@@ -1178,7 +1221,6 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   public PhloxInvoice readInvoice (@NonNull final InvoiceType aInvoice, @NonNull final ErrorList aErrors)
   {
     final PhloxInvoice aModel = new PhloxInvoice ();
-    aModel.setKind (EPhloxDocumentKind.INVOICE);
     aModel.setEdition (EEN16931Edition.EN2026);
 
     // BT-1
@@ -1188,18 +1230,19 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     _readIssueTime (aInvoice.getIssueTimeValue (), aModel, aErrors);
     // BT-3
     aModel.setTypeCode (str (aInvoice.getInvoiceTypeCodeValue ()));
+    aModel.setKind (PhloxReaderHelper.getDocumentKind (aModel.getTypeCode (), EPhloxDocumentKind.INVOICE, aErrors));
     // BG-1 — notes
-    _readAnnotations (aInvoice.getAnnotation (), aModel);
+    _readNotes (aInvoice.getAnnotation (), aInvoice.getNote (), aModel);
     // BT-5 / BT-6 / BT-167
-    aModel.setCurrency (aInvoice.getDocumentCurrencyCodeValue ());
-    aModel.setVatAccountingCurrency (aInvoice.getTaxCurrencyCodeValue ());
+    aModel.setCurrency (str (aInvoice.getDocumentCurrencyCodeValue ()));
+    aModel.setVatAccountingCurrency (str (aInvoice.getTaxCurrencyCodeValue ()));
     _readExchangeRate (aInvoice.getTaxExchangeRate (), aModel);
     // BT-7
     aModel.setVatPointDate (d (aInvoice.getTaxPointDateValue ()));
     // BT-9 (Invoice: header DueDate)
     aModel.setPaymentDueDate (d (aInvoice.getDueDateValue ()));
     // BT-10
-    _readBuyerReferences (aInvoice.getBuyerAssignedReference (), aModel);
+    _readBuyerReferences (aInvoice.getBuyerAssignedReference (), aInvoice.getBuyerReferenceValue (), aModel);
     // BT-19
     aModel.setBuyerAccountingReference (str (aInvoice.getAccountingCostValue ()));
     // BG-2
@@ -1261,7 +1304,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   @Nullable
   protected PhloxInvoice readInvoiceDocument (@NonNull final Document aDoc, @NonNull final ErrorList aErrors)
   {
-    final InvoiceType aInvoice = UBL25Marshaller.invoice ().read (aDoc);
+    final InvoiceType aInvoice = unmarshal (UBL25Marshaller.invoice (), aDoc, aErrors);
     return aInvoice == null ? null : readInvoice (aInvoice, aErrors);
   }
 
@@ -1278,21 +1321,21 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   public PhloxInvoice readCreditNote (@NonNull final CreditNoteType aCreditNote, @NonNull final ErrorList aErrors)
   {
     final PhloxInvoice aModel = new PhloxInvoice ();
-    aModel.setKind (EPhloxDocumentKind.CREDIT_NOTE);
     aModel.setEdition (EEN16931Edition.EN2026);
 
     aModel.setNumber (str (aCreditNote.getIDValue ()));
     aModel.setIssueDate (d (aCreditNote.getIssueDateValue ()));
     _readIssueTime (aCreditNote.getIssueTimeValue (), aModel, aErrors);
     aModel.setTypeCode (str (aCreditNote.getCreditNoteTypeCodeValue ()));
-    _readAnnotations (aCreditNote.getAnnotation (), aModel);
-    aModel.setCurrency (aCreditNote.getDocumentCurrencyCodeValue ());
-    aModel.setVatAccountingCurrency (aCreditNote.getTaxCurrencyCodeValue ());
+    aModel.setKind (PhloxReaderHelper.getDocumentKind (aModel.getTypeCode (), EPhloxDocumentKind.CREDIT_NOTE, aErrors));
+    _readNotes (aCreditNote.getAnnotation (), aCreditNote.getNote (), aModel);
+    aModel.setCurrency (str (aCreditNote.getDocumentCurrencyCodeValue ()));
+    aModel.setVatAccountingCurrency (str (aCreditNote.getTaxCurrencyCodeValue ()));
     _readExchangeRate (aCreditNote.getTaxExchangeRate (), aModel);
     aModel.setVatPointDate (d (aCreditNote.getTaxPointDateValue ()));
     // BT-9 in CN: cbc:DueDate since UBL 2.2, same as the invoice
     aModel.setPaymentDueDate (d (aCreditNote.getDueDateValue ()));
-    _readBuyerReferences (aCreditNote.getBuyerAssignedReference (), aModel);
+    _readBuyerReferences (aCreditNote.getBuyerAssignedReference (), aCreditNote.getBuyerReferenceValue (), aModel);
     aModel.setBuyerAccountingReference (str (aCreditNote.getAccountingCostValue ()));
     aModel.getProcessControl ().setBusinessProcessType (str (aCreditNote.getProfileIDValue ()));
     aModel.getProcessControl ().setSpecificationIdentifier (str (aCreditNote.getCustomizationIDValue ()));
@@ -1315,9 +1358,19 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
     _readInvoicePeriod (aCreditNote.getInvoicePeriod (), aModel);
 
     if (!aCreditNote.getPaymentMeans ().isEmpty ())
+    {
       aModel.setPaymentInstructions (_readPaymentInstructions (aCreditNote.getPaymentMeans (),
                                                                aCreditNote.getAccountingSupplierParty (),
                                                                aCreditNote.getPayeeParty ()));
+      // BT-9 of the 2017 binding, for documents that still follow it
+      if (aModel.getPaymentDueDate () == null)
+        for (final PaymentMeansType aPM : aCreditNote.getPaymentMeans ())
+          if (d (aPM.getPaymentDueDateValue ()) != null)
+          {
+            aModel.setPaymentDueDate (d (aPM.getPaymentDueDateValue ()));
+            break;
+          }
+    }
     _readPaymentTerms (aCreditNote.getPaymentTerms (), aModel);
 
     _readDocumentAllowanceCharges (aCreditNote.getAllowanceCharge (), aModel);
@@ -1338,7 +1391,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   @Nullable
   protected PhloxInvoice readCreditNoteDocument (@NonNull final Document aDoc, @NonNull final ErrorList aErrors)
   {
-    final CreditNoteType aCreditNote = UBL25Marshaller.creditNote ().read (aDoc);
+    final CreditNoteType aCreditNote = unmarshal (UBL25Marshaller.creditNote (), aDoc, aErrors);
     return aCreditNote == null ? null : readCreditNote (aCreditNote, aErrors);
   }
 }

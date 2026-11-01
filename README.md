@@ -91,6 +91,7 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `--logo` | Logo image (PNG, JPEG or GIF) |
 | `--font` | Regular font file (TTF or OTF) for HTML and PDF; also `--font-bold`, `--font-italic` and `--font-bold-italic` |
 | `--watermark` | User watermark text; see also `--watermark-opacity` and `--watermark-rotation` |
+| `--line-width` | Width at which the `TEXT` output wraps paragraphs; `0` for no wrapping |
 | `--pdfa` | PDF/A level of the PDF: `2b`, `2u`, `3a` (tagged), `3b` or `3u`; needs `--font` (or fonts in the theme) |
 | `--pdfua` | Create a PDF/UA-1 (accessible, tagged PDF); can be combined with `--pdfa`; needs `--font` (or fonts in the theme) |
 | `--embed-source` | Embed the input XML into the PDF (PDF/A-3, `3b` unless `--pdfa` is given) |

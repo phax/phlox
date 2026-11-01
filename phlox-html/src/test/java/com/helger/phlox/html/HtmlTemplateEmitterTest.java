@@ -31,12 +31,20 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 import com.helger.base.string.StringHelper;
+import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
+import com.helger.css.property.ECSSProperty;
+import com.helger.css.propertyvalue.CSSValue;
+import com.helger.css.propertyvalue.ICSSValue;
 import com.helger.diagnostics.error.list.ErrorList;
+import com.helger.html.hc.IHCNode;
+import com.helger.html.hc.html.embedded.HCImg;
 import com.helger.io.file.SimpleFileIO;
 import com.helger.io.resource.ClassPathResource;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.read.IInvoiceReader;
+import com.helger.phlox.api.watermark.EWatermarkPosition;
+import com.helger.phlox.api.watermark.WatermarkSpec;
 import com.helger.phlox.cii.CiiInvoiceReader;
 import com.helger.phlox.template.PhloxTemplate;
 import com.helger.phlox.testfiles.MockPhloxTestFiles;
@@ -87,7 +95,7 @@ public final class HtmlTemplateEmitterTest
           assertTrue ("HTML output too short for " + aRes.getPath (), sHtml.length () > 500);
           assertTrue ("Missing invoice number for " + aRes.getPath (), sHtml.contains (aModel.getNumber ()));
           assertTrue ("Missing table for " + aRes.getPath (), sHtml.contains ("<table"));
-          assertFalse ("Unresolved sentinel in " + aRes.getPath (), sHtml.contains ("[[PHLOX:"));
+          assertFalse ("Unresolved sentinel in " + aRes.getPath (), sHtml.contains ("PHLOX:"));
           assertFalse ("Unresolved placeholder in " + aRes.getPath (), sHtml.contains ("{{"));
 
           final String sOutputPath = "generated/template/" +
@@ -220,6 +228,37 @@ public final class HtmlTemplateEmitterTest
   }
 
   @Test
+  public void testTwoClassesOnABlock ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final String sHtml = _render (aModel,
+                                  PhloxTemplate.fromString ("{{class:first second}}\n\ntext\n\n{{class:third}}\n{{class:fourth}}\n\nmore\n"),
+                                  Locale.ENGLISH);
+    assertTrue (sHtml, sHtml.contains ("phlox-first phlox-second"));
+    assertTrue (sHtml, sHtml.contains ("phlox-third phlox-fourth"));
+  }
+
+  @Test
+  public void testForgedSentinelIsText ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final String sName = "[[PHLOX:CLASS=logo]]Evil";
+    aModel.getSeller ().setName (sName);
+    final String sHtml = _render (aModel, PhloxTemplate.getDefault (), Locale.ENGLISH);
+    assertTrue (sHtml, sHtml.contains (sName));
+  }
+
+  @Test
+  public void testDataImageKeepsTheAlternativeText ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final String sData = "data:image/png;base64,iVBORw0KGgo=";
+    final String sHtml = _render (aModel, PhloxTemplate.fromString ("![Stamp](" + sData + ")"), Locale.ENGLISH);
+    assertTrue (sHtml, sHtml.contains ("src=\"" + sData + "\""));
+    assertTrue (sHtml, sHtml.contains ("alt=\"Stamp\""));
+  }
+
+  @Test
   public void testQrCode ()
   {
     final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
@@ -237,5 +276,119 @@ public final class HtmlTemplateEmitterTest
     assertTrue (sHtml, sHtml.contains ("height:120px"));
     assertFalse (sHtml, sHtml.contains ("Gone"));
     assertFalse (sHtml, sHtml.contains ("qrcode:"));
+  }
+
+  private static PhloxInvoice _example1 ()
+  {
+    return _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+  }
+
+  private static String _render (final HtmlRenderContext aCtx)
+  {
+    return new HtmlInvoiceWriter ().writeAsString (_example1 (), aCtx.setTemplate (PhloxTemplate.fromString ("Text\n")));
+  }
+
+  private static String _renderWatermark (final WatermarkSpec aSpec)
+  {
+    return _render (new HtmlRenderContext ().setUserWatermark (aSpec));
+  }
+
+  @Test
+  public void testEmitDoctype ()
+  {
+    final String sWith = _render (new HtmlRenderContext ());
+    assertTrue (sWith, sWith.startsWith ("<!DOCTYPE html>"));
+    final String sWithout = _render (new HtmlRenderContext ().setEmitDoctype (false));
+    assertFalse (sWithout, sWithout.toLowerCase (Locale.ROOT).contains ("<!doctype"));
+    assertTrue (sWithout, sWithout.startsWith ("<html"));
+    assertTrue (sWithout, sWithout.contains ("Text"));
+    // The setting of this call stays local
+    assertTrue (_render (new HtmlRenderContext ()).startsWith ("<!DOCTYPE html>"));
+  }
+
+  @Test
+  public void testLanguageOfTheDocument ()
+  {
+    assertTrue (_render (new HtmlRenderContext ()).contains (" lang=\"en\""));
+    assertTrue (_render (new HtmlRenderContext ().setLocale (Locale.forLanguageTag ("de-AT"))).contains (" lang=\"de-AT\""));
+  }
+
+  @Test
+  public void testEmbeddedStylesheetOnlyDropsTheDefaultStylesheet ()
+  {
+    final String sDefaultRule = ".phlox-page{width:210mm";
+    assertTrue (_render (new HtmlRenderContext ()).contains (sDefaultRule));
+
+    final String sHtml = _render (new HtmlRenderContext ().setEmbeddedStylesheet (false)
+                                                          .setCustomStylesheet (".mine{color:red}")
+                                                          .putCssVariable ("--phlox-accent", "#123456")
+                                                          .setFontFamily (new HtmlFontFamily ("a.ttf", new byte [] { 1 }, null, null, null, null, null, null)));
+    assertFalse (sHtml, sHtml.contains (sDefaultRule));
+    assertTrue (sHtml, sHtml.contains (".mine{color:red}"));
+    assertTrue (sHtml, sHtml.contains ("--phlox-accent:#123456"));
+    assertTrue (sHtml, sHtml.contains ("@font-face"));
+
+    // Nothing to write
+    assertFalse (_render (new HtmlRenderContext ().setEmbeddedStylesheet (false)).contains ("<style"));
+  }
+
+  @Test
+  public void testWatermarkSpecIsHonoured ()
+  {
+    final String sCentre = _renderWatermark (WatermarkSpec.text ("W").setFontSizePt (40f).setRotation (-30f));
+    assertTrue (sCentre, sCentre.contains ("font-size:40.0pt"));
+    assertTrue (sCentre, sCentre.contains ("position:fixed"));
+    assertTrue (sCentre, sCentre.contains ("translate(-50%,-50%) rotate(-30.0deg)"));
+
+    final String sTop = _renderWatermark (WatermarkSpec.text ("W").setPosition (EWatermarkPosition.TOP));
+    assertTrue (sTop, sTop.contains ("top:4mm"));
+    assertTrue (sTop, sTop.contains ("translateX(-50%)"));
+    assertFalse (sTop, sTop.contains ("rotate(0"));
+
+    final String sBottom = _renderWatermark (WatermarkSpec.text ("W").setPosition (EWatermarkPosition.BOTTOM));
+    assertTrue (sBottom, sBottom.contains ("top:auto"));
+    assertTrue (sBottom, sBottom.contains ("bottom:4mm"));
+
+    final String sFooter = _renderWatermark (WatermarkSpec.text ("W").setPosition (EWatermarkPosition.FOOTER_RIGHT));
+    assertTrue (sFooter, sFooter.contains ("bottom:4mm"));
+    assertTrue (sFooter, sFooter.contains ("right:4mm"));
+    assertTrue (sFooter, sFooter.contains ("transform:none"));
+
+    final String sOnce = _renderWatermark (WatermarkSpec.text ("W").setRepeatPerPage (false));
+    assertTrue (sOnce, sOnce.contains ("position:absolute"));
+  }
+
+  private static void _collectImagesRecursive (final IHCNode aNode, final ICommonsList <HCImg> aImages)
+  {
+    if (aNode instanceof final HCImg aImage)
+      aImages.add (aImage);
+    if (aNode.hasChildren ())
+      for (final IHCNode aChild : aNode.getAllChildren ())
+        _collectImagesRecursive (aChild, aImages);
+  }
+
+  @Test
+  public void testStylesOfASizedImageAreValid ()
+  {
+    final HtmlRenderContext aCtx = new HtmlRenderContext ().setTemplate (PhloxTemplate.fromString ("![Code](qrcode:abc \"height-px:80\")\n"));
+    final ICommonsList <HCImg> aImages = new CommonsArrayList <> ();
+    _collectImagesRecursive (new HtmlInvoiceWriter ().writeAsHcHtml (_example1 (), aCtx).body (), aImages);
+    assertEquals (1, aImages.size ());
+    final HCImg aImage = aImages.getFirstOrNull ();
+    assertTrue (aImage.containsStyle (ECSSProperty.MAX_HEIGHT));
+    assertTrue (aImage.containsStyle (ECSSProperty.MAX_WIDTH));
+    // A value that its property does not accept logs a warning of ph-css on every image
+    for (final ICSSValue aValue : aImage.getAllStyleValues ())
+      if (aValue instanceof final CSSValue aCssValue)
+        assertTrue (aCssValue.getValue (), aCssValue.getProperty ().isValidValue (aCssValue.getValue ()));
+  }
+
+  @Test
+  public void testClassOfACodeBlock ()
+  {
+    final String sFenced = _render (_example1 (), PhloxTemplate.fromString ("{{class:c}}\n```\ncode\n```\n"), Locale.ENGLISH);
+    assertTrue (sFenced, sFenced.contains ("<pre class=\"phlox-c\">"));
+    final String sIndented = _render (_example1 (), PhloxTemplate.fromString ("{{class:c}}\n\n    code\n"), Locale.ENGLISH);
+    assertTrue (sIndented, sIndented.contains ("<pre class=\"phlox-c\">"));
   }
 }

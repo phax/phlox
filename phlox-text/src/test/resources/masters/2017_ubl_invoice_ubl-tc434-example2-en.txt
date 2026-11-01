@@ -5,7 +5,7 @@ TOSL108
 
 Invoice issue date               June 30, 2013
 Payment due date                 July 20, 2013
-Value added tax point date code  3
+Value added tax point date code  Invoice document issue date time
 Invoice currency code            NOK
 Invoice type code                380 — Commercial invoice
 

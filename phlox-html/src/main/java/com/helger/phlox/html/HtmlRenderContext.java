@@ -108,10 +108,11 @@ public class HtmlRenderContext extends AbstractRenderContext <HtmlRenderContext>
   }
 
   /**
-   * Set the embedded stylesheet flag.
+   * Set whether the default stylesheet is embedded into the document. The CSS variables, the fonts
+   * and the custom stylesheet do not depend on it: they are written in any case.
    *
    * @param bEmbeddedStylesheet
-   *        The new value. Never {@code null}.
+   *        {@code false} to drop the default stylesheet.
    * @return this for chaining.
    */
   @NonNull
@@ -158,8 +159,8 @@ public class HtmlRenderContext extends AbstractRenderContext <HtmlRenderContext>
   }
 
   /**
-   * Set the fonts that are embedded into the document. They are part of the embedded stylesheet,
-   * so they are only used if {@link #isEmbeddedStylesheet()} is {@code true}.
+   * Set the fonts that are embedded into the document. They are written independent of
+   * {@link #isEmbeddedStylesheet()}.
    *
    * @param aFontFamily
    *        The new value. May be {@code null} for the fonts of the default stylesheet.
@@ -183,10 +184,12 @@ public class HtmlRenderContext extends AbstractRenderContext <HtmlRenderContext>
   }
 
   /**
-   * Set the emit doctype flag.
+   * Set whether the HTML doctype is written. It has an effect on
+   * {@link HtmlInvoiceWriter#writeAsString(com.helger.phlox.api.model.PhloxInvoice, HtmlRenderContext)}
+   * and {@link HtmlInvoiceWriter#writeTo(com.helger.phlox.api.model.PhloxInvoice, HtmlRenderContext, java.io.OutputStream)}.
    *
    * @param bEmitDoctype
-   *        The new value. Never {@code null}.
+   *        {@code false} to omit the doctype.
    * @return this for chaining.
    */
   @NonNull

@@ -542,9 +542,6 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
 
   private void _registerDefaultStyles ()
   {
-    // The row with the amount due of the template of an earlier version
-    putBlockStyle ("totals-due", PdfBlockStyle.fill (PLColor.gray (0xe8)));
-
     // The look of the default template
     putBlockStyle ("kind",
                    PdfBlockStyle.builder ()
@@ -720,8 +717,8 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
    * (<code>{{class:name}}</code>, <code>{{group:name}}</code>) to an object with the keys
    * <code>fill</code>, <code>text</code>, <code>padding</code>, <code>borderTop</code> and
    * <code>borderBottom</code> (objects with <code>color</code> and <code>width</code>),
-   * <code>fontSize</code>, <code>bold</code> and <code>widthPercent</code>. A style changes the
-   * style of the same name; <code>extends</code> names the style to start from and
+   * <code>fontSize</code>, <code>bold</code>, <code>widthPercent</code> and
+   * <code>keepTogether</code>. A style changes the style of the same name; <code>extends</code> names the style to start from and
    * <code>reset: true</code> starts from nothing</li>
    * </ul>
    *

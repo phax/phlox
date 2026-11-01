@@ -487,8 +487,8 @@ T p2 500.0 455.4 10.0 Roboto-Regular € 0.00
 T p2 347.2 488.5 10.0 Roboto-Bold Invoice total amount
 T p2 347.2 501.7 10.0 Roboto-Bold with VAT
 T p2 479.6 488.5 10.0 Roboto-Bold € 3,102.50
-T p2 347.2 541.5 10.0 Roboto-Regular Amount due
-T p2 481.2 541.5 10.0 Roboto-Regular € 3,102.50
+T p2 347.2 541.5 10.0 Roboto-Bold Amount due
+T p2 479.6 541.5 10.0 Roboto-Bold € 3,102.50
 T p2 66.7 581.0 7.0 Roboto-Bold Payment
 T p2 66.7 598.2 10.0 Roboto-Bold Payment means type code: Credit transfer
 T p2 66.7 611.5 10.0 Roboto-Regular Credit transfer

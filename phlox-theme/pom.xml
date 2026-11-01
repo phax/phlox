@@ -27,8 +27,8 @@
   <artifactId>phlox-theme</artifactId>
   <packaging>jar</packaging>
   <name>phlox-theme</name>
-  <description>phlox - the JSON theme that defines the layout parameters of the HTML and PDF output</description>
-  <url>https://github.com/phax/phlox/phlox-theme</url>
+  <description>phlox - the JSON theme that defines the layout parameters of the HTML, PDF and plain-text output</description>
+  <url>https://github.com/phax/phlox/tree/main/phlox-theme</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>

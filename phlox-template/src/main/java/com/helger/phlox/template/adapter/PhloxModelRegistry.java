@@ -17,6 +17,7 @@
 package com.helger.phlox.template.adapter;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
@@ -72,8 +73,8 @@ import com.helger.phlox.api.model.PhloxVatBreakdown;
 
 /**
  * Static (Class, BT/BG name) → getter registry. Drives the Mustache adapter's name resolution.
- * Every BT/BG referenced by {@code default.ptpl} (and by extension, every BT/BG documented in
- * {@code wiki/Domain-Model.md}) is registered here.
+ * Every BT/BG referenced by {@code default.ptpl} (and by extension, every BT/BG documented on the
+ * wiki page Domain-Model) is registered here.
  * <p>
  * Multiple BG positions sharing a Java type — e.g. {@code PhloxPostalAddress} is reached via BG-5
  * (BT-35..40), BG-8 (BT-50..55), BG-12 (BT-64..69) and BG-15 (BT-75..80) — register all BT aliases
@@ -147,6 +148,26 @@ public final class PhloxModelRegistry
         if (StringHelper.isNotEmpty (aClass.getListID ()))
           aSB.append (aClass.getListID ()).append (':');
         aSB.append (aClass.getCode ());
+      }
+    return aSB.length () == 0 ? null : aSB.toString ();
+  }
+
+  /**
+   * Join the version of the item classification schemes as <code>listID:version</code>, separated
+   * by a comma, in the order of the classifications.
+   */
+  @Nullable
+  private static String _joinClassificationVersions (@NonNull final PhloxItem aItem)
+  {
+    final StringBuilder aSB = new StringBuilder ();
+    for (final PhloxItemClassification aClass : aItem.classifications ())
+      if (StringHelper.isNotEmpty (aClass.getListVersionID ()))
+      {
+        if (aSB.length () > 0)
+          aSB.append (", ");
+        if (StringHelper.isNotEmpty (aClass.getListID ()))
+          aSB.append (aClass.getListID ()).append (':');
+        aSB.append (aClass.getListVersionID ());
       }
     return aSB.length () == 0 ? null : aSB.toString ();
   }
@@ -291,10 +312,10 @@ public final class PhloxModelRegistry
     _add (PhloxBuyer.class, "BG-8", PhloxBuyer::getPostalAddress);
     _add (PhloxBuyer.class, "BG-9", PhloxBuyer::getContact);
 
-    // BG-5 (seller): BT-35..40
-    // BG-8 (buyer): BT-50..55
-    // BG-12 (tax rep): BT-64, BT-66, BT-67, BT-69
-    // BG-15 (deliver-to): BT-75, BT-77, BT-78, BT-80
+    // BG-5 (seller): BT-35..40, BT-162
+    // BG-8 (buyer): BT-50..55, BT-163
+    // BG-12 (tax rep): BT-64..69, BT-164
+    // BG-15 (deliver-to): BT-75..80, BT-165
     _add (PhloxPostalAddress.class, "BT-35", PhloxPostalAddress::getLine1);
     _add (PhloxPostalAddress.class, "BT-36", PhloxPostalAddress::getLine2);
     _add (PhloxPostalAddress.class, "BT-37", PhloxPostalAddress::getCity);
@@ -507,6 +528,7 @@ public final class PhloxModelRegistry
     _add (PhloxItem.class, "BT-156", PhloxItem::getBuyerItemID);
     _add (PhloxItem.class, "BT-157", PhloxItem::getStandardItemID);
     _add (PhloxItem.class, "BT-158", PhloxModelRegistry::_joinClassifications);
+    _add (PhloxItem.class, "BT-158-2", PhloxModelRegistry::_joinClassificationVersions);
     _add (PhloxItem.class, "BT-159", PhloxItem::getCountryOfOrigin);
     _add (PhloxItem.class, "BT-196", PhloxItem::getGoodsServicesCode);
     _add (PhloxItem.class, "BG-32", PhloxItem::attributes);
@@ -583,5 +605,45 @@ public final class PhloxModelRegistry
   public static boolean knows (@NonNull final Class <?> aClass)
   {
     return REG.containsKey (aClass);
+  }
+
+  /**
+   * Check if any model class has a term of this name, independent of where it can be used.
+   *
+   * @param sName
+   *        The bare BT/BG name. Never {@code null}.
+   * @return {@code true} when the name is registered for any model class.
+   */
+  public static boolean isKnownName (@NonNull final String sName)
+  {
+    for (final ICommonsMap <String, Function <Object, Object>> aMap : REG.values ())
+      if (aMap.containsKey (sName))
+        return true;
+    return false;
+  }
+
+  /**
+   * Check if a value has nothing to show. A model object is empty if all its registered terms are.
+   *
+   * @param aValue
+   *        The value to check. May be {@code null}.
+   * @return {@code true} for {@code null}, an empty text, an empty collection and a model object
+   *         without any content.
+   */
+  public static boolean isEmptyRecursive (@Nullable final Object aValue)
+  {
+    if (aValue == null)
+      return true;
+    if (aValue instanceof final String sValue)
+      return sValue.isEmpty ();
+    if (aValue instanceof final Collection <?> aCollection)
+      return aCollection.isEmpty ();
+    final ICommonsMap <String, Function <Object, Object>> aMap = REG.get (aValue.getClass ());
+    if (aMap == null)
+      return false;
+    for (final Function <Object, Object> aGetter : aMap.values ())
+      if (!isEmptyRecursive (aGetter.apply (aValue)))
+        return false;
+    return true;
   }
 }

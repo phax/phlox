@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>phlox-cli</name>
   <description>phlox - CLI wrapper (shaded fat JAR)</description>
-  <url>https://github.com/phax/phlox/phlox-cli</url>
+  <url>https://github.com/phax/phlox/tree/main/phlox-cli</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>
@@ -114,8 +114,10 @@
           <transformers>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
             <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
-              <resource>.RSA</resource>
-              <resource>.SF</resource>
+              <resources>
+                <resource>.RSA</resource>
+                <resource>.SF</resource>
+              </resources>
             </transformer>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
               <mainClass>com.helger.phlox.cli.PhloxCli</mainClass>

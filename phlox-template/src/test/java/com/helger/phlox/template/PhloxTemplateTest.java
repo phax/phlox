@@ -235,7 +235,7 @@ public final class PhloxTemplateTest
     aCtx.setLocale (Locale.ENGLISH);
     final String sCommonMark = PhloxTemplate.getDefault ().renderSubstituted (aInvoice, aCtx);
 
-    assertTrue (sCommonMark.contains ("BR-1 (ABE), BR-2"));
+    assertTrue (sCommonMark.contains ("BR-1 \\(ABE\\), BR-2"));
     assertTrue (sCommonMark.contains ("12:05:03+01:00"));
     assertTrue (sCommonMark.contains ("DN-77"));
     assertTrue (sCommonMark.contains ("Net 30 days"));
@@ -297,7 +297,7 @@ public final class PhloxTemplateTest
     aCtx.setLocale (Locale.ENGLISH);
 
     final PhloxTemplate aTpl = PhloxTemplate.fromString ("{{BT-1}}");
-    assertEquals ("1\\. a \\| \\*b\\*<br>\\- !\\[x\\](http://evil/x.png)",
+    assertEquals ("1\\. a \\| \\*b\\*<br>\\- !\\[x\\]\\(http://evil/x.png\\)",
                   aTpl.renderSubstituted (aInvoice, aCtx));
   }
 

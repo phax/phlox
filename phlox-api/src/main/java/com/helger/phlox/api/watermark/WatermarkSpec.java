@@ -217,7 +217,10 @@ public class WatermarkSpec
   }
 
   /**
-   * Set whether the watermark should repeat on every page.
+   * Set whether the watermark should repeat on every page. Otherwise the PDF writer draws it on the
+   * first page only, and the HTML writer positions it <code>absolute</code> instead of
+   * <code>fixed</code>, so that a browser prints it on the first page only. The plain-text writer
+   * shows it once in any case.
    *
    * @param bRepeatPerPage
    *        {@code true} to repeat.

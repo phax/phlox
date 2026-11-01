@@ -28,7 +28,7 @@
   <packaging>jar</packaging>
   <name>phlox-testfiles</name>
   <description>phlox - Curated EN 16931 example invoice corpus for tests</description>
-  <url>https://github.com/phax/phlox/phlox-testfiles</url>
+  <url>https://github.com/phax/phlox/tree/main/phlox-testfiles</url>
   <inceptionYear>2026</inceptionYear>
 
   <licenses>

@@ -18,12 +18,16 @@ package com.helger.phlox.pdf;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
 
 import org.commonmark.ext.gfm.strikethrough.Strikethrough;
 import org.commonmark.ext.gfm.tables.TableBlock;
@@ -62,6 +66,7 @@ import com.helger.pdflayout.element.text.PLText;
 import com.helger.pdflayout.element.vbox.PLVBox;
 import com.helger.pdflayout.richtext.element.PLRichText;
 import com.helger.pdflayout.richtext.run.PLFontFamily;
+import com.helger.pdflayout.richtext.run.PLRichTextRun;
 import com.helger.pdflayout.richtext.run.PLRichTextRunBuilder;
 import com.helger.pdflayout.spec.BorderStyleSpec;
 import com.helger.pdflayout.spec.EHorzAlignment;
@@ -70,6 +75,8 @@ import com.helger.pdflayout.spec.PaddingSpec;
 import com.helger.pdflayout.spec.PreloadFont;
 import com.helger.pdflayout.spec.WidthSpec;
 import com.helger.pdflayout.tagging.EPLStructureRole;
+import com.helger.phlox.api.PhloxLogHelper;
+import com.helger.phlox.api.PhloxRuntimeException;
 import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
@@ -84,8 +91,16 @@ import com.helger.phlox.template.ast.PhloxTemplateAst;
  * table cell are therefore folded into the markup of {@code ph-pdf-layout-richtext}
  * (<code>**bold**</code>, <code>*italic*</code>, <code>~~strikethrough~~</code>,
  * <code>`code`</code> for the monospace font, <code>{link[uri]}text{link}</code>), which
- * {@code PLRichText} wraps and draws. Inline images are skipped. A block class that was attached
- * with {@code {{class:name}}} is looked up with {@link PdfRenderContext#getBlockStyle(String)}.
+ * {@code PLRichText} wraps and draws. Inline images are skipped; inline raw HTML other than
+ * {@code <br>} is shown as text, as in the other formats. A block class that was attached with
+ * {@code {{class:name}}} is looked up with {@link PdfRenderContext#getBlockStyle(String)}. The text
+ * colour, the font size and the bold of a group, row, table, list or block quote apply to the text
+ * inside it, unless that has an own value; a heading and a table header row keep their font size.
+ * <p>
+ * Only a page break at the top level of the template, or directly in a group at the top level, can
+ * work, because ph-pdf-layout handles page breaks only as direct children of a page set. Such a
+ * group is split in two groups of the same style at the page break. A page break in any other place
+ * is ignored with a warning.
  *
  * @author Philip Helger
  */
@@ -98,6 +113,8 @@ public final class PdfTemplateEmitter extends
   private static final Pattern BR_TAG = Pattern.compile ("<br\\s*/?>", Pattern.CASE_INSENSITIVE);
   private static final float PARAGRAPH_GAP = 4f;
   private static final float ROW_GAP = 14f;
+  private static final float CELL_PADDING = 3f;
+  private static final float MIN_COLUMN_WIDTH = 14f;
   private static final float LOGO_HEIGHT = 40f;
   private static final float MAX_IMAGE_WIDTH = 200f;
   // 96 CSS pixels are 72 points, so that height-px gives the same size as in HTML
@@ -105,6 +122,11 @@ public final class PdfTemplateEmitter extends
   // Width of the column with the list marker: a bullet, or a number like "10."
   private static final float BULLET_WIDTH = 10f;
   private static final float NUMBER_WIDTH = 16f;
+  // A block of that part of the content height of a page is not kept together: the height does not
+  // include the padding and margin of the block
+  private static final float MAX_KEEP_TOGETHER_RATIO = 0.9f;
+  // 100 MB in the usual four bytes per pixel. Far above the logos and QR codes of an invoice
+  private static final long MAX_IMAGE_PIXELS = 25_000_000L;
 
   private final PdfRenderContext m_aCtx;
 
@@ -114,8 +136,14 @@ public final class PdfTemplateEmitter extends
   /** The width in points that is available for a block at the current position. */
   private float m_fContentWidth;
 
-  /** The text colour of the enclosing group, if it has one. */
-  private PLColor m_aInheritedTextColor;
+  /** The highest block that is moved to the next page as a whole. */
+  private final float m_fMaxKeepTogetherHeight;
+
+  /** The combined style of the enclosing groups, if they have one. */
+  private PdfBlockStyle m_aInheritedStyle;
+
+  /** The consumer of the content of the page set: only there a page break works. */
+  private Consumer <IPLRenderableObject <?>> m_aPageSink;
 
   /**
    * Create a new emitter.
@@ -128,24 +156,56 @@ public final class PdfTemplateEmitter extends
   {
     m_aCtx = aCtx;
     m_fContentWidth = aCtx.getPageSize ().getWidth () - aCtx.getMargins ().getXSum ();
+    m_fMaxKeepTogetherHeight = (aCtx.getPageSize ().getHeight () - aCtx.getMargins ().getYSum ()) *
+                               MAX_KEEP_TOGETHER_RATIO;
   }
 
+  /**
+   * Apply a style and the inherited style to a font.
+   *
+   * @param aFont
+   *        The font of the block.
+   * @param aStyle
+   *        The style of the block. May be {@code null}.
+   * @param bInheritFontSize
+   *        {@code false} for a block with a size of its own, which only the own style can change.
+   */
   @NonNull
-  private FontSpec _styled (@NonNull final FontSpec aFont, @Nullable final PdfBlockStyle aStyle)
+  private FontSpec _styled (@NonNull final FontSpec aFont,
+                            @Nullable final PdfBlockStyle aStyle,
+                            final boolean bInheritFontSize)
   {
+    final PdfBlockStyle aEffective = aStyle == null ? m_aInheritedStyle
+                                                    : m_aInheritedStyle == null ? aStyle
+                                                                                : m_aInheritedStyle.getOverlaidWith (aStyle);
     FontSpec ret = aFont;
-    final PLColor aColor = aStyle != null && aStyle.getTextColor () != null ? aStyle.getTextColor ()
-                                                                            : m_aInheritedTextColor;
-    if (aColor != null)
-      ret = ret.getCloneWithDifferentColor (aColor);
-    if (aStyle != null)
+    if (aEffective != null)
     {
-      if (aStyle.hasFontSize ())
-        ret = ret.getCloneWithDifferentFontSize (aStyle.getFontSize ().floatValue ());
-      if (aStyle.isBold ())
+      if (aEffective.getTextColor () != null)
+        ret = ret.getCloneWithDifferentColor (aEffective.getTextColor ());
+      final PdfBlockStyle aSizeStyle = bInheritFontSize ? aEffective : aStyle;
+      if (aSizeStyle != null && aSizeStyle.hasFontSize ())
+        ret = ret.getCloneWithDifferentFontSize (aSizeStyle.getFontSize ().floatValue ());
+      if (aEffective.isBold ())
         ret = ret.getCloneWithDifferentFont (m_aCtx.getFontFamily ().getBold ());
     }
     return ret;
+  }
+
+  /** Run an action with the text style of an enclosing block. */
+  private void _withInheritedStyle (@Nullable final PdfBlockStyle aStyle, @NonNull final Runnable aAction)
+  {
+    final PdfBlockStyle aOldStyle = m_aInheritedStyle;
+    if (aStyle != null)
+      m_aInheritedStyle = aOldStyle == null ? aStyle : aOldStyle.getOverlaidWith (aStyle);
+    try
+    {
+      aAction.run ();
+    }
+    finally
+    {
+      m_aInheritedStyle = aOldStyle;
+    }
   }
 
   /** Apply the background, the padding and the lines of a block style to a box. */
@@ -171,13 +231,18 @@ public final class PdfTemplateEmitter extends
   @Nullable
   private PdfBlockStyle _getStyle (@NonNull final PhloxTemplateAst aAst, @NonNull final Node aNode)
   {
-    final String sBlockClass = aAst.getBlockClass (aNode);
-    if (sBlockClass == null)
-      return null;
-    final PdfBlockStyle aStyle = m_aCtx.getBlockStyle (sBlockClass);
-    if (aStyle == null)
-      LOGGER.debug ("No PDF block style registered for template class '" + sBlockClass + "' - rendering it unstyled");
-    return aStyle;
+    PdfBlockStyle ret = null;
+    for (final String sBlockClass : aAst.getBlockClasses (aNode))
+    {
+      final PdfBlockStyle aStyle = m_aCtx.getBlockStyle (sBlockClass);
+      if (aStyle == null)
+        LOGGER.debug ("No PDF block style registered for template class '" +
+                      PhloxLogHelper.sanitise (sBlockClass) +
+                      "' - skipping it");
+      else
+        ret = ret == null ? aStyle : ret.getOverlaidWith (aStyle);
+    }
+    return ret;
   }
 
   /**
@@ -243,7 +308,7 @@ public final class PdfTemplateEmitter extends
                                                       @NonNull final Node aParent,
                                                       @NonNull final FontSpec aBase,
                                                       @NonNull final EHorzAlignment eAlign,
-                                                      final boolean bVertSplittable)
+                                                      final boolean bKeepTogether)
   {
     final ICommonsList <StringBuilder> aLines = new CommonsArrayList <> ();
     aLines.add (new StringBuilder ());
@@ -252,7 +317,7 @@ public final class PdfTemplateEmitter extends
     final ICommonsList <String> aNonBlank = new CommonsArrayList <> ();
     for (final StringBuilder aLine : aLines)
     {
-      final String sLine = aLine.toString ().strip ();
+      final String sLine = PdfTextSupport.collapseSpaces (aLine.toString ()).strip ();
       if (!sLine.isEmpty ())
         aNonBlank.add (sLine);
     }
@@ -266,13 +331,14 @@ public final class PdfTemplateEmitter extends
     final PLFontFamily aCodeFamily = m_aCtx.getFontFamily () == PdfFontFamily.STANDARD ? PLFontFamily.monospace ()
                                                                                        : aFamily;
     // A backslash in front of the line ending is a hard line break in the markup
-    final PLRichText aRichText = new PLRichText (new PLRichTextRunBuilder (aFamily,
-                                                                           aCodeFamily,
-                                                                           aBase.getFontSize (),
-                                                                           aBase.getColor ()).buildFromMarkup (String.join ("\\\n",
-                                                                                                                            aNonBlank)));
+    final ICommonsList <PLRichTextRun> aRuns = new PLRichTextRunBuilder (aFamily,
+                                                                         aCodeFamily,
+                                                                         aBase.getFontSize (),
+                                                                         aBase.getColor ()).buildFromMarkup (String.join ("\\\n",
+                                                                                                                          aNonBlank));
+    final PLRichText aRichText = bKeepTogether ? new PdfKeepTogether.RichText (aRuns, m_fMaxKeepTogetherHeight)
+                                               : new PLRichText (aRuns);
     aRichText.setHorzAlign (eAlign);
-    aRichText.setVertSplittable (bVertSplittable);
     return aRichText;
   }
 
@@ -309,7 +375,7 @@ public final class PdfTemplateEmitter extends
     final IPLRenderableObject <?> aContent;
     try
     {
-      aContent = _createInlineBlock (aAst, aHeading, _styled (aFont, aStyle), EHorzAlignment.LEFT, false);
+      aContent = _createInlineBlock (aAst, aHeading, _styled (aFont, aStyle, false), EHorzAlignment.LEFT, true);
     }
     finally
     {
@@ -331,15 +397,41 @@ public final class PdfTemplateEmitter extends
     aSink.accept (_decorate (aBox, aStyle));
   }
 
+  /**
+   * Read an image. The size is checked before the pixels are decoded: a small file can unpack to a
+   * huge image, and the image can come from the invoice.
+   *
+   * @return The image, or {@code null} if it has no supported format, is damaged or is too large.
+   */
   @Nullable
   private static BufferedImage _readImage (@NonNull final PhloxResolvedImage aResolved)
   {
-    try
+    try (final ImageInputStream aIIS = new MemoryCacheImageInputStream (new NonBlockingByteArrayInputStream (aResolved.getBinary ())))
     {
-      return ImageIO.read (new NonBlockingByteArrayInputStream (aResolved.getBinary ()));
+      final Iterator <ImageReader> aReaders = ImageIO.getImageReaders (aIIS);
+      if (!aReaders.hasNext ())
+        return null;
+      final ImageReader aReader = aReaders.next ();
+      try
+      {
+        aReader.setInput (aIIS);
+        final long nPixels = (long) aReader.getWidth (0) * aReader.getHeight (0);
+        if (nPixels > MAX_IMAGE_PIXELS)
+        {
+          LOGGER.warn ("An image of " + nPixels + " pixels exceeds the limit of " + MAX_IMAGE_PIXELS + " pixels");
+          return null;
+        }
+        return aReader.read (0);
+      }
+      finally
+      {
+        aReader.dispose ();
+      }
     }
-    catch (final IOException ex)
+    catch (final IOException | RuntimeException | OutOfMemoryError ex)
     {
+      // Decoders fail with more than an IOException on damaged data
+      LOGGER.debug ("Failed to read an image: " + PhloxLogHelper.sanitise (ex.getMessage ()));
       return null;
     }
   }
@@ -351,15 +443,17 @@ public final class PdfTemplateEmitter extends
     final PhloxResolvedImage aResolved = aAst.getResolvedImage (aImage);
     if (aResolved == null)
     {
-      LOGGER.warn ("Template image '" + aImage.getDestination () + "' could not be resolved - skipping it");
+      LOGGER.warn ("Template image '" +
+                   PhloxLogHelper.sanitise (aImage.getDestination ()) +
+                   "' could not be resolved - skipping it");
       return;
     }
     final BufferedImage aBufferedImage = _readImage (aResolved);
     if (aBufferedImage == null)
     {
       LOGGER.warn ("Template image '" +
-                   aImage.getDestination () +
-                   "' is not a raster image PDF can embed - skipping it");
+                   PhloxLogHelper.sanitise (aImage.getDestination ()) +
+                   "' is not a raster image of a usable size that PDF can embed - skipping it");
       return;
     }
     final float fRatio = (float) aBufferedImage.getWidth () / aBufferedImage.getHeight ();
@@ -375,10 +469,15 @@ public final class PdfTemplateEmitter extends
       fWidth = fMaxWidth;
       fHeight = fWidth / fRatio;
     }
+    if (fHeight > m_fMaxKeepTogetherHeight)
+    {
+      fHeight = m_fMaxKeepTogetherHeight;
+      fWidth = fHeight * fRatio;
+    }
     // Tagged PDF: a figure needs an alternate text
     String sAltText = aResolved.getAltText ();
     if (StringHelper.isEmpty (sAltText))
-      sAltText = LOGO_URL.equals (aImage.getDestination ()) ? "Logo" : "Image";
+      sAltText = m_aCtx.label (LOGO_URL.equals (aImage.getDestination ()) ? "image.alt.logo" : "image.alt.default");
     final PLImage aPLImage = new PLImage (aBufferedImage, fWidth, fHeight).setMarginBottom (PARAGRAPH_GAP)
                                                                           .setAlternateText (sAltText);
     // The default JPEG compression blurs the modules of a QR code
@@ -401,9 +500,9 @@ public final class PdfTemplateEmitter extends
     final PdfBlockStyle aStyle = _getStyle (aAst, aParagraph);
     final IPLRenderableObject <?> aContent = _createInlineBlock (aAst,
                                                                  aParagraph,
-                                                                 _styled (m_aCtx.getBodyFont (), aStyle),
+                                                                 _styled (m_aCtx.getBodyFont (), aStyle, true),
                                                                  EHorzAlignment.LEFT,
-                                                                 true);
+                                                                 false);
     if (aContent == null)
       return;
     aSink.accept (_decorate (new PLBox (aContent).setMarginBottom (PARAGRAPH_GAP), aStyle));
@@ -413,13 +512,14 @@ public final class PdfTemplateEmitter extends
   private IPLRenderableObject <?> _createCell (@NonNull final PhloxTemplateAst aAst,
                                                @NonNull final TableCell aCell,
                                                @NonNull final FontSpec aFont,
-                                               @NonNull final EHorzAlignment eAlign)
+                                               @NonNull final EHorzAlignment eAlign,
+                                               final float fPadding)
   {
-    final IPLRenderableObject <?> aContent = _createInlineBlock (aAst, aCell, aFont, eAlign, true);
+    final IPLRenderableObject <?> aContent = _createInlineBlock (aAst, aCell, aFont, eAlign, false);
     if (aContent == null)
       return new PLSpacerX (1f);
     // The box aligns its content inside the width of the cell
-    return new PLBox (aContent).setPadding (new PaddingSpec (3)).setHorzAlign (eAlign);
+    return new PLBox (aContent).setPadding (new PaddingSpec (fPadding)).setHorzAlign (eAlign);
   }
 
   @NonNull
@@ -507,12 +607,22 @@ public final class PdfTemplateEmitter extends
     }
     for (int i = 0; i < nColumns; ++i)
       ret[i] = ret[i] * 100f / fSum;
+
+    // A very long word must not push the other columns below the padding of their cells
+    final float fMinPercent = MIN_COLUMN_WIDTH * 100f / m_fContentWidth;
+    fSum = 0;
+    for (int i = 0; i < nColumns; ++i)
+      fSum += Math.max (ret[i], fMinPercent);
+    if (fSum > 100.001f)
+      for (int i = 0; i < nColumns; ++i)
+        ret[i] = Math.max (ret[i], fMinPercent) * 100f / fSum;
     return ret;
   }
 
-  private void _addTable (@NonNull final PhloxTemplateAst aAst,
-                          @NonNull final TableBlock aTable,
-                          @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  private void _addTableContent (@NonNull final PhloxTemplateAst aAst,
+                                 @NonNull final TableBlock aTable,
+                                 @Nullable final PdfBlockStyle aTableStyle,
+                                 @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
     final Node aHead = aTable.getFirstChild ();
     final Node aFirstRow = aHead == null ? null : aHead.getFirstChild ();
@@ -524,7 +634,8 @@ public final class PdfTemplateEmitter extends
     if (nColumns == 0)
       return;
 
-    final PLTable aTbl = PLTable.createWithPercentage (_columnWidths (aTable, nColumns));
+    final float [] aColumnWidths = _columnWidths (aTable, nColumns);
+    final PLTable aTbl = PLTable.createWithPercentage (aColumnWidths);
     // A header row without any text (as in a table of key-value pairs) is not shown
     final boolean bShowHeader = _textLength (aFirstRow) > 0;
     if (bShowHeader)
@@ -543,7 +654,9 @@ public final class PdfTemplateEmitter extends
       {
         final PdfBlockStyle aStyle = _getStyle (aAst, aRowNode);
         final FontSpec aBaseFont = bHead ? m_aCtx.getTableHeaderFont () : m_aCtx.getBodyFont ();
-        final ICommonsList <PLTableCell> aCells = new CommonsArrayList <> ();
+        final float fPadding = aStyle != null && aStyle.getPadding () > 0 ? aStyle.getPadding () : CELL_PADDING;
+        final PdfKeepTogether.TableRow aRow = new PdfKeepTogether.TableRow (m_fMaxKeepTogetherHeight);
+        int nColumn = 0;
         for (Node aCellNode = aRowNode.getFirstChild (); aCellNode instanceof final TableCell aCell; aCellNode = aCellNode.getNext ())
         {
           m_bUppercase = bHead;
@@ -552,38 +665,67 @@ public final class PdfTemplateEmitter extends
           {
             aPLCell = new PLTableCell (_createCell (aAst,
                                                     aCell,
-                                                    _styled (aBaseFont, aStyle),
-                                                    _align (aCell.getAlignment ())));
+                                                    _styled (aBaseFont, aStyle, !bHead),
+                                                    _align (aCell.getAlignment ()),
+                                                    fPadding));
           }
           finally
           {
             m_bUppercase = false;
           }
-          if (bHead)
-            aPLCell.setBorderBottom (new BorderStyleSpec (m_aCtx.getPalette ().getInk (), 1f));
+          if (aStyle != null && aStyle.getBorderTopColor () != null)
+            aPLCell.setBorderTop (new BorderStyleSpec (aStyle.getBorderTopColor (), aStyle.getBorderWidth ()));
+          if (aStyle != null && aStyle.getBorderBottomColor () != null)
+            aPLCell.setBorderBottom (new BorderStyleSpec (aStyle.getBorderBottomColor (), aStyle.getBorderWidth ()));
           else
-            aPLCell.setBorderBottom (new BorderStyleSpec (m_aCtx.getPalette ().getRule (), 0.5f));
+            if (bHead)
+              aPLCell.setBorderBottom (new BorderStyleSpec (m_aCtx.getPalette ().getInk (), 1f));
+            else
+              aPLCell.setBorderBottom (new BorderStyleSpec (m_aCtx.getPalette ().getRule (), 0.5f));
           if (aStyle != null && aStyle.getFillColor () != null)
             aPLCell.setFillColor (aStyle.getFillColor ());
-          aCells.add (aPLCell);
+          aRow.addCell (aPLCell, WidthSpec.perc (aColumnWidths[nColumn]));
+          nColumn++;
         }
         // Rows may have fewer cells than the table has columns
-        while (aCells.size () < nColumns)
-          aCells.add (PLTableCell.createEmptyCell ());
-        aTbl.addAndReturnRow (aCells).setVertSplittable (false);
+        for (; nColumn < nColumns; ++nColumn)
+          aRow.addCell (PLTableCell.createEmptyCell (), WidthSpec.perc (aColumnWidths[nColumn]));
+        aTbl.addRow (aRow);
       }
     }
-    aSink.accept (aTbl);
+    aSink.accept (aTableStyle == null ? aTbl : _decorate (new PLBox (aTbl), aTableStyle));
   }
 
-  private void _addCodeBlock (@NonNull final String sLiteral, @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  private void _addTable (@NonNull final PhloxTemplateAst aAst,
+                          @NonNull final TableBlock aTable,
+                          @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    final FontSpec aFont = new FontSpec (PreloadFont.MONOSPACE, m_aCtx.getBodyFont ().getFontSize () - 1f);
+    final PdfBlockStyle aStyle = _getStyle (aAst, aTable);
+    _withInheritedStyle (aStyle, () -> _addTableContent (aAst, aTable, aStyle, aSink));
+  }
+
+  /**
+   * Add a code block. It uses the monospace font of PDF only with the standard fonts: a custom font
+   * family must be used for everything, because the standard fonts lack most scripts and are not
+   * embedded, which PDF/A does not allow.
+   */
+  private void _addCodeBlock (@NonNull final PhloxTemplateAst aAst,
+                              @NonNull final Node aBlock,
+                              @NonNull final String sLiteral,
+                              @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  {
+    final PdfBlockStyle aStyle = _getStyle (aAst, aBlock);
+    final PreloadFont aCodeFont = m_aCtx.getFontFamily () == PdfFontFamily.STANDARD ? PreloadFont.MONOSPACE
+                                                                                    : m_aCtx.getFontFamily ().getRegular ();
+    final FontSpec aFont = _styled (new FontSpec (aCodeFont, m_aCtx.getBodyFont ().getFontSize () - 1f), aStyle, true);
     final PLVBox aLines = new PLVBox ();
     // The line breaks of the CommonMark literal are normalised to LF
     for (final String sLine : StringHelper.getExploded ('\n', sLiteral.stripTrailing ()))
       aLines.addRow (new PLText (sLine.isEmpty () ? " " : sLine, aFont));
-    aSink.accept (new PLBox (aLines).setFillColor (PLColor.gray (0xf5)).setPadding (4).setMarginBottom (PARAGRAPH_GAP));
+    aSink.accept (_decorate (new PLBox (aLines).setFillColor (PLColor.gray (0xf5))
+                                               .setPadding (4)
+                                               .setMarginBottom (PARAGRAPH_GAP),
+                             aStyle));
   }
 
   /**
@@ -593,8 +735,8 @@ public final class PdfTemplateEmitter extends
   @NonNull
   private IBulletPointCreator _createMarkerCreator (@NonNull final IntFunction <String> aMarkerText)
   {
-    final FontSpec aFont = _styled (m_aCtx.getBodyFont (), null);
-    final PLFontFamily aFamily = m_aCtx.getFontFamily ().getAsPLFontFamily ();
+    final FontSpec aFont = _styled (m_aCtx.getBodyFont (), null, true);
+    final PLFontFamily aFamily = _fontFamily (aFont);
     return nIndex -> PLRichText.createFromMarkup (PdfTextSupport.escapeMarkup (aMarkerText.apply (nIndex)),
                                                   aFamily,
                                                   aFont.getFontSize (),
@@ -603,18 +745,119 @@ public final class PdfTemplateEmitter extends
 
   private void _addList (@NonNull final PhloxTemplateAst aAst,
                          @NonNull final Node aList,
-                         @NonNull final IBulletPointCreator aCreator,
+                         @NonNull final IntFunction <String> aMarkerText,
                          final float fMarkerWidth,
                          @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    final PLBulletPointList aBullets = new PLBulletPointList (WidthSpec.abs (fMarkerWidth), aCreator);
-    for (Node aItem = aList.getFirstChild (); aItem instanceof ListItem; aItem = aItem.getNext ())
+    final PdfBlockStyle aStyle = _getStyle (aAst, aList);
+    _withInheritedStyle (aStyle, () -> {
+      final PLBulletPointList aBullets = new PLBulletPointList (WidthSpec.abs (fMarkerWidth),
+                                                                _createMarkerCreator (aMarkerText));
+      for (Node aItem = aList.getFirstChild (); aItem instanceof ListItem; aItem = aItem.getNext ())
+      {
+        final PLVBox aContent = new PLVBox ();
+        visitBlockChildren (aAst, aItem, aContent::addRow);
+        aBullets.addBulletPoint (aContent);
+      }
+      aSink.accept (_decorate (new PLBox (aBullets).setMarginBottom (PARAGRAPH_GAP), aStyle));
+    });
+  }
+
+  /** Create the box around the blocks of a group or row. */
+  @NonNull
+  private static PLBox _createGroupBox (@NonNull final IPLRenderableObject <?> aContent,
+                                        @Nullable final PdfBlockStyle aStyle)
+  {
+    // Tagged PDF: a group or row is a division
+    return _decorate (new PLBox (aContent).setMarginBottom (PARAGRAPH_GAP).setStructureRole (EPLStructureRole.DIV),
+                      aStyle);
+  }
+
+  @NonNull
+  private PLVBox _createGroupContent (@Nullable final PdfBlockStyle aStyle)
+  {
+    return aStyle != null && aStyle.isKeepTogether () ? new PdfKeepTogether.VBox (m_fMaxKeepTogetherHeight)
+                                                      : new PLVBox ();
+  }
+
+  /**
+   * Add the blocks of a group below each other. A page break directly in a group of the top level
+   * splits the group, because a page break only works as a direct child of the page set.
+   */
+  private void _addStackedGroup (@NonNull final PhloxTemplateAst aAst,
+                                 @NonNull final PhloxGroupNode aGroup,
+                                 @Nullable final PdfBlockStyle aStyle,
+                                 @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  {
+    PLVBox aBlocks = _createGroupContent (aStyle);
+    boolean bSplit = false;
+    for (Node aChild = aGroup.getFirstChild (); aChild != null; aChild = aChild.getNext ())
     {
-      final PLVBox aContent = new PLVBox ();
-      visitBlockChildren (aAst, aItem, aContent::addRow);
-      aBullets.addBulletPoint (aContent);
+      if (aChild instanceof PhloxPageBreakNode && aSink == m_aPageSink)
+      {
+        if (aBlocks.getRowCount () > 0)
+          aSink.accept (_createGroupBox (aBlocks, aStyle));
+        aSink.accept (new PLPageBreak (true));
+        aBlocks = _createGroupContent (aStyle);
+        bSplit = true;
+      }
+      else
+      {
+        final PLVBox aChildTarget = aBlocks;
+        visitBlock (aAst, aChild, aChildTarget::addRow);
+      }
     }
-    aSink.accept (new PLBox (aBullets).setMarginBottom (PARAGRAPH_GAP));
+    if (!bSplit || aBlocks.getRowCount () > 0)
+      aSink.accept (_createGroupBox (aBlocks, aStyle));
+  }
+
+  /**
+   * Add the cells of a row side by side.
+   */
+  private void _addRowGroup (@NonNull final PhloxTemplateAst aAst,
+                             @NonNull final PhloxGroupNode aGroup,
+                             @Nullable final PdfBlockStyle aStyle,
+                             @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  {
+    // A row (parties, totals) is moved to the next page as a whole
+    final PLHBox aRow = new PdfKeepTogether.HBox (m_fMaxKeepTogetherHeight);
+    // Work out the width of the cells, so that the tables in them can plan their columns
+    final float fRowWidth = m_fContentWidth;
+    float fFixedPercent = 0;
+    int nStarCells = 0;
+    for (Node aCell = aGroup.getFirstChild (); aCell != null; aCell = aCell.getNext ())
+    {
+      final PdfBlockStyle aCellStyle = aCell instanceof PhloxGroupNode ? _getStyle (aAst, aCell) : null;
+      if (aCellStyle != null && aCellStyle.getWidthPercent () != null)
+        fFixedPercent += aCellStyle.getWidthPercent ().floatValue ();
+      else
+        nStarCells++;
+    }
+    for (Node aCell = aGroup.getFirstChild (); aCell != null; aCell = aCell.getNext ())
+    {
+      final PLVBox aCellContent = new PLVBox ();
+      final PdfBlockStyle aCellStyle = aCell instanceof PhloxGroupNode ? _getStyle (aAst, aCell) : null;
+      final float fCellPercent = aCellStyle != null && aCellStyle.getWidthPercent () != null ? aCellStyle.getWidthPercent ()
+                                                                                                         .floatValue ()
+                                                                                             : (100f - fFixedPercent) /
+                                                                                               Math.max (1, nStarCells);
+      m_fContentWidth = fRowWidth * fCellPercent / 100f - ROW_GAP;
+      // A nested row decorates itself
+      final PhloxGroupNode aCellGroup = aCell instanceof final PhloxGroupNode aGroupCell && !aGroupCell.isRow ()
+                                                                                                                 ? aGroupCell
+                                                                                                                 : null;
+      if (aCellGroup != null)
+        _withInheritedStyle (aCellStyle, () -> visitBlockChildren (aAst, aCellGroup, aCellContent::addRow));
+      else
+        visitBlock (aAst, aCell, aCellContent::addRow);
+      m_fContentWidth = fRowWidth;
+      final PLBox aCellBox = _decorate (new PLBox (aCellContent), aCellGroup != null ? aCellStyle : null);
+      if (aCell.getNext () != null)
+        aCellBox.setMarginRight (ROW_GAP);
+      final Float aWidth = aCellStyle == null ? null : aCellStyle.getWidthPercent ();
+      aRow.addColumn (aCellBox, aWidth == null ? WidthSpec.star () : WidthSpec.perc (aWidth.floatValue ()));
+    }
+    aSink.accept (_createGroupBox (aRow, aStyle));
   }
 
   /**
@@ -625,71 +868,12 @@ public final class PdfTemplateEmitter extends
                           @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
     final PdfBlockStyle aStyle = _getStyle (aAst, aGroup);
-    final PLColor aOldColor = m_aInheritedTextColor;
-    if (aStyle != null && aStyle.getTextColor () != null)
-      m_aInheritedTextColor = aStyle.getTextColor ();
-    try
-    {
-      final IPLRenderableObject <?> aContent;
+    _withInheritedStyle (aStyle, () -> {
       if (aGroup.isRow ())
-      {
-        // A row (parties, totals) is moved to the next page as a whole
-        final PLHBox aRow = new PLHBox ().setVertSplittable (false);
-        // Work out the width of the cells, so that the tables in them can plan their columns
-        final float fRowWidth = m_fContentWidth;
-        float fFixedPercent = 0;
-        int nStarCells = 0;
-        for (Node aCell = aGroup.getFirstChild (); aCell != null; aCell = aCell.getNext ())
-        {
-          final PdfBlockStyle aCellStyle = aCell instanceof PhloxGroupNode ? _getStyle (aAst, aCell) : null;
-          if (aCellStyle != null && aCellStyle.getWidthPercent () != null)
-            fFixedPercent += aCellStyle.getWidthPercent ().floatValue ();
-          else
-            nStarCells++;
-        }
-        for (Node aCell = aGroup.getFirstChild (); aCell != null; aCell = aCell.getNext ())
-        {
-          final PLVBox aCellContent = new PLVBox ();
-          final PdfBlockStyle aWidthStyle = aCell instanceof PhloxGroupNode ? _getStyle (aAst, aCell) : null;
-          final float fCellPercent = aWidthStyle != null && aWidthStyle.getWidthPercent () != null ? aWidthStyle
-                                                                                                                .getWidthPercent ()
-                                                                                                                .floatValue ()
-                                                                                                   : (100f -
-                                                                                                      fFixedPercent) /
-                                                                                                     Math.max (1,
-                                                                                                               nStarCells);
-          m_fContentWidth = fRowWidth * fCellPercent / 100f - ROW_GAP;
-          if (aCell instanceof final PhloxGroupNode aCellGroup && !aCellGroup.isRow ())
-            visitBlockChildren (aAst, aCellGroup, aCellContent::addRow);
-          else
-            visitBlock (aAst, aCell, aCellContent::addRow);
-          m_fContentWidth = fRowWidth;
-          final PdfBlockStyle aCellStyle = aCell instanceof PhloxGroupNode ? _getStyle (aAst, aCell) : null;
-          final PLBox aCellBox = _decorate (new PLBox (aCellContent), aCellStyle);
-          if (aCell.getNext () != null)
-            aCellBox.setMarginRight (ROW_GAP);
-          final Float aWidth = aCellStyle == null ? null : aCellStyle.getWidthPercent ();
-          aRow.addColumn (aCellBox, aWidth == null ? WidthSpec.star () : WidthSpec.perc (aWidth.floatValue ()));
-        }
-        aContent = aRow;
-      }
+        _addRowGroup (aAst, aGroup, aStyle, aSink);
       else
-      {
-        final PLVBox aBlocks = new PLVBox ();
-        if (aStyle != null && aStyle.isKeepTogether ())
-          aBlocks.setVertSplittable (false);
-        visitBlockChildren (aAst, aGroup, aBlocks::addRow);
-        aContent = aBlocks;
-      }
-      // Tagged PDF: a group or row is a division
-      aSink.accept (_decorate (new PLBox (aContent).setMarginBottom (PARAGRAPH_GAP)
-                                                   .setStructureRole (EPLStructureRole.DIV),
-                               aGroup.isRow () ? null : aStyle));
-    }
-    finally
-    {
-      m_aInheritedTextColor = aOldColor;
-    }
+        _addStackedGroup (aAst, aGroup, aStyle, aSink);
+    });
   }
 
   @Override
@@ -782,8 +966,12 @@ public final class PdfTemplateEmitter extends
                                   @NonNull final HtmlInline aHtml,
                                   @NonNull final List <StringBuilder> aLines)
   {
+    // Raw HTML of a template is never interpreted, except for a line break, which is the only way
+    // to break a line inside a table cell. All else is shown as text, as in the other formats
     if (BR_TAG.matcher (aHtml.getLiteral ()).matches ())
       aLines.add (new StringBuilder ());
+    else
+      _getLastLine (aLines).append (PdfTextSupport.escapeMarkup (aHtml.getLiteral ()));
   }
 
   @Override
@@ -807,7 +995,7 @@ public final class PdfTemplateEmitter extends
                                   @NonNull final BulletList aList,
                                   @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    _addList (aAst, aList, _createMarkerCreator (nIndex -> "\u2022"), BULLET_WIDTH, aSink);
+    _addList (aAst, aList, nIndex -> "\u2022", BULLET_WIDTH, aSink);
   }
 
   @Override
@@ -816,7 +1004,7 @@ public final class PdfTemplateEmitter extends
                                    @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
     final int nStart = aList.getMarkerStartNumber () == null ? 1 : aList.getMarkerStartNumber ().intValue ();
-    _addList (aAst, aList, _createMarkerCreator (nIndex -> (nStart + nIndex) + "."), NUMBER_WIDTH, aSink);
+    _addList (aAst, aList, nIndex -> (nStart + nIndex) + ".", NUMBER_WIDTH, aSink);
   }
 
   @Override
@@ -824,12 +1012,16 @@ public final class PdfTemplateEmitter extends
                                   @NonNull final BlockQuote aQuote,
                                   @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    final PLVBox aContent = new PLVBox ();
-    visitBlockChildren (aAst, aQuote, aContent::addRow);
-    aSink.accept (new PLBox (aContent).setBorderLeft (new BorderStyleSpec (PLColor.GRAY, 2f))
-                                      .setPaddingLeft (6)
-                                      .setMarginBottom (PARAGRAPH_GAP)
-                                      .setStructureRole (EPLStructureRole.BLOCK_QUOTE));
+    final PdfBlockStyle aStyle = _getStyle (aAst, aQuote);
+    _withInheritedStyle (aStyle, () -> {
+      final PLVBox aContent = new PLVBox ();
+      visitBlockChildren (aAst, aQuote, aContent::addRow);
+      final PLBox aBox = _decorate (new PLBox (aContent), aStyle);
+      aSink.accept (aBox.setPaddingLeft (Math.max (6f, aBox.getPaddingLeft ()))
+                        .setBorderLeft (new BorderStyleSpec (PLColor.GRAY, 2f))
+                        .setMarginBottom (PARAGRAPH_GAP)
+                        .setStructureRole (EPLStructureRole.BLOCK_QUOTE));
+    });
   }
 
   @Override
@@ -837,7 +1029,7 @@ public final class PdfTemplateEmitter extends
                                        @NonNull final FencedCodeBlock aBlock,
                                        @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    _addCodeBlock (aBlock.getLiteral (), aSink);
+    _addCodeBlock (aAst, aBlock, aBlock.getLiteral (), aSink);
   }
 
   @Override
@@ -845,7 +1037,7 @@ public final class PdfTemplateEmitter extends
                                          @NonNull final IndentedCodeBlock aBlock,
                                          @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    _addCodeBlock (aBlock.getLiteral (), aSink);
+    _addCodeBlock (aAst, aBlock, aBlock.getLiteral (), aSink);
   }
 
   @Override
@@ -882,7 +1074,7 @@ public final class PdfTemplateEmitter extends
                                  @NonNull final HtmlBlock aHtml,
                                  @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    aSink.accept (new PLText (aHtml.getLiteral ().strip (), m_aCtx.getBodyFont ()));
+    aSink.accept (new PLText (aHtml.getLiteral ().strip (), _styled (m_aCtx.getBodyFont (), _getStyle (aAst, aHtml), true)));
   }
 
   @Override
@@ -898,7 +1090,10 @@ public final class PdfTemplateEmitter extends
                                  @NonNull final PhloxPageBreakNode aPageBreak,
                                  @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    aSink.accept (new PLPageBreak (true));
+    if (aSink == m_aPageSink)
+      aSink.accept (new PLPageBreak (true));
+    else
+      LOGGER.warn ("A page break inside a row, list, block quote or nested group is not possible in PDF - ignoring it");
   }
 
   /**
@@ -907,12 +1102,17 @@ public final class PdfTemplateEmitter extends
    * @param aAst
    *        The rendered template. Never {@code null}.
    * @return The page set with the size and the margins of the render context. Never {@code null}.
+   * @throws PhloxRuntimeException
+   *         If the template has no content that can be shown in a PDF.
    */
   @NonNull
   public PLPageSet emit (@NonNull final PhloxTemplateAst aAst)
   {
     final PLPageSet aPS = new PLPageSet (m_aCtx.getPageSize ()).setMargin (m_aCtx.getMargins ());
-    visitBlockChildren (aAst, aAst.getRoot (), aPS::addElement);
+    m_aPageSink = aPS::addElement;
+    visitBlockChildren (aAst, aAst.getRoot (), m_aPageSink);
+    if (aPS.getElementCount () == 0)
+      throw new PhloxRuntimeException ("The template produced no content for the PDF. The reason may be an image that could not be resolved or that PDF cannot show, like SVG.");
     return aPS;
   }
 }

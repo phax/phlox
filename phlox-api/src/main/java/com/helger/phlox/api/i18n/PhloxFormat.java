@@ -31,6 +31,7 @@ import com.helger.annotation.concurrent.Immutable;
 import com.helger.base.CGlobal;
 import com.helger.datetime.format.EDTFormatterMode;
 import com.helger.datetime.format.PDTFormatter;
+import com.helger.phlox.api.ENegativeStyle;
 import com.helger.phlox.api.PhloxFormatOptions;
 
 /**
@@ -98,7 +99,8 @@ public final class PhloxFormat
   }
 
   /**
-   * Format an amount with the given currency in the locale's number style.
+   * Format an amount with the given currency in the locale's number style. A negative amount is
+   * shown as {@link PhloxFormatOptions#getNegativeStyle()} asks for.
    *
    * @param aAmount
    *        The amount, may be {@code null}.
@@ -146,6 +148,8 @@ public final class PhloxFormat
       aFmt.setMinimumFractionDigits (aOptions.getAmountFractionDigits ().intValue ());
       aFmt.setMaximumFractionDigits (aOptions.getAmountFractionDigits ().intValue ());
     }
+    if (aAmount.signum () < 0 && aOptions != null && aOptions.getNegativeStyle () == ENegativeStyle.PARENTHESES)
+      return "(" + _keepTogether (aFmt.format (aAmount.negate ())) + ")";
     return _keepTogether (aFmt.format (aAmount));
   }
 

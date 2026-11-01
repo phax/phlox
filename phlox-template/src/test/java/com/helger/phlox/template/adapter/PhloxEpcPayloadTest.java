@@ -105,6 +105,22 @@ public final class PhloxEpcPayloadTest
     return _invoice (_account ("58", IBAN));
   }
 
+  @Test (timeout = 10_000)
+  public void testLongRunOfSpacesTakesLinearTime ()
+  {
+    final PhloxInvoice aInvoice = _invoice ();
+    aInvoice.getPaymentInstructions ().setRemittanceInformation ("a" + " ".repeat (300_000) + "b");
+    assertEquals ("a" + " ".repeat (139), _element (aInvoice, 10));
+  }
+
+  @Test
+  public void testLineBreaksInName ()
+  {
+    final PhloxInvoice aInvoice = _invoice ();
+    aInvoice.getSeller ().setName ("  a  b \r\n\t c\n\nd\f\re  ");
+    assertEquals ("a  b c d e", _element (aInvoice, 5));
+  }
+
   @Test
   public void testMinimal ()
   {

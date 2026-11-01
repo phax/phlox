@@ -23,6 +23,8 @@ import java.nio.charset.StandardCharsets;
 
 import org.jspecify.annotations.NonNull;
 
+import com.helger.html.hc.config.HCConversionSettings;
+import com.helger.html.hc.config.HCSettings;
 import com.helger.html.hc.html.root.HCHtml;
 import com.helger.html.hc.render.HCRenderer;
 import com.helger.phlox.api.PhloxRuntimeException;
@@ -30,10 +32,15 @@ import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.template.IPhloxTemplate;
 import com.helger.phlox.api.write.IInvoiceWriter;
 import com.helger.phlox.template.PhloxTemplate;
+import com.helger.xml.serialize.write.EXMLSerializeDocType;
 
 /**
  * Renders a {@link PhloxInvoice} as an HTML5 document. Built on {@code ph-oton-html}. The content
  * comes from a template; if the render context has none, the default template is used.
+ * <p>
+ * phlox sets no limit on the size of its input. The time and the memory a render needs grow with
+ * the size of the invoice, so an application that renders invoices from untrusted sources must cap
+ * the size of the XML before it reads it.
  *
  * @author Philip Helger
  */
@@ -75,7 +82,14 @@ public class HtmlInvoiceWriter implements IInvoiceWriter <HtmlRenderContext>
   @NonNull
   public String writeAsString (@NonNull final PhloxInvoice aInvoice, @NonNull final HtmlRenderContext aCtx)
   {
-    return HCRenderer.getAsHTMLString (writeAsHcHtml (aInvoice, aCtx));
+    final HCHtml aHtml = writeAsHcHtml (aInvoice, aCtx);
+    if (aCtx.isEmitDoctype ())
+      return HCRenderer.getAsHTMLString (aHtml);
+
+    final HCConversionSettings aSettings = new HCConversionSettings (HCSettings.getConversionSettings ());
+    aSettings.setXMLWriterSettings (aSettings.getMutableXMLWriterSettings ()
+                                             .setSerializeDocType (EXMLSerializeDocType.IGNORE));
+    return HCRenderer.getAsHTMLString (aHtml, aSettings);
   }
 
   /**

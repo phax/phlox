@@ -44,129 +44,129 @@ G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.50 0.50 0.50
 G p1 w 0.75
-G p1 m 56.69 532.55
-G p1 l 538.58 532.55
+G p1 m 56.69 522.72
+G p1 l 538.58 522.72
 G p1 S
 G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.11 0.14 0.20
 G p1 w 1.00
-G p1 m 56.69 451.15
-G p1 l 89.37 451.15
+G p1 m 56.69 441.32
+G p1 l 89.37 441.32
 G p1 S
-G p1 m 89.37 451.15
-G p1 l 254.98 451.15
+G p1 m 89.37 441.32
+G p1 l 254.98 441.32
 G p1 S
-G p1 m 254.98 451.15
-G p1 l 304.46 451.15
+G p1 m 254.98 441.32
+G p1 l 304.46 441.32
 G p1 S
-G p1 m 304.46 451.15
-G p1 l 378.46 451.15
+G p1 m 304.46 441.32
+G p1 l 378.46 441.32
 G p1 S
-G p1 m 378.46 451.15
-G p1 l 464.58 451.15
+G p1 m 378.46 441.32
+G p1 l 464.58 441.32
 G p1 S
-G p1 m 464.58 451.15
-G p1 l 538.58 451.15
+G p1 m 464.58 441.32
+G p1 l 538.58 441.32
 G p1 S
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
-G p1 m 56.69 384.90
-G p1 l 89.37 384.90
+G p1 m 56.69 375.07
+G p1 l 89.37 375.07
 G p1 S
 G p1 sc 0.00 0.00 0.00
-G p1 m 89.37 384.90
-G p1 l 254.98 384.90
+G p1 m 89.37 375.07
+G p1 l 254.98 375.07
 G p1 S
-G p1 m 254.98 384.90
-G p1 l 304.46 384.90
+G p1 m 254.98 375.07
+G p1 l 304.46 375.07
 G p1 S
-G p1 m 304.46 384.90
-G p1 l 378.46 384.90
+G p1 m 304.46 375.07
+G p1 l 378.46 375.07
 G p1 S
-G p1 m 378.46 384.90
-G p1 l 464.58 384.90
+G p1 m 378.46 375.07
+G p1 l 464.58 375.07
 G p1 S
-G p1 m 464.58 384.90
-G p1 l 538.58 384.90
+G p1 m 464.58 375.07
+G p1 l 538.58 375.07
 G p1 S
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.11 0.14 0.20
 G p1 w 1.00
-G p1 m 56.69 348.70
-G p1 l 131.36 348.70
+G p1 m 56.69 338.88
+G p1 l 131.36 338.88
 G p1 S
-G p1 m 131.36 348.70
-G p1 l 209.80 348.70
+G p1 m 131.36 338.88
+G p1 l 209.80 338.88
 G p1 S
-G p1 m 209.80 348.70
-G p1 l 262.28 348.70
+G p1 m 209.80 338.88
+G p1 l 262.28 338.88
 G p1 S
-G p1 m 262.28 348.70
-G p1 l 322.19 348.70
+G p1 m 262.28 338.88
+G p1 l 322.19 338.88
 G p1 S
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
-G p1 m 56.69 318.83
-G p1 l 131.36 318.83
+G p1 m 56.69 309.01
+G p1 l 131.36 309.01
 G p1 S
 G p1 sc 0.00 0.00 0.00
-G p1 m 131.36 318.83
-G p1 l 209.80 318.83
+G p1 m 131.36 309.01
+G p1 l 209.80 309.01
 G p1 S
-G p1 m 209.80 318.83
-G p1 l 262.28 318.83
+G p1 m 209.80 309.01
+G p1 l 262.28 309.01
 G p1 S
-G p1 m 262.28 318.83
-G p1 l 322.19 318.83
+G p1 m 262.28 309.01
+G p1 l 322.19 309.01
 G p1 S
 G p1 SC 0.50 0.50 0.50
 G p1 w 2.00
-G p1 m 57.69 318.58
-G p1 l 57.69 303.02
+G p1 m 57.69 308.76
+G p1 l 57.69 293.20
 G p1 S
 G p1 sc 0.96 0.97 0.98
-G p1 re 336.19 249.49 202.39 135.16
+G p1 re 336.19 239.66 202.39 135.16
 G p1 f
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
-G p1 m 344.19 347.28
-G p1 l 459.15 347.28
+G p1 m 344.19 337.45
+G p1 l 459.15 337.45
 G p1 S
 G p1 sc 0.00 0.00 0.00
-G p1 m 459.15 347.28
-G p1 l 530.58 347.28
+G p1 m 459.15 337.45
+G p1 l 530.58 337.45
 G p1 S
-G p1 m 344.19 317.66
-G p1 l 459.15 317.66
+G p1 m 344.19 307.83
+G p1 l 459.15 307.83
 G p1 S
-G p1 m 459.15 317.66
-G p1 l 530.58 317.66
+G p1 m 459.15 307.83
+G p1 l 530.58 307.83
 G p1 S
-G p1 m 344.19 288.04
-G p1 l 459.15 288.04
+G p1 m 344.19 278.21
+G p1 l 459.15 278.21
 G p1 S
-G p1 m 459.15 288.04
-G p1 l 530.58 288.04
+G p1 m 459.15 278.21
+G p1 l 530.58 278.21
 G p1 S
-G p1 m 344.19 257.74
-G p1 l 459.15 257.74
+G p1 m 344.19 247.91
+G p1 l 459.15 247.91
 G p1 S
-G p1 m 459.15 257.74
-G p1 l 530.58 257.74
+G p1 m 459.15 247.91
+G p1 l 530.58 247.91
 G p1 S
 G p1 sc 0.14 0.36 0.39
-G p1 re 336.19 211.43 202.39 34.06
+G p1 re 336.19 201.26 202.39 34.40
 G p1 f
-G p1 m 344.19 219.68
-G p1 l 434.29 219.68
+G p1 m 344.19 209.51
+G p1 l 434.29 209.51
 G p1 S
 G p1 sc 1.00 1.00 1.00
-G p1 m 434.29 219.68
-G p1 l 530.58 219.68
+G p1 m 434.29 209.51
+G p1 l 530.58 209.51
 G p1 S
 G p1 sc 0.91 0.95 0.95
-G p1 re 56.69 110.22 481.89 93.21
+G p1 re 56.69 100.05 481.89 93.21
 G p1 f
 G p1 sc 0.40 0.44 0.52
 G p1 sc 0.00 0.00 0.00
@@ -193,6 +193,7 @@ T p1 56.7 263.5 10.0 Helvetica Belgium
 T p1 56.7 277.3 8.0 Helvetica Seller VAT identifier: BE0000000196
 T p1 56.7 287.1 8.0 Helvetica Seller legal registration identifier: 0000000196
 T p1 56.7 297.0 8.0 Helvetica Seller electronic address: 0201:0000000196
+T p1 56.7 306.8 8.0 Helvetica john.doole@mysuppliercompany.be
 T p1 297.6 193.9 7.0 Helvetica-Bold Buyer
 T p1 297.6 211.0 11.0 Helvetica-Bold My Customer Company
 T p1 297.6 224.8 8.0 Helvetica My Customer Company S.A.
@@ -202,56 +203,57 @@ T p1 297.6 263.5 10.0 Helvetica Belgium
 T p1 297.6 277.3 8.0 Helvetica Buyer VAT identifier: BE0000000295
 T p1 297.6 287.1 8.0 Helvetica Buyer legal registration identifier: 0000000295
 T p1 297.6 297.0 8.0 Helvetica Buyer electronic address: 0201:0000000295
-T p1 56.7 336.2 8.0 Helvetica-Bold INVOICING PERIOD
-T p1 56.7 350.8 10.0 Helvetica February 1, 2019 — February 28, 2019
-T p1 56.7 372.3 8.0 Helvetica-Bold INVOICE LINES
-T p1 82.2 387.2 7.0 Helvetica-Bold #
-T p1 92.4 387.2 7.0 Helvetica-Bold DESCRIPTION
-T p1 286.0 387.2 7.0 Helvetica-Bold QTY
-T p1 333.0 387.2 7.0 Helvetica-Bold UNIT PRICE
-T p1 446.6 387.2 7.0 Helvetica-Bold VAT
-T p1 491.4 387.2 7.0 Helvetica-Bold LINE TOTAL
-T p1 80.8 405.8 10.0 Helvetica 1
-T p1 92.4 406.1 10.0 Helvetica-Bold Exonération du versement du PP
-T p1 92.4 418.0 10.0 Helvetica Exonération du versement du PP
-T p1 92.4 429.9 10.0 Helvetica-Oblique Item seller's identifier: V55
-T p1 92.4 441.8 10.0 Helvetica-Oblique 2: Contributions - précompte
-T p1 92.4 453.7 10.0 Helvetica-Oblique professionnel
-T p1 262.5 405.8 10.0 Helvetica 1.00 one
-T p1 336.5 405.8 10.0 Helvetica € 100.11
-T p1 388.8 405.8 10.0 Helvetica Exempt from tax
-T p1 433.2 417.4 10.0 Helvetica 0.00%
-T p1 496.7 405.8 10.0 Helvetica € 100.11
-T p1 56.7 474.8 8.0 Helvetica-Bold VAT BREAKDOWN
-T p1 59.7 489.7 7.0 Helvetica-Bold VAT CATEGORY
-T p1 136.4 489.7 7.0 Helvetica-Bold TAXABLE AMOUNT
-T p1 221.8 489.7 7.0 Helvetica-Bold VAT RATE
-T p1 269.2 489.7 7.0 Helvetica-Bold VAT AMOUNT
-T p1 59.7 508.2 10.0 Helvetica Exempt from
-T p1 59.7 519.8 10.0 Helvetica tax
-T p1 167.9 508.2 10.0 Helvetica € 100.11
-T p1 230.9 508.2 10.0 Helvetica 0.00%
-T p1 291.4 508.2 10.0 Helvetica € 0.00
-T p1 64.7 534.9 10.0 Helvetica VAT category code E: Taxes are not applicable
-T p1 347.2 479.8 10.0 Helvetica Sum of invoice line net
-T p1 347.2 491.4 10.0 Helvetica amounts
-T p1 488.7 479.8 10.0 Helvetica € 100.11
-T p1 347.2 509.4 10.0 Helvetica Invoice total amount
-T p1 347.2 521.0 10.0 Helvetica without VAT
-T p1 488.7 509.4 10.0 Helvetica € 100.11
-T p1 347.2 539.0 10.0 Helvetica Invoice total VAT
-T p1 347.2 550.6 10.0 Helvetica amount
-T p1 499.8 539.0 10.0 Helvetica € 0.00
-T p1 347.2 569.0 10.0 Helvetica-Bold Invoice total amount
-T p1 347.2 580.9 10.0 Helvetica-Bold with VAT
-T p1 488.7 569.0 10.0 Helvetica-Bold € 100.11
-T p1 347.2 619.0 10.0 Helvetica Amount due
-T p1 488.7 619.0 10.0 Helvetica € 100.11
-T p1 66.7 657.4 7.0 Helvetica-Bold Payment
-T p1 66.7 673.3 10.0 Helvetica-Bold Payment means type code: Instrument not defined
-T p1 66.7 685.2 10.0 Helvetica-Oblique Remittance information: 010676609538
-T p1 66.7 698.1 7.0 Helvetica-Bold Credit transfer
-T p1 66.7 713.7 10.0 Helvetica •
-T p1 76.7 713.7 10.0 Courier BE91000000143476 (BIC BPOTBEB1)
-T p1 56.7 744.3 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2017 · Business process type: urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
+T p1 297.6 306.8 8.0 Helvetica pete.smith@mycustomercompany.be
+T p1 56.7 346.1 8.0 Helvetica-Bold INVOICING PERIOD
+T p1 56.7 360.6 10.0 Helvetica February 1, 2019 — February 28, 2019
+T p1 56.7 382.1 8.0 Helvetica-Bold INVOICE LINES
+T p1 82.2 397.1 7.0 Helvetica-Bold #
+T p1 92.4 397.1 7.0 Helvetica-Bold DESCRIPTION
+T p1 286.0 397.1 7.0 Helvetica-Bold QTY
+T p1 333.0 397.1 7.0 Helvetica-Bold UNIT PRICE
+T p1 446.6 397.1 7.0 Helvetica-Bold VAT
+T p1 491.4 397.1 7.0 Helvetica-Bold LINE TOTAL
+T p1 80.8 415.6 10.0 Helvetica 1
+T p1 92.4 416.0 10.0 Helvetica-Bold Exonération du versement du PP
+T p1 92.4 427.9 10.0 Helvetica Exonération du versement du PP
+T p1 92.4 439.8 10.0 Helvetica-Oblique Item seller's identifier: V55
+T p1 92.4 451.7 10.0 Helvetica-Oblique 2: Contributions - précompte
+T p1 92.4 463.6 10.0 Helvetica-Oblique professionnel
+T p1 262.5 415.6 10.0 Helvetica 1.00 one
+T p1 336.5 415.6 10.0 Helvetica € 100.11
+T p1 388.8 415.6 10.0 Helvetica Exempt from tax
+T p1 433.2 427.2 10.0 Helvetica 0.00%
+T p1 496.7 415.6 10.0 Helvetica € 100.11
+T p1 56.7 484.6 8.0 Helvetica-Bold VAT BREAKDOWN
+T p1 59.7 499.5 7.0 Helvetica-Bold VAT CATEGORY
+T p1 136.4 499.5 7.0 Helvetica-Bold TAXABLE AMOUNT
+T p1 221.8 499.5 7.0 Helvetica-Bold VAT RATE
+T p1 269.2 499.5 7.0 Helvetica-Bold VAT AMOUNT
+T p1 59.7 518.1 10.0 Helvetica Exempt from
+T p1 59.7 529.6 10.0 Helvetica tax
+T p1 167.9 518.1 10.0 Helvetica € 100.11
+T p1 230.9 518.1 10.0 Helvetica 0.00%
+T p1 291.4 518.1 10.0 Helvetica € 0.00
+T p1 64.7 544.7 10.0 Helvetica VAT category code E: Taxes are not applicable
+T p1 347.2 489.6 10.0 Helvetica Sum of invoice line net
+T p1 347.2 501.2 10.0 Helvetica amounts
+T p1 488.7 489.6 10.0 Helvetica € 100.11
+T p1 347.2 519.2 10.0 Helvetica Invoice total amount
+T p1 347.2 530.8 10.0 Helvetica without VAT
+T p1 488.7 519.2 10.0 Helvetica € 100.11
+T p1 347.2 548.9 10.0 Helvetica Invoice total VAT
+T p1 347.2 560.4 10.0 Helvetica amount
+T p1 499.8 548.9 10.0 Helvetica € 0.00
+T p1 347.2 578.8 10.0 Helvetica-Bold Invoice total amount
+T p1 347.2 590.7 10.0 Helvetica-Bold with VAT
+T p1 488.7 578.8 10.0 Helvetica-Bold € 100.11
+T p1 347.2 629.1 10.0 Helvetica-Bold Amount due
+T p1 488.7 629.1 10.0 Helvetica-Bold € 100.11
+T p1 66.7 667.6 7.0 Helvetica-Bold Payment
+T p1 66.7 683.5 10.0 Helvetica-Bold Payment means type code: Instrument not defined
+T p1 66.7 695.4 10.0 Helvetica-Oblique Remittance information: 010676609538
+T p1 66.7 708.3 7.0 Helvetica-Bold Credit transfer
+T p1 66.7 723.8 10.0 Helvetica •
+T p1 76.7 723.8 10.0 Courier BE91000000143476 (BIC BPOTBEB1)
+T p1 56.7 754.5 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2017 · Business process type: urn:fdc:peppol.eu:2017:poacc:billing:01:1.0
 T p1 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox

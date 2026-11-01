@@ -4,7 +4,7 @@ D25A-COV-INV-1
 ==============
 
 Invoice issue date               January 15, 2026
-Value added tax point date code  3
+Value added tax point date code  Invoice document issue date time
 Invoice currency code            EUR
 Invoice type code                380 — Commercial invoice
 

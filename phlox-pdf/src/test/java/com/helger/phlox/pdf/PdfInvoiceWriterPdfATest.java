@@ -304,6 +304,15 @@ public final class PdfInvoiceWriterPdfATest
   }
 
   @Test
+  public void testCodeBlockIsValidPdfA () throws Exception
+  {
+    final byte [] aPdf = _render (_readUbl (_readBytes (UBL_FILE)),
+                                  _createContext (EPdfALevel.PDF_A_3B).setTemplate (PhloxTemplate.fromString ("Text\n\n```\ncode block\n```\n\n    indented\n")),
+                                  "ubl-3b-code-block");
+    _assertPdfA3Valid (aPdf);
+  }
+
+  @Test
   public void testFacturXWithAttachments () throws Exception
   {
     final byte [] aXml = _readBytes (CII_ATTACHMENT_FILE);

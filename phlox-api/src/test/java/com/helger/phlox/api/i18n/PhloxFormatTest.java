@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.helger.phlox.api.ENegativeStyle;
 import com.helger.phlox.api.PhloxFormatOptions;
 
 /**
@@ -104,6 +105,23 @@ public final class PhloxFormatTest
     final PhloxFormatOptions aOpts = PhloxFormatOptions.defaults ().setAmountFractionDigits (Integer.valueOf (3));
     final String sOut = PhloxFormat.amount (aValue, "EUR", Locale.US, aOpts);
     assertTrue ("expected fraction-digit override to keep 3 decimals, got: " + sOut, sOut.contains ("1.234"));
+  }
+
+  @Test
+  public void testNegativeStyle ()
+  {
+    final BigDecimal aNegative = new BigDecimal ("-1234.5");
+    final PhloxFormatOptions aMinus = PhloxFormatOptions.defaults ();
+    final PhloxFormatOptions aParentheses = PhloxFormatOptions.defaults ().setNegativeStyle (ENegativeStyle.PARENTHESES);
+    assertTrue (PhloxFormat.amount (aNegative, "EUR", Locale.US, aMinus).contains ("-"));
+    assertEquals ("(€ 1,234.50)", PhloxFormat.amount (aNegative, "EUR", Locale.US, aParentheses));
+    assertEquals ("(1.234,50 €)", PhloxFormat.amount (aNegative, "EUR", Locale.GERMANY, aParentheses));
+    // Only negative amounts
+    assertEquals ("€ 1,234.50", PhloxFormat.amount (aNegative.negate (), "EUR", Locale.US, aParentheses));
+    assertEquals ("€ 0.00", PhloxFormat.amount (BigDecimal.ZERO, "EUR", Locale.US, aParentheses));
+    // No options are the defaults
+    assertEquals (PhloxFormat.amount (aNegative, "EUR", Locale.US, aMinus),
+                  PhloxFormat.amount (aNegative, "EUR", Locale.US, null));
   }
 
   @Test

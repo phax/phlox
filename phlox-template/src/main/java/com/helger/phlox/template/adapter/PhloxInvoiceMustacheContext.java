@@ -21,12 +21,12 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayDeque;
-import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +36,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.annotation.concurrent.NotThreadSafe;
+import com.helger.annotation.concurrent.ThreadSafe;
 import com.helger.annotation.style.VisibleForTesting;
 import com.helger.base.string.StringHelper;
 import com.helger.base.string.StringReplace;
@@ -51,8 +51,8 @@ import com.helger.phlox.api.i18n.PhloxFormat;
 import com.helger.phlox.api.model.PhloxIdentifier;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.model.PhloxInvoiceLine;
-import com.helger.phlox.template.PhloxTemplateException.EStage;
 import com.helger.phlox.template.PhloxTemplateException;
+import com.helger.phlox.template.PhloxTemplateException.EStage;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Template;
 
@@ -60,45 +60,57 @@ import com.samskivert.mustache.Template;
  * The JMustache adapter — preprocesses {@code .ptpl} source so JMustache understands the phlox
  * extensions ({@code {{?…}}}, {@code {{label:…}}}, the pipe-modifier syntax), exposes a
  * {@link com.samskivert.mustache.Mustache.Collector} that resolves BT/BG paths through
- * {@link PhloxModelRegistry}, applies format modifiers, emits {@code [[PHLOX:CLASS=…]]} /
- * {@code [[PHLOX:PAGEBREAK]]} sentinels for the post-pass, and routes {@code {{label:…}}} through
- * the active {@code IPhloxLabelResolver}.
+ * {@link PhloxModelRegistry}, applies format modifiers, emits the sentinels of the layout tags for
+ * the post-pass, and routes {@code {{label:…}}} through the active {@code IPhloxLabelResolver}.
+ * <p>
+ * A sentinel starts and ends with {@link #SENTINEL_MARKER}. That code point is removed from every
+ * value of an invoice before it is substituted, whatever the modifiers are, so that invoice data
+ * can never produce a sentinel and only a template can.
  * <p>
  * Per-render execution state (the {@link PhloxRenderEnv}) flows through a {@link ThreadLocal} so
- * the compiled JMustache {@code Template} stays sharable across threads.
+ * the compiled JMustache {@code Template} stays sharable across threads. The class only has static
+ * members and is safe to use concurrently.
  *
  * @author Philip Helger
  */
-@NotThreadSafe
+@ThreadSafe
 public final class PhloxInvoiceMustacheContext
 {
+  /**
+   * The code point that delimits all sentinels: the Unicode noncharacter U+FDD0, which no text uses.
+   * XML allows it, so it is removed from the values of an invoice.
+   */
+  public static final char SENTINEL_MARKER = '\uFDD0';
+
   /** Opening literal of the {@code {{class:…}}} sentinel; the post-pass scans for this prefix. */
-  public static final String SENTINEL_CLASS_PREFIX = "[[PHLOX:CLASS=";
+  public static final String SENTINEL_CLASS_PREFIX = SENTINEL_MARKER + "PHLOX:CLASS=";
   /**
    * Closing literal of the {@code {{class:…}}} sentinel, paired with
    * {@link #SENTINEL_CLASS_PREFIX}.
    */
-  public static final String SENTINEL_CLASS_SUFFIX = "]]";
+  public static final String SENTINEL_CLASS_SUFFIX = String.valueOf (SENTINEL_MARKER);
   /**
    * Literal emitted for the {@code {{pagebreak}}} directive; the post-pass converts it into a
    * {@code PhloxPageBreakNode}.
    */
-  public static final String SENTINEL_PAGEBREAK = "[[PHLOX:PAGEBREAK]]";
+  public static final String SENTINEL_PAGEBREAK = SENTINEL_MARKER + "PHLOX:PAGEBREAK" + SENTINEL_MARKER;
 
   /** The sentinel prefix of <code>{{group:name}}</code>. */
-  public static final String SENTINEL_GROUP_PREFIX = "[[PHLOX:GROUP=";
+  public static final String SENTINEL_GROUP_PREFIX = SENTINEL_MARKER + "PHLOX:GROUP=";
 
   /** The sentinel prefix of <code>{{row:name}}</code>. */
-  public static final String SENTINEL_ROW_PREFIX = "[[PHLOX:ROW=";
+  public static final String SENTINEL_ROW_PREFIX = SENTINEL_MARKER + "PHLOX:ROW=";
 
   /** The sentinel of <code>{{end}}</code>, which closes the innermost group or row. */
-  public static final String SENTINEL_END = "[[PHLOX:END]]";
+  public static final String SENTINEL_END = SENTINEL_MARKER + "PHLOX:END" + SENTINEL_MARKER;
 
   private static final Logger LOGGER = LoggerFactory.getLogger (PhloxInvoiceMustacheContext.class);
 
   // Replace dots in presence-check paths so JMustache does not split them.
   private static final char DOT_PLACEHOLDER = '§';
   private static final String PRESENCE_PREFIX = "¤PRESENT¤";
+  // A section knows that it may enter a model object, which a placeholder must not print
+  private static final String SECTION_PREFIX = "¤SECTION¤";
 
   private static final ThreadLocal <PhloxRenderEnv> ENV = new ThreadLocal <> ();
 
@@ -112,6 +124,7 @@ public final class PhloxInvoiceMustacheContext
   // - block comments: {{!\n …text…\n}} (closing `}}` on its own line, optionally indented)
   private static final Pattern BLOCK_COMMENT = Pattern.compile ("\\{\\{!.*?\\n[ \\t]*\\}\\}", Pattern.DOTALL);
   private static final Pattern INLINE_COMMENT = Pattern.compile ("\\{\\{!.*?\\}\\}");
+  private static final Pattern TAG = Pattern.compile ("\\{\\{(.*?)\\}\\}", Pattern.DOTALL);
 
   // The KEY may itself contain dots ({{label:section.header.title.invoice}}) — we don't care,
   // because the substitution happens before Mustache compile so JMustache never sees a
@@ -123,15 +136,43 @@ public final class PhloxInvoiceMustacheContext
   // The text of the EPC QR code, a value that no BT holds
   private static final String EPC_PAYLOAD = "epc_payload";
 
+  // The names that JMustache itself answers inside of a loop
+  private static final String LOOP_NAME_PREFIX = "-";
+  private static final Set <String> LOOP_NAMES = Set.of ("-first", "-last", "-index");
+  private static final Set <String> DERIVED_NAMES = Set.of ("logo",
+                                                            "is_credit_note",
+                                                            "is_invoice",
+                                                            "references_present",
+                                                            "line_extras_present",
+                                                            "line_allowances_present",
+                                                            "line_charges_present",
+                                                            EPC_PAYLOAD);
+  private static final String MODIFIER_RAW = "raw";
+  private static final String MODIFIER_URL = "url";
+  private static final String MODIFIER_CODESPAN = "codespan";
+  private static final Set <String> MODIFIERS = Set.of (MODIFIER_RAW,
+                                                        MODIFIER_URL,
+                                                        MODIFIER_CODESPAN,
+                                                        "amount",
+                                                        "percent",
+                                                        "date",
+                                                        "code",
+                                                        "upper",
+                                                        "lower",
+                                                        "title");
+
   private static final class PhloxCollector implements Mustache.Collector
   {
     private final Mustache.VariableFetcher m_aVarFetcher = (aCtx, sName) -> {
       // "..X" addresses the enclosing context: if the current context cannot answer X, let
-      // JMustache continue with the parent context, which is asked with the same name
+      // JMustache continue with the parent context, which is asked with the same name. The invoice
+      // has no parent, so there X simply has no value.
       if (sName.startsWith (PARENT_PREFIX))
       {
         final Object aParentResolved = resolveName (aCtx, sName.substring (PARENT_PREFIX.length ()));
-        return aParentResolved == null ? Template.NO_FETCHER_FOUND : aParentResolved;
+        if (aParentResolved == null && !(aCtx instanceof PhloxInvoice))
+          return Template.NO_FETCHER_FOUND;
+        return aParentResolved;
       }
       final Object aResolved = resolveName (aCtx, sName);
       // JMustache requires NO_FETCHER_FOUND when the variable is not known so it can fall
@@ -173,20 +214,49 @@ public final class PhloxInvoiceMustacheContext
     return INLINE_COMMENT.matcher (sNoBlock).replaceAll ("");
   }
 
+  /** The label goes into the Markdown text, so the brackets must not form a link. */
+  @NonNull
+  private static String _getBakedLabel (@NonNull final String sKey,
+                                        @NonNull final Locale aLocale,
+                                        @NonNull final IPhloxLabelResolver aResolver,
+                                        final boolean bAnnotateBtIDs)
+  {
+    final String sLabel = aResolver.getLabel (sKey, aLocale);
+    if (bAnnotateBtIDs && (sKey.startsWith ("BT-") || sKey.startsWith ("BG-")))
+      return sLabel + " \\[" + sKey + "\\]";
+    return sLabel;
+  }
+
   @NonNull
   private static String _bakeLabels (@NonNull final String sSource,
                                      @NonNull final Locale aLocale,
-                                     @NonNull final IPhloxLabelResolver aResolver)
+                                     @NonNull final IPhloxLabelResolver aResolver,
+                                     final boolean bAnnotateBtIDs)
   {
     final Matcher aMatcher = LABEL_PATTERN.matcher (sSource);
     final StringBuilder aSB = new StringBuilder (sSource.length ());
     while (aMatcher.find ())
     {
-      final String sResolved = aResolver.getLabel (aMatcher.group (1), aLocale);
+      final String sResolved = _getBakedLabel (aMatcher.group (1), aLocale, aResolver, bAnnotateBtIDs);
       aMatcher.appendReplacement (aSB, Matcher.quoteReplacement (sResolved));
     }
     aMatcher.appendTail (aSB);
     return aSB.toString ();
+  }
+
+  /**
+   * @return The name of a section with the dots of the path hidden from JMustache. A parent prefix
+   *         stays in front, and the loop names of JMustache are not touched.
+   */
+  @NonNull
+  private static String _encodeSectionName (@NonNull final String sName)
+  {
+    if (sName.startsWith (LOOP_NAME_PREFIX))
+      return sName;
+    final boolean bParent = sName.startsWith (PARENT_PREFIX);
+    final String sPath = bParent ? sName.substring (PARENT_PREFIX.length ()) : sName;
+    final String sEncoded = SECTION_PREFIX + StringReplace.replaceAll (sPath, '.', DOT_PLACEHOLDER);
+    return bParent ? PARENT_PREFIX + sEncoded : sEncoded;
   }
 
   // Hand-rolled scanner — skips {{!comment}} regions entirely so the {{?BT-X}} examples
@@ -244,9 +314,10 @@ public final class PhloxInvoiceMustacheContext
               }
               case '#', '^' ->
               {
-                aStack.push (sName);
+                final String sEncoded = _encodeSectionName (sName);
+                aStack.push (sEncoded);
                 aWrittenNames.push (cOp + sName);
-                aSB.append ("{{").append (cOp).append (sName).append ("}}");
+                aSB.append ("{{").append (cOp).append (sEncoded).append ("}}");
               }
               case '/' ->
               {
@@ -300,32 +371,46 @@ public final class PhloxInvoiceMustacheContext
 
   private static boolean _isTruthy (@Nullable final Object aValue)
   {
-    if (aValue == null)
-      return false;
     if (aValue instanceof final Boolean bValue)
       return bValue.booleanValue ();
-    if (aValue instanceof final String sValue)
-      return !sValue.isEmpty ();
-    if (aValue instanceof final Collection <?> aCollection)
-      return !aCollection.isEmpty ();
-    return true;
+    return !PhloxModelRegistry.isEmptyRecursive (aValue);
+  }
+
+  @NonNull
+  private static String _removeSentinelMarker (@NonNull final String sValue)
+  {
+    if (sValue.indexOf (SENTINEL_MARKER) < 0)
+      return sValue;
+    return StringReplace.replaceAll (sValue, SENTINEL_CLASS_SUFFIX, "");
   }
 
   /**
    * Neutralise Markdown in invoice data. The substituted template is parsed as CommonMark, so data
    * like <code>1. Main Street</code> or <code>a | b</code> would otherwise change the document
-   * structure. Line breaks become the template's explicit break tag.
+   * structure. Line breaks become the template's explicit break tag. A value may start a line of the
+   * template, so its leading white space is dropped: it could indent a code block, and a following
+   * block marker would still count. Inside a value the white space stays, but does not end the line
+   * start either. All this is safe in a link destination too, where the backslashes are removed.
    */
   @NonNull
-  private static String _escapeMarkdown (@NonNull final String sValue)
+  private static String _escapeMarkdown (@NonNull final String sRawValue)
   {
+    final String sValue = _removeSentinelMarker (sRawValue);
     final StringBuilder aSB = new StringBuilder (sValue.length () + 8);
     final int nLen = sValue.length ();
+    int nStart = 0;
+    while (nStart < nLen && " \t\r\n".indexOf (sValue.charAt (nStart)) >= 0)
+      ++nStart;
     boolean bLineStart = true;
     boolean bDigitsFromLineStart = false;
-    for (int i = 0; i < nLen; ++i)
+    for (int i = nStart; i < nLen; ++i)
     {
       final char c = sValue.charAt (i);
+      if (bLineStart && (c == ' ' || c == '\t'))
+      {
+        aSB.append (c);
+        continue;
+      }
       final boolean bAtLineStart = bLineStart;
       final boolean bDigitsBefore = bDigitsFromLineStart;
       bLineStart = false;
@@ -353,20 +438,24 @@ public final class PhloxInvoiceMustacheContext
         case '|':
         case '~':
         case '&':
+          // A parenthesis could end a link destination, and "1)" opens an ordered list
+        case '(':
+        case ')':
           aSB.append ('\\').append (c);
           break;
         case '#':
         case '+':
         case '-':
+          // Setext heading underline
+        case '=':
           // Block markers only matter at the start of a line
           if (bAtLineStart)
             aSB.append ('\\');
           aSB.append (c);
           break;
         case '.':
-        case ')':
-          // "1." and "1)" at a line start open an ordered list
-          if (bDigitsBefore && (i + 1 == nLen || sValue.charAt (i + 1) == ' '))
+          // "1." at a line start opens an ordered list
+          if (bDigitsBefore && (i + 1 == nLen || sValue.charAt (i + 1) == ' ' || sValue.charAt (i + 1) == '\t'))
             aSB.append ('\\');
           aSB.append (c);
           break;
@@ -481,6 +570,31 @@ public final class PhloxInvoiceMustacheContext
     return aValue.toString ();
   }
 
+  /**
+   * Get a CommonMark code span that shows the text as it is. Nothing can be escaped in a code span,
+   * so the delimiter is longer than any run of backticks in the text. A line break could end the
+   * paragraph, so it becomes a space.
+   */
+  @NonNull
+  private static String _getCodeSpan (@NonNull final String sRawText)
+  {
+    final String sNoCRLF = StringReplace.replaceAll (sRawText, "\r\n", " ");
+    final String sText = StringReplace.replaceAll (StringReplace.replaceAll (sNoCRLF, '\r', ' '), '\n', ' ');
+    if (sText.isEmpty ())
+      return "";
+    int nLongestRun = 0;
+    int nRun = 0;
+    for (int i = 0; i < sText.length (); ++i)
+    {
+      nRun = sText.charAt (i) == '`' ? nRun + 1 : 0;
+      nLongestRun = Math.max (nLongestRun, nRun);
+    }
+    final String sDelimiter = "`".repeat (nLongestRun + 1);
+    // Next to a delimiter a backtick would be part of it. The parser removes the spaces again.
+    final boolean bPad = sText.charAt (0) == '`' || sText.charAt (sText.length () - 1) == '`';
+    return sDelimiter + (bPad ? " " : "") + sText + (bPad ? " " : "") + sDelimiter;
+  }
+
   @Nullable
   private static String _applyOneModifier (@Nullable final Object aValue,
                                            @NonNull final String sName,
@@ -492,10 +606,12 @@ public final class PhloxInvoiceMustacheContext
 
     switch (sName)
     {
-      case "raw":
+      case MODIFIER_RAW:
         return aValue.toString ();
-      case "url":
-        return _percentEncode (_getUrlText (aValue, aEnv));
+      case MODIFIER_URL:
+        return _percentEncode (_removeSentinelMarker (_getUrlText (aValue, aEnv)));
+      case MODIFIER_CODESPAN:
+        return _getCodeSpan (_removeSentinelMarker (_getUrlText (aValue, aEnv)));
       case "amount":
       {
         if (!(aValue instanceof final BigDecimal aAmount))
@@ -537,19 +653,20 @@ public final class PhloxInvoiceMustacheContext
                                          @NonNull final List <String> aModifiers,
                                          @NonNull final PhloxRenderEnv aEnv)
   {
-    Object aValue = aValueIn;
+    // Before the first modifier, because the case modifiers or a code label keep the text
+    Object aValue = aValueIn instanceof final String sValueIn ? _removeSentinelMarker (sValueIn) : aValueIn;
     boolean bRaw = false;
     for (final String sModifier : aModifiers)
     {
       final int nColon = sModifier.indexOf (':');
       final String sName = nColon < 0 ? sModifier : sModifier.substring (0, nColon);
       final String sArg = nColon < 0 ? null : sModifier.substring (nColon + 1);
-      bRaw |= "raw".equals (sName) || "url".equals (sName);
+      bRaw |= MODIFIER_RAW.equals (sName) || MODIFIER_URL.equals (sName) || MODIFIER_CODESPAN.equals (sName);
       aValue = _applyOneModifier (aValue, sName, sArg, aEnv);
     }
     if (aValue == null)
       return "";
-    return bRaw ? aValue.toString () : _escapeMarkdown (aValue.toString ());
+    return bRaw ? _removeSentinelMarker (aValue.toString ()) : _escapeMarkdown (aValue.toString ());
   }
 
   private static boolean _referencesPresent (@NonNull final PhloxInvoice aInv)
@@ -662,7 +779,8 @@ public final class PhloxInvoiceMustacheContext
   }
 
   /**
-   * Get the singleton {@link com.samskivert.mustache.Mustache.Collector} used by every compiled.
+   * Get the singleton {@link com.samskivert.mustache.Mustache.Collector} used by every compiled
+   * template.
    *
    * @return The singleton {@link com.samskivert.mustache.Mustache.Collector} used by every compiled
    *         template. Backed by a thread-local execution environment set by
@@ -728,16 +846,94 @@ public final class PhloxInvoiceMustacheContext
    *        Locale to use for label lookups.
    * @param aResolver
    *        Label resolver to use for label lookups.
+   * @param bAnnotateBtIDs
+   *        {@code true} to append the identifier to the labels of the BTs and BGs, see
+   *        {@link AbstractRenderContext#isAnnotateBtIDs()}.
    * @return Locale-baked source ready to hand to JMustache.
    */
   @NonNull
   public static String preprocess (@NonNull final String sSource,
                                    @NonNull final Locale aLocale,
-                                   @NonNull final IPhloxLabelResolver aResolver)
+                                   @NonNull final IPhloxLabelResolver aResolver,
+                                   final boolean bAnnotateBtIDs)
   {
     final String sNoComments = stripComments (sSource);
-    final String sLabelBaked = _bakeLabels (sNoComments, aLocale, aResolver);
+    final String sLabelBaked = _bakeLabels (sNoComments, aLocale, aResolver, bAnnotateBtIDs);
     return _encodePresenceChecks (sLabelBaked);
+  }
+
+  private static void _checkName (@NonNull final String sTag, @NonNull final String sName)
+  {
+    final String sPath = sName.startsWith (PARENT_PREFIX) ? sName.substring (PARENT_PREFIX.length ()) : sName;
+    if (LOOP_NAMES.contains (sPath))
+      return;
+    if (sPath.isEmpty ())
+      throw new PhloxTemplateException (EStage.LOAD, sName, "Unknown placeholder '{{" + sTag + "}}'");
+    for (final String sSegment : StringHelper.getExploded ('.', sPath))
+      if (!DERIVED_NAMES.contains (sSegment) && !PhloxModelRegistry.isKnownName (sSegment))
+        throw new PhloxTemplateException (EStage.LOAD, sName, "Unknown placeholder '{{" + sTag + "}}'");
+  }
+
+  private static void _checkValueTag (@NonNull final String sTag, @NonNull final String sValueTag)
+  {
+    final List <String> aParts = _splitOnPipe (sValueTag);
+    _checkName (sTag, aParts.isEmpty () ? "" : aParts.get (0));
+    for (int i = 1; i < aParts.size (); ++i)
+    {
+      final String sModifier = aParts.get (i);
+      final int nColon = sModifier.indexOf (':');
+      final String sName = nColon < 0 ? sModifier : sModifier.substring (0, nColon);
+      if (!MODIFIERS.contains (sName))
+        throw new PhloxTemplateException (EStage.LOAD,
+                                          sName,
+                                          "Unknown format modifier '" + sName + "' in '{{" + sTag + "}}'");
+    }
+  }
+
+  /**
+   * Check the names and the modifiers of all tags of a template, independent of any invoice. A
+   * registered name without a value stays empty at render time, but a name that no term has could
+   * never show anything.
+   *
+   * @param sSource
+   *        The raw {@code .ptpl} source. Never {@code null}.
+   * @throws PhloxTemplateException
+   *         of stage {@link EStage#LOAD} for an unknown name, an unknown modifier, a partial or a
+   *         change of the delimiters.
+   */
+  public static void checkTags (@NonNull final String sSource)
+  {
+    final Matcher aMatcher = TAG.matcher (stripComments (sSource));
+    while (aMatcher.find ())
+    {
+      final String sTag = aMatcher.group (1).trim ();
+      if (sTag.isEmpty ())
+        continue;
+      switch (sTag.charAt (0))
+      {
+        case '>' -> throw new PhloxTemplateException (EStage.LOAD,
+                                                      sTag,
+                                                      "Partials are not supported: '{{" + sTag + "}}'");
+        case '=' -> throw new PhloxTemplateException (EStage.LOAD,
+                                                      sTag,
+                                                      "Changing the delimiters is not supported: '{{" + sTag + "}}'");
+        case '/' ->
+        {
+          // Checked by its opening tag
+        }
+        case '#', '^', '?', '&', '{' -> _checkValueTag (sTag, sTag.substring (1).trim ());
+        default ->
+        {
+          if (!sTag.startsWith ("label:") &&
+              !sTag.startsWith ("class:") &&
+              !sTag.startsWith ("group:") &&
+              !sTag.startsWith ("row:") &&
+              !"end".equals (sTag) &&
+              !"pagebreak".equals (sTag))
+            _checkValueTag (sTag, sTag);
+        }
+      }
+    }
   }
 
   /**
@@ -763,7 +959,11 @@ public final class PhloxInvoiceMustacheContext
     }
 
     // 2. Modifier pipeline — split on pipes
-    final List <String> aParts = _splitOnPipe (sRawName);
+    final boolean bSection = sRawName.startsWith (SECTION_PREFIX);
+    final List <String> aParts = _splitOnPipe (bSection ? StringReplace.replaceAll (sRawName.substring (SECTION_PREFIX.length ()),
+                                                                                    DOT_PLACEHOLDER,
+                                                                                    '.')
+                                                        : sRawName);
     final String sHead = aParts.get (0);
     final List <String> aModifiers = aParts.size () > 1 ? aParts.subList (1, aParts.size ()) : List.of ();
 
@@ -813,6 +1013,9 @@ public final class PhloxInvoiceMustacheContext
     // Lists (BG-3, BG-25, …) must reach JMustache untouched so that {{#BG-x}} sections iterate
     if (aValue instanceof Iterable <?>)
       return aValue;
+    // A single object opens a scope for its terms, unless it has no content at all
+    if (bSection && aModifiers.isEmpty () && PhloxModelRegistry.knows (aValue.getClass ()))
+      return PhloxModelRegistry.isEmptyRecursive (aValue) ? null : aValue;
     if (aModifiers.isEmpty ())
       return _renderLeaf (aValue, aEnv);
     return _applyModifiers (aValue, aModifiers, aEnv);

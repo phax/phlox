@@ -21,13 +21,15 @@ import java.time.format.FormatStyle;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.base.clone.ICloneable;
+
 /**
  * Optional fine-tuning of locale-driven formatting. Held by {@link AbstractRenderContext} and shared
  * across writers.
  *
  * @author Philip Helger
  */
-public class PhloxFormatOptions
+public class PhloxFormatOptions implements ICloneable <PhloxFormatOptions>
 {
   /** Default style of formatted dates. */
   public static final FormatStyle DEFAULT_DATE_STYLE = FormatStyle.MEDIUM;
@@ -44,6 +46,20 @@ public class PhloxFormatOptions
   /** Create a new instance with default options. */
   public PhloxFormatOptions ()
   {}
+
+  /**
+   * Copy constructor.
+   *
+   * @param aOther
+   *        The options to copy. Never {@code null}.
+   */
+  public PhloxFormatOptions (@NonNull final PhloxFormatOptions aOther)
+  {
+    m_eDateStyle = aOther.m_eDateStyle;
+    m_aAmountFractionDigits = aOther.m_aAmountFractionDigits;
+    m_nPercentFractionDigits = aOther.m_nPercentFractionDigits;
+    m_eNegativeStyle = aOther.m_eNegativeStyle;
+  }
 
   /**
    * Get the new instance with all options at their defaults.
@@ -154,5 +170,16 @@ public class PhloxFormatOptions
   {
     m_eNegativeStyle = eNegativeStyle;
     return this;
+  }
+
+  /**
+   * Get an independent copy of these options.
+   *
+   * @return A new instance with the same values. Never {@code null}.
+   */
+  @NonNull
+  public PhloxFormatOptions getClone ()
+  {
+    return new PhloxFormatOptions (this);
   }
 }

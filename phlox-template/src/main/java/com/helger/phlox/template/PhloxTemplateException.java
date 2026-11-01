@@ -31,7 +31,7 @@ import com.helger.phlox.api.PhloxRuntimeException;
 public class PhloxTemplateException extends PhloxRuntimeException
 {
   /**
-   * Stage of the template pipeline. See {@code wiki/Template-Processing.md} § Error handling.
+   * Stage of the template pipeline. See the wiki page Template-Processing, section "Error handling".
    */
   public enum EStage
   {

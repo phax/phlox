@@ -3,12 +3,13 @@ Invoice
 Snippet1
 ========
 
-Invoice issue date          November 13, 2017
-Payment due date            December 1, 2017
-Value added tax point date  December 1, 2017
-Invoice currency code       EUR
-Buyer reference             0150abc
-Invoice type code           380 — Commercial invoice
+Invoice issue date            November 13, 2017
+Payment due date              December 1, 2017
+Value added tax point date    December 1, 2017
+Invoice currency code         EUR
+VAT accounting currency code  SEK
+Buyer reference               0150abc
+Invoice type code             380 — Commercial invoice
 
 --------------------------------------------------------------------------------
 

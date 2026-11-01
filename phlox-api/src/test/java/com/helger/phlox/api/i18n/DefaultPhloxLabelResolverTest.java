@@ -17,9 +17,11 @@
 package com.helger.phlox.api.i18n;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Locale;
 
@@ -103,6 +105,44 @@ public final class DefaultPhloxLabelResolverTest
   }
 
   @Test
+  public void testMissingKeyFallsBackToEnglish ()
+  {
+    final String sBundle = "phlox-test-labels";
+    assertEquals ("Beide", DefaultPhloxLabelResolver.getLabel (sBundle, "both", Locale.GERMAN));
+    assertEquals ("Only English", DefaultPhloxLabelResolver.getLabel (sBundle, "english.only", Locale.GERMAN));
+    assertEquals ("nowhere", DefaultPhloxLabelResolver.getLabel (sBundle, "nowhere", Locale.GERMAN));
+    assertEquals ("nowhere", DefaultPhloxLabelResolver.getLabel (sBundle, "nowhere", Locale.ENGLISH));
+  }
+
+  @Test
+  public void testAlternativeTextsOfImages ()
+  {
+    final String [] [] aExpected = { { "en", "Logo", "Image" },
+                                     { "de", "Logo", "Bild" },
+                                     { "es", "Logotipo", "Imagen" },
+                                     { "fr", "Logo", "Image" },
+                                     { "nl", "Logo", "Afbeelding" } };
+    for (final String [] aRow : aExpected)
+    {
+      final Locale aLocale = Locale.forLanguageTag (aRow[0]);
+      assertEquals (aRow[1], DefaultPhloxLabelResolver.INSTANCE.getLabel ("image.alt.logo", aLocale));
+      assertEquals (aRow[2], DefaultPhloxLabelResolver.INSTANCE.getLabel ("image.alt.default", aLocale));
+    }
+  }
+
+  @Test
+  public void testVatPointDateCodes ()
+  {
+    // UNTDID 2005, the code list of the standard
+    final String sDelivery = DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatpointdate", "35", Locale.ENGLISH);
+    assertNotEquals ("35", sDelivery);
+    // The code of the CII binding has the same meaning
+    assertEquals (sDelivery, DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatpointdate", "29", Locale.ENGLISH));
+    assertNotEquals ("3", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatpointdate", "3", Locale.GERMAN));
+    assertEquals ("99", DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatpointdate", "99", Locale.ENGLISH));
+  }
+
+  @Test
   public void testCodeListLookup ()
   {
     // VAT category "S" is in the standard EN 16931 code list.
@@ -164,5 +204,14 @@ public final class DefaultPhloxLabelResolverTest
     assertNotEquals ("VATEX-EU-132-1A", sName);
     assertEquals (sName, DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatexemption", "vatex-eu-132-1a", Locale.ENGLISH));
     assertEquals (sName, DefaultPhloxLabelResolver.INSTANCE.getCodeLabel ("vatexemption", "Vatex-EU-132-1A", Locale.ENGLISH));
+  }
+
+  @Test
+  public void testIsSupportedLocale ()
+  {
+    for (final String sTag : new String [] { "en", "de", "es", "fr", "nl", "de-AT", "en-GB" })
+      assertTrue (sTag, DefaultPhloxLabelResolver.isSupportedLocale (Locale.forLanguageTag (sTag)));
+    for (final String sTag : new String [] { "xx", "it", "" })
+      assertFalse (sTag, DefaultPhloxLabelResolver.isSupportedLocale (Locale.forLanguageTag (sTag)));
   }
 }
