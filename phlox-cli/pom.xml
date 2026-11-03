@@ -22,7 +22,7 @@
   <parent>
     <groupId>com.helger.phlox</groupId>
     <artifactId>phlox-parent-pom</artifactId>
-    <version>0.6.0</version>
+    <version>0.6.1-SNAPSHOT</version>
   </parent>
   <artifactId>phlox-cli</artifactId>
   <packaging>jar</packaging>
