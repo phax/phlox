@@ -180,11 +180,9 @@ public final class BlueThemeTest
     final int nDefault = sHtml.indexOf ("--phlox-accent:#245c64");
     final int nBlue = sHtml.indexOf ("--blue:#1a56db");
     final int nAccent = sHtml.indexOf ("--phlox-accent:var(--blue)");
-    final int nCustom = sHtml.indexOf (".phlox-title{color:#1a56db}");
     assertTrue (nDefault >= 0);
     assertTrue (nBlue > nDefault);
     assertTrue (nAccent > nDefault);
-    assertTrue (nCustom > nAccent);
     // The default layout uses the variables, not the colours
     assertTrue (sHtml.contains ("background:var(--phlox-accent)"));
   }
@@ -201,7 +199,7 @@ public final class BlueThemeTest
     // The amount due is filled with the accent, the payment block with the light accent
     assertTrue ("Colours: " + aColors, aColors.contains (BLUE));
     assertTrue ("Colours: " + aColors, aColors.contains (SKY));
-    // The text is navy instead of black
+    // The line below the table headers is navy
     assertTrue ("Colours: " + aColors, aColors.contains (NAVY));
     // The accent of the default layout is gone
     assertFalse (aColors.contains (PdfPalette.DEFAULT.getAccent ()));

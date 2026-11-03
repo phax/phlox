@@ -25,7 +25,8 @@ import org.jspecify.annotations.Nullable;
  * BG-23 VAT BREAKDOWN (1..n). Carries BT-116 (taxable amount), BT-117 (tax amount, optional since
  * EN 16931:2026 to support margin schemes), BT-118 (VAT category code), BT-119 (VAT rate), BT-120
  * (exemption reason text), BT-121 (exemption reason and specification code) and, since EN
- * 16931:2026, BT-184 (VAT breakdown currency) and BT-210 (goods/services code).
+ * 16931:2026, BT-184 (VAT breakdown currency) and BT-210 (goods/services code). BT-116-1 (taxable
+ * amount currency) is only set if it differs from the currency of the breakdown.
  *
  * @author Philip Helger
  */
@@ -38,6 +39,7 @@ public class PhloxVatBreakdown
   private String m_sExemptionReason;
   private String m_sExemptionReasonCode;
   private String m_sCurrency;
+  private String m_sTaxableAmountCurrency;
   private String m_sGoodsServicesCode;
 
   /** Create an empty VAT breakdown. */
@@ -216,6 +218,32 @@ public class PhloxVatBreakdown
   public PhloxVatBreakdown setCurrency (@Nullable final String sCurrency)
   {
     m_sCurrency = sCurrency;
+    return this;
+  }
+
+  /**
+   * Get the VAT category taxable amount currency (BT-116-1). It is only set if it differs from the
+   * currency of the breakdown, which is BT-184 or, without it, the invoice currency BT-5.
+   *
+   * @return VAT category taxable amount currency (BT-116-1). May be {@code null}.
+   */
+  @Nullable
+  public String getTaxableAmountCurrency ()
+  {
+    return m_sTaxableAmountCurrency;
+  }
+
+  /**
+   * Set the VAT category taxable amount currency (BT-116-1).
+   *
+   * @param sTaxableAmountCurrency
+   *        VAT category taxable amount currency; may be {@code null}.
+   * @return this for chaining.
+   */
+  @NonNull
+  public PhloxVatBreakdown setTaxableAmountCurrency (@Nullable final String sTaxableAmountCurrency)
+  {
+    m_sTaxableAmountCurrency = sTaxableAmountCurrency;
     return this;
   }
 

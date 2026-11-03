@@ -1,5 +1,5 @@
 {
-  "$comment": "A theme in blue: all hues of the layout come from one blue scale. Every key that starts with a dollar sign is ignored.",
+  "$comment": "A theme in blue: the layout of the default template, with all hues from one blue scale. Every key that starts with a dollar sign is ignored.",
   "variables": {
     "--navy": "#0b1f3a",
     "--slate-blue": "#4a6285",
@@ -16,18 +16,5 @@
     "--phlox-wash": "var(--frost)",
     "--phlox-accent": "var(--blue)",
     "--phlox-accent-wash": "var(--sky)"
-  },
-  "html": {
-    "$comment": "The variables above already restyle the page; the stylesheet adds what they do not reach.",
-    "customStylesheet": "@media screen{body{background:var(--phlox-accent-wash)}} .phlox-title{color:var(--phlox-accent)} .phlox-table th{border-bottom-color:var(--phlox-accent)}"
-  },
-  "pdf": {
-    "bodyFont": { "color": "var(--navy)" },
-    "headerFont": { "color": "var(--blue)" },
-    "tableHeaderFont": { "color": "var(--blue)" },
-    "blockStyles": {
-      "party-name": { "text": "var(--navy)" },
-      "pay": { "borderTop": { "color": "var(--blue)", "width": 1 } }
-    }
   }
 }

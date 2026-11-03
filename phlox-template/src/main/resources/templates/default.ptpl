@@ -463,7 +463,7 @@
 
 | {{label:section.table.column.vatcategory}} | {{label:section.table.column.vattaxable}} | {{label:section.table.column.vatrate}} | {{label:section.table.column.vatamount}} |
 |---|---:|---:|---:|
-{{#BG-23}}| {{BT-118 | code:vatcategory}}{{?BT-121}} *({{BT-121 | code:vatexemption}})*{{/BT-121}}{{?BT-184}} ({{BT-184}}){{/BT-184}}{{?BT-210}} [{{BT-210}}]{{/BT-210}} | {{?BT-184}}{{BT-116}} {{BT-184}}{{/BT-184}}{{^BT-184}}{{BT-116 | amount}}{{/BT-184}} | {{BT-119 | percent}} | {{?BT-184}}{{BT-117}} {{BT-184}}{{/BT-184}}{{^BT-184}}{{BT-117 | amount}}{{/BT-184}} |
+{{#BG-23}}| {{BT-118 | code:vatcategory}}{{?BT-121}} *({{BT-121 | code:vatexemption}})*{{/BT-121}}{{?BT-184}} ({{BT-184}}){{/BT-184}}{{?BT-210}} [{{BT-210}}]{{/BT-210}} | {{?BT-116-1}}{{BT-116}} {{BT-116-1}}{{/BT-116-1}}{{^BT-116-1}}{{?BT-184}}{{BT-116}} {{BT-184}}{{/BT-184}}{{^BT-184}}{{BT-116 | amount}}{{/BT-184}}{{/BT-116-1}} | {{BT-119 | percent}} | {{?BT-184}}{{BT-117}} {{BT-184}}{{/BT-184}}{{^BT-184}}{{BT-117 | amount}}{{/BT-184}} |
 {{/BG-23}}
 {{#BG-23}}
 {{?BT-120}}

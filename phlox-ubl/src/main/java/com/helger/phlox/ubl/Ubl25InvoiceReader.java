@@ -57,6 +57,11 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
 {
   /** UNTDID 5153 list identifier used to tell BT-177/BT-193 from the reason codes BT-105/BT-145. */
   private static final String NON_VAT_TAX_CODE_LIST_ID = EN16931CodeLists.NON_VAT_TAX_CODE_LIST_ID;
+  /**
+   * The {@code cbc:DocumentType} that marks BT-18 in a credit note of the 2017 binding, which the
+   * 2026 binding still accepts for migration.
+   */
+  private static final String CREDIT_NOTE_OBJECT_DOCUMENT_TYPE = "ATS";
 
   Ubl25InvoiceReader ()
   {}
@@ -832,6 +837,14 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
       if (sCurrencyID != null && !sCurrencyID.equals (sInvoiceCurrency))
         aOut.setCurrency (sCurrencyID);
     }
+    // BT-116-1 — only meaningful if it differs from the currency of the breakdown
+    if (aSub.getTaxableAmount () != null)
+    {
+      final String sCurrencyID = str (aSub.getTaxableAmount ().getCurrencyID ());
+      final String sBreakdownCurrency = aOut.getCurrency () != null ? aOut.getCurrency () : sInvoiceCurrency;
+      if (sCurrencyID != null && !sCurrencyID.equals (sBreakdownCurrency))
+        aOut.setTaxableAmountCurrency (sCurrencyID);
+    }
     if (aSub.getTaxCategory () != null)
     {
       final TaxCategoryType aTC = aSub.getTaxCategory ();
@@ -916,12 +929,15 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
   }
 
   private static void _readAdditionalDocumentReferences (@NonNull final List <DocumentReferenceType> aRefs,
+                                                         final boolean bCreditNote,
                                                          @NonNull final PhloxInvoice aModel)
   {
-    // BT-18 (type code 130) and BG-24 (type code 916)
+    // BT-18 (type code 130; in a credit note also the 2017 form cbc:DocumentType "ATS") and BG-24
+    // (type code 916)
     final ICommonsList <PhloxIdentifier> aObjectIDs = new CommonsArrayList <> ();
     for (final DocumentReferenceType aRef : aRefs)
-      if (EN16931CodeLists.DOCUMENT_TYPE_CODE_OBJECT_DOCUMENT.equals (str (aRef.getDocumentTypeCodeValue ())))
+      if (EN16931CodeLists.DOCUMENT_TYPE_CODE_OBJECT_DOCUMENT.equals (str (aRef.getDocumentTypeCodeValue ())) ||
+          (bCreditNote && CREDIT_NOTE_OBJECT_DOCUMENT_TYPE.equals (joinTexts (aRef.getDocumentType ()))))
       {
         // BT-18: Invoiced object identifier
         if (aRef.getID () != null)
@@ -1412,7 +1428,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
                            aInvoice.getProjectReference (),
                            aModel);
     // BT-18 + BG-24
-    _readAdditionalDocumentReferences (aInvoice.getAdditionalDocumentReference (), aModel);
+    _readAdditionalDocumentReferences (aInvoice.getAdditionalDocumentReference (), false, aModel);
     // BG-3
     _readPrecedingInvoiceRefs (aInvoice.getBillingReference (), aModel);
     // BG-4 to BG-12
@@ -1505,7 +1521,7 @@ final class Ubl25InvoiceReader extends AbstractUblInvoiceReader
                            aCreditNote.getOriginatorDocumentReference (),
                            aCreditNote.getProjectReference (),
                            aModel);
-    _readAdditionalDocumentReferences (aCreditNote.getAdditionalDocumentReference (), aModel);
+    _readAdditionalDocumentReferences (aCreditNote.getAdditionalDocumentReference (), true, aModel);
     _readPrecedingInvoiceRefs (aCreditNote.getBillingReference (), aModel);
     _readParties (aCreditNote.getAccountingSupplierParty (),
                   aCreditNote.getAccountingCustomerParty (),

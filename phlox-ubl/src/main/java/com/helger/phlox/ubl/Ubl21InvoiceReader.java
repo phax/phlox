@@ -571,6 +571,14 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
       if (sCurrencyID != null && !sCurrencyID.equals (sInvoiceCurrency))
         aOut.setCurrency (sCurrencyID);
     }
+    // BT-116-1 — only meaningful if it differs from the currency of the breakdown
+    if (aSub.getTaxableAmount () != null)
+    {
+      final String sCurrencyID = str (aSub.getTaxableAmount ().getCurrencyID ());
+      final String sBreakdownCurrency = aOut.getCurrency () != null ? aOut.getCurrency () : sInvoiceCurrency;
+      if (sCurrencyID != null && !sCurrencyID.equals (sBreakdownCurrency))
+        aOut.setTaxableAmountCurrency (sCurrencyID);
+    }
     if (aSub.getTaxCategory () != null)
     {
       final TaxCategoryType aTC = aSub.getTaxCategory ();

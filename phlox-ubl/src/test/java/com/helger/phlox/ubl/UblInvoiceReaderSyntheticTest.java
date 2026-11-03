@@ -271,10 +271,24 @@ public final class UblInvoiceReaderSyntheticTest
   }
 
   @Test
+  public void testInvoicedObjectInCreditNote25 ()
+  {
+    // The 2026 binding still accepts the form of the 2017 binding, see the migration table
+    final PhloxInvoice aModel = _read (UBL25_CREDIT_NOTE,
+                                       _load (UBL25_CREDIT_NOTE,
+                                              "<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>",
+                                              "<cbc:DocumentType>ATS</cbc:DocumentType>"));
+    assertEquals ("OBJECT-1", aModel.getInvoicedObjectIdentifier ().getValue ());
+    assertEquals ("AVE", aModel.getInvoicedObjectIdentifier ().getSchemeID ());
+    assertEquals (1, aModel.supportingDocuments ().size ());
+    assertEquals ("SUPPORT-1", aModel.supportingDocuments ().get (0).getReference ());
+  }
+
+  @Test
   public void testInvoicedObjectNeedsType130Elsewhere ()
   {
-    // The Invoice of the 2017 binding and both documents of the 2026 binding only know code 130
-    for (final String sFile : new String [] { UBL21_INVOICE, UBL25_INVOICE, UBL25_CREDIT_NOTE })
+    // The Invoice of both bindings only knows code 130
+    for (final String sFile : new String [] { UBL21_INVOICE, UBL25_INVOICE })
     {
       assertEquals (sFile, "OBJECT-1", _read (sFile).getInvoicedObjectIdentifier ().getValue ());
 
@@ -509,6 +523,28 @@ public final class UblInvoiceReaderSyntheticTest
       assertEquals (sFile, 2, aModel.vatBreakdowns ().size ());
       assertNull (sFile, aModel.vatBreakdowns ().get (0).getCurrency ());
       assertEquals (sFile, "USD", aModel.vatBreakdowns ().get (1).getCurrency ());
+      // BT-116-1 is the currency of the breakdown in both
+      assertNull (sFile, aModel.vatBreakdowns ().get (0).getTaxableAmountCurrency ());
+      assertNull (sFile, aModel.vatBreakdowns ().get (1).getTaxableAmountCurrency ());
+    }
+  }
+
+  @Test
+  public void testTaxableAmountInOtherCurrency ()
+  {
+    for (final String sFile : ALL_FILES)
+    {
+      // Differs from BT-5
+      PhloxInvoice aModel = _read (sFile,
+                                   _load (sFile,
+                                          "<cbc:TaxableAmount currencyID=\"EUR\">",
+                                          "<cbc:TaxableAmount currencyID=\"CHF\">"));
+      assertEquals (sFile, "CHF", aModel.vatBreakdowns ().get (0).getTaxableAmountCurrency ());
+
+      // Differs from BT-184
+      aModel = _read (sFile,
+                      _load (sFile, "<cbc:TaxableAmount currencyID=\"USD\">", "<cbc:TaxableAmount currencyID=\"EUR\">"));
+      assertEquals (sFile, "EUR", aModel.vatBreakdowns ().get (1).getTaxableAmountCurrency ());
     }
   }
 }

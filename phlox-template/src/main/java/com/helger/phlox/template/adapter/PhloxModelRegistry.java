@@ -450,6 +450,7 @@ public final class PhloxModelRegistry
     _add (PhloxThirdPartyCharge.class, "BT-180", PhloxThirdPartyCharge::getSpecification);
 
     _add (PhloxVatBreakdown.class, "BT-116", PhloxVatBreakdown::getTaxableAmount);
+    _add (PhloxVatBreakdown.class, "BT-116-1", PhloxVatBreakdown::getTaxableAmountCurrency);
     _add (PhloxVatBreakdown.class, "BT-117", PhloxVatBreakdown::getTaxAmount);
     _add (PhloxVatBreakdown.class, "BT-118", PhloxVatBreakdown::getCategoryCode);
     _add (PhloxVatBreakdown.class, "BT-119", PhloxVatBreakdown::getRate);
