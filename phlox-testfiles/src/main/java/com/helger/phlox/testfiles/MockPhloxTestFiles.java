@@ -63,6 +63,9 @@ public final class MockPhloxTestFiles
                                                   "2017/cii/CII_example1-CreditNote.xml",
                                                   "2017/cii/xrechnung/2.0.0/01.15a-INVOICE_uncefact.xml",
                                                   "2017/cii/xrechnung/3.0.2/01.01a-INVOICE_uncefact.xml",
+                                                  "2017/cii/zugferd/2.5.2/en16931/factur-x-1.xml",
+                                                  "2017/cii/zugferd/2.5.2/en16931/factur-x-11.xml",
+                                                  "2017/cii/zugferd/2.5.2/en16931/factur-x-20.xml",
                                                   "2026/ubl/invoice/d25a-full-invoice-ubl.xml",
                                                   "2026/ubl/invoice/d25a-minimal-invoice-ubl.xml",
                                                   "2026/ubl/invoice/d25a-new-bg34-invoice-ubl.xml",
@@ -226,6 +229,12 @@ public final class MockPhloxTestFiles
                                                           "2017/cii/issues/issue38-bad.xml",
                                                           "2017/cii/issues/issue47.xml",
                                                           "2017/cii/issues/issue1121.xml" };
+
+  // EN 16931:2017 / CII D16B — samples of the ZUGFeRD 2.5.2 profile EN 16931
+  // (imported from phive-rules-zugferd/src/test/resources/external/test-files/2.5.2/en16931)
+  private static final String [] CII_D16B_ZUGFERD_FILES = { "2017/cii/zugferd/2.5.2/en16931/factur-x-1.xml",
+                                                            "2017/cii/zugferd/2.5.2/en16931/factur-x-11.xml",
+                                                            "2017/cii/zugferd/2.5.2/en16931/factur-x-20.xml" };
 
   // EN 16931:2026 / UBL 2.5 — Invoices
   private static final String [] UBL25_INVOICE_FILES = { "2026/ubl/invoice/d25a-coverage-card-invoice-ubl.xml",
@@ -400,10 +409,22 @@ public final class MockPhloxTestFiles
   }
 
   /**
+   * Get the classpath resources for the samples of the ZUGFeRD 2.5.2 profile EN 16931 (3 files).
+   *
+   * @return Classpath resources for the samples of the ZUGFeRD 2.5.2 profile EN 16931 (3 files).
+   */
+  @NonNull
+  @ReturnsMutableCopy
+  public static ICommonsList <ClassPathResource> getCiiD16BZugferdFiles ()
+  {
+    return _toResources (CII_D16B_ZUGFERD_FILES);
+  }
+
+  /**
    * Get the classpath resources for every EN 16931:2017 CII D16B example file — core +.
    *
    * @return Classpath resources for every EN 16931:2017 CII D16B example file — core +
-   *         XRechnung 1.2.2 + 2.0.0 + 3.0.2 + technical + issues. All files are well-formed
+   *         XRechnung 1.2.2 + 2.0.0 + 3.0.2 + technical + issues + ZUGFeRD. All files are well-formed
    *         CII and should round-trip through {@code CiiInvoiceReader} without errors.
    */
   @NonNull
@@ -417,6 +438,7 @@ public final class MockPhloxTestFiles
     aList.addAll (_toResources (CII_D16B_XRECHNUNG_302_FILES));
     aList.addAll (_toResources (CII_D16B_TECHNICAL_FILES));
     aList.addAll (_toResources (CII_D16B_ISSUE_FILES));
+    aList.addAll (_toResources (CII_D16B_ZUGFERD_FILES));
     return aList;
   }
 

@@ -1,0 +1,364 @@
+pages 2
+page 1 595.3x841.9
+G p1 sc 0.14 0.36 0.39
+G p1 sc 0.00 0.00 0.00
+G p1 SC 0.89 0.91 0.93
+G p1 w 0.50
+G p1 m 56.69 725.85
+G p1 l 286.40 725.85
+G p1 S
+G p1 m 286.40 725.85
+G p1 l 538.58 725.85
+G p1 S
+G p1 m 56.69 707.79
+G p1 l 286.40 707.79
+G p1 S
+G p1 m 286.40 707.79
+G p1 l 538.58 707.79
+G p1 S
+G p1 m 56.69 689.73
+G p1 l 286.40 689.73
+G p1 S
+G p1 m 286.40 689.73
+G p1 l 538.58 689.73
+G p1 S
+G p1 m 56.69 671.67
+G p1 l 286.40 671.67
+G p1 S
+G p1 m 286.40 671.67
+G p1 l 538.58 671.67
+G p1 S
+G p1 SC 0.14 0.36 0.39
+G p1 w 1.50
+G p1 m 56.69 662.67
+G p1 l 538.58 662.67
+G p1 S
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 SC 0.50 0.50 0.50
+G p1 w 0.75
+G p1 m 56.69 533.28
+G p1 l 538.58 533.28
+G p1 S
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 SC 0.11 0.14 0.20
+G p1 w 1.00
+G p1 m 56.69 325.52
+G p1 l 83.82 325.52
+G p1 S
+G p1 m 83.82 325.52
+G p1 l 245.65 325.52
+G p1 S
+G p1 m 245.65 325.52
+G p1 l 302.28 325.52
+G p1 S
+G p1 m 302.28 325.52
+G p1 l 397.58 325.52
+G p1 S
+G p1 m 397.58 325.52
+G p1 l 470.75 325.52
+G p1 S
+G p1 m 470.75 325.52
+G p1 l 538.58 325.52
+G p1 S
+G p1 SC 0.89 0.91 0.93
+G p1 w 0.50
+G p1 m 56.69 284.09
+G p1 l 83.82 284.09
+G p1 S
+G p1 sc 0.00 0.00 0.00
+G p1 m 83.82 284.09
+G p1 l 245.65 284.09
+G p1 S
+G p1 m 245.65 284.09
+G p1 l 302.28 284.09
+G p1 S
+G p1 m 302.28 284.09
+G p1 l 397.58 284.09
+G p1 S
+G p1 m 397.58 284.09
+G p1 l 470.75 284.09
+G p1 S
+G p1 m 470.75 284.09
+G p1 l 538.58 284.09
+G p1 S
+G p1 m 56.69 242.91
+G p1 l 83.82 242.91
+G p1 S
+G p1 m 83.82 242.91
+G p1 l 245.65 242.91
+G p1 S
+G p1 m 245.65 242.91
+G p1 l 302.28 242.91
+G p1 S
+G p1 m 302.28 242.91
+G p1 l 397.58 242.91
+G p1 S
+G p1 m 397.58 242.91
+G p1 l 470.75 242.91
+G p1 S
+G p1 m 470.75 242.91
+G p1 l 538.58 242.91
+G p1 S
+G p1 sc 0.40 0.44 0.52
+G p1 SC 0.11 0.14 0.20
+G p1 w 1.00
+G p1 m 56.69 206.71
+G p1 l 103.81 206.71
+G p1 S
+G p1 m 103.81 206.71
+G p1 l 288.98 206.71
+G p1 S
+G p1 m 288.98 206.71
+G p1 l 377.14 206.71
+G p1 S
+G p1 m 377.14 206.71
+G p1 l 452.26 206.71
+G p1 S
+G p1 m 452.26 206.71
+G p1 l 538.58 206.71
+G p1 S
+G p1 SC 0.89 0.91 0.93
+G p1 w 0.50
+G p1 m 56.69 188.40
+G p1 l 103.81 188.40
+G p1 S
+G p1 sc 0.00 0.00 0.00
+G p1 m 103.81 188.40
+G p1 l 288.98 188.40
+G p1 S
+G p1 m 288.98 188.40
+G p1 l 377.14 188.40
+G p1 S
+G p1 m 377.14 188.40
+G p1 l 452.26 188.40
+G p1 S
+G p1 m 452.26 188.40
+G p1 l 538.58 188.40
+G p1 S
+G p1 sc 0.83 0.83 0.83
+page 2 595.3x841.9
+G p2 sc 0.40 0.44 0.52
+G p2 SC 0.11 0.14 0.20
+G p2 w 1.00
+G p2 m 56.69 749.25
+G p2 l 131.36 749.25
+G p2 S
+G p2 m 131.36 749.25
+G p2 l 209.80 749.25
+G p2 S
+G p2 m 209.80 749.25
+G p2 l 262.28 749.25
+G p2 S
+G p2 m 262.28 749.25
+G p2 l 322.19 749.25
+G p2 S
+G p2 SC 0.89 0.91 0.93
+G p2 w 0.50
+G p2 m 56.69 719.38
+G p2 l 131.36 719.38
+G p2 S
+G p2 sc 0.00 0.00 0.00
+G p2 m 131.36 719.38
+G p2 l 209.80 719.38
+G p2 S
+G p2 m 209.80 719.38
+G p2 l 262.28 719.38
+G p2 S
+G p2 m 262.28 719.38
+G p2 l 322.19 719.38
+G p2 S
+G p2 SC 0.50 0.50 0.50
+G p2 w 2.00
+G p2 m 57.69 719.13
+G p2 l 57.69 692.01
+G p2 S
+G p2 sc 0.96 0.97 0.98
+G p2 re 336.19 584.30 202.39 200.90
+G p2 f
+G p2 SC 0.89 0.91 0.93
+G p2 w 0.50
+G p2 m 344.19 747.83
+G p2 l 465.33 747.83
+G p2 S
+G p2 sc 0.00 0.00 0.00
+G p2 m 465.33 747.83
+G p2 l 530.58 747.83
+G p2 S
+G p2 m 344.19 718.21
+G p2 l 465.33 718.21
+G p2 S
+G p2 m 465.33 718.21
+G p2 l 530.58 718.21
+G p2 S
+G p2 m 344.19 688.59
+G p2 l 465.33 688.59
+G p2 S
+G p2 m 465.33 688.59
+G p2 l 530.58 688.59
+G p2 S
+G p2 m 344.19 658.97
+G p2 l 465.33 658.97
+G p2 S
+G p2 m 465.33 658.97
+G p2 l 530.58 658.97
+G p2 S
+G p2 m 344.19 640.91
+G p2 l 465.33 640.91
+G p2 S
+G p2 m 465.33 640.91
+G p2 l 530.58 640.91
+G p2 S
+G p2 m 344.19 610.61
+G p2 l 465.33 610.61
+G p2 S
+G p2 m 465.33 610.61
+G p2 l 530.58 610.61
+G p2 S
+G p2 m 344.19 592.55
+G p2 l 465.33 592.55
+G p2 S
+G p2 m 465.33 592.55
+G p2 l 530.58 592.55
+G p2 S
+G p2 sc 0.14 0.36 0.39
+G p2 re 336.19 545.90 202.39 34.40
+G p2 f
+G p2 m 344.19 554.15
+G p2 l 434.29 554.15
+G p2 S
+G p2 sc 1.00 1.00 1.00
+G p2 m 434.29 554.15
+G p2 l 530.58 554.15
+G p2 S
+G p2 sc 0.91 0.95 0.95
+G p2 re 56.69 363.60 481.89 174.30
+G p2 f
+G p2 sc 0.40 0.44 0.52
+G p2 sc 0.00 0.00 0.00
+G p2 sc 0.40 0.44 0.52
+G p2 sc 0.00 0.00 0.00
+G p2 Do /Im1
+G p2 sc 0.40 0.44 0.52
+G p2 sc 0.83 0.83 0.83
+T p1 56.7 66.8 8.0 Helvetica-Bold Invoice
+T p1 56.7 92.2 18.0 Helvetica-Bold 01.234.567.8-2026-1
+T p1 59.7 112.8 10.0 Helvetica Invoice issue date
+T p1 289.4 112.8 10.0 Helvetica March 6, 2026
+T p1 59.7 130.8 10.0 Helvetica Payment due date
+T p1 289.4 130.8 10.0 Helvetica March 15, 2026
+T p1 59.7 148.9 10.0 Helvetica Invoice currency code
+T p1 289.4 148.9 10.0 Helvetica EUR
+T p1 59.7 167.0 10.0 Helvetica Invoice type code
+T p1 289.4 167.0 10.0 Helvetica 575 — Insurer's invoice
+T p1 56.7 193.9 7.0 Helvetica-Bold Seller
+T p1 56.7 211.0 11.0 Helvetica-Bold MVM Musterhafter Versicherungsverein
+T p1 56.7 224.1 11.0 Helvetica-Bold Musterstadt a.G.
+T p1 56.7 239.6 10.0 Helvetica Musterstr. 12
+T p1 56.7 251.2 10.0 Helvetica 12345 Musterstadt
+T p1 56.7 262.8 10.0 Helvetica Germany
+T p1 56.7 276.6 8.0 Helvetica Seller identifier: 549910
+T p1 56.7 286.4 8.0 Helvetica Seller VAT identifier: DE136695976
+T p1 56.7 296.2 8.0 Helvetica Versicherungsbüro Muster · 0123/45678
+T p1 297.6 193.9 7.0 Helvetica-Bold Buyer
+T p1 297.6 211.0 11.0 Helvetica-Bold Max Mustermann
+T p1 297.6 226.5 10.0 Helvetica Musterstr. 11
+T p1 297.6 238.1 10.0 Helvetica 12346 Bad Musterhausen
+T p1 297.6 249.7 10.0 Helvetica Germany
+T p1 56.7 322.9 7.0 Helvetica-Bold Delivery
+T p1 56.7 338.5 10.0 Helvetica Germany
+T p1 56.7 364.0 8.0 Helvetica-Bold INVOICING PERIOD
+T p1 56.7 378.5 10.0 Helvetica March 1, 2026 — February 28, 2027
+T p1 56.7 400.1 8.0 Helvetica-Bold NOTES
+T p1 56.7 414.6 10.0 Helvetica Allgemeine Haftpflichtversicherung VSNR: 01.234.567.8
+T p1 56.7 426.2 10.0 Helvetica (Bei Schriftwechsel und Zahlung bitte angeben.)
+T p1 56.7 441.7 10.0 Helvetica-Oblique [Regulatory information] Oeffnungszeiten:
+T p1 56.7 453.3 10.0 Helvetica Mo.-Fr. 08.30 - 12.30 Uhr
+T p1 56.7 464.9 10.0 Helvetica Mo.-Fr. 14.00 - 17.00 Uhr
+T p1 56.7 476.4 10.0 Helvetica Sa 8.00-14.00 Uhr
+T p1 56.7 497.9 8.0 Helvetica-Bold INVOICE LINES
+T p1 76.7 512.9 7.0 Helvetica-Bold #
+T p1 86.8 512.9 7.0 Helvetica-Bold DESCRIPTION
+T p1 283.9 512.9 7.0 Helvetica-Bold QTY
+T p1 352.1 512.9 7.0 Helvetica-Bold UNIT PRICE
+T p1 452.8 512.9 7.0 Helvetica-Bold VAT
+T p1 491.4 512.9 7.0 Helvetica-Bold LINE TOTAL
+T p1 75.3 531.4 10.0 Helvetica 1
+T p1 86.8 531.8 10.0 Helvetica-Bold Privathaftpflicht
+T p1 249.2 531.4 10.0 Helvetica 1.0000 one
+T p1 361.2 531.4 10.0 Helvetica € 90.52
+T p1 320.7 543.0 10.0 Helvetica-Oblique Item gross price:
+T p1 361.2 554.6 10.0 Helvetica-Oblique € 90.52
+T p1 411.1 531.4 10.0 Helvetica Exempt from
+T p1 423.3 543.0 10.0 Helvetica tax 0.00%
+T p1 496.7 531.4 10.0 Helvetica € 107.72
+T p1 75.3 572.6 10.0 Helvetica 2
+T p1 86.8 573.0 10.0 Helvetica-Bold Lebensgefährte/in zur
+T p1 86.8 584.9 10.0 Helvetica-Bold Privathaftpflicht
+T p1 249.2 572.6 10.0 Helvetica 1.0000 one
+T p1 366.8 572.6 10.0 Helvetica € 0.00
+T p1 320.7 584.2 10.0 Helvetica-Oblique Item gross price:
+T p1 366.8 595.7 10.0 Helvetica-Oblique € 0.00
+T p1 411.1 572.6 10.0 Helvetica Exempt from
+T p1 423.3 584.2 10.0 Helvetica tax 0.00%
+T p1 507.8 572.6 10.0 Helvetica € 0.00
+T p1 56.7 616.8 8.0 Helvetica-Bold INVOICE LINE CHARGES AND TAXES
+T p1 96.6 631.7 7.0 Helvetica-Bold #
+T p1 106.8 631.7 7.0 Helvetica-Bold REASON
+T p1 318.3 631.7 7.0 Helvetica-Bold BASE AMOUNT
+T p1 442.6 631.7 7.0 Helvetica-Bold %
+T p1 502.7 631.7 7.0 Helvetica-Bold AMOUNT
+T p1 95.3 650.2 10.0 Helvetica 1
+T p1 106.8 650.2 10.0 Helvetica Versicherungssteuer
+T p1 340.8 650.2 10.0 Helvetica € 90.52
+T p1 415.4 650.2 10.0 Helvetica 19.00%
+T p1 496.4 650.2 10.0 Helvetica +€ 17.20
+T p1 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
+T p2 56.7 74.2 8.0 Helvetica-Bold VAT BREAKDOWN
+T p2 59.7 89.1 7.0 Helvetica-Bold VAT CATEGORY
+T p2 136.4 89.1 7.0 Helvetica-Bold TAXABLE AMOUNT
+T p2 221.8 89.1 7.0 Helvetica-Bold VAT RATE
+T p2 269.2 89.1 7.0 Helvetica-Bold VAT AMOUNT
+T p2 59.7 107.7 10.0 Helvetica Exempt from
+T p2 59.7 119.3 10.0 Helvetica tax
+T p2 167.9 107.7 10.0 Helvetica € 107.72
+T p2 230.9 107.7 10.0 Helvetica 0.00%
+T p2 291.4 107.7 10.0 Helvetica € 0.00
+T p2 64.7 134.3 10.0 Helvetica VAT category code E: Umsatzsteuerbefreit nach §4 Nr.
+T p2 64.7 145.9 10.0 Helvetica 10a UStG
+T p2 347.2 79.3 10.0 Helvetica Sum of invoice line net
+T p2 347.2 90.8 10.0 Helvetica amounts
+T p2 488.7 79.3 10.0 Helvetica € 107.72
+T p2 347.2 108.9 10.0 Helvetica Sum of allowances on
+T p2 347.2 120.4 10.0 Helvetica document level
+T p2 496.5 108.9 10.0 Helvetica -€ 0.00
+T p2 347.2 138.5 10.0 Helvetica Sum of charges and
+T p2 347.2 150.1 10.0 Helvetica taxes on document level
+T p2 493.9 138.5 10.0 Helvetica +€ 0.00
+T p2 347.2 168.1 10.0 Helvetica Invoice total amount
+T p2 347.2 179.7 10.0 Helvetica without VAT
+T p2 488.7 168.1 10.0 Helvetica € 107.72
+T p2 347.2 197.7 10.0 Helvetica Invoice total VAT amount
+T p2 499.8 197.7 10.0 Helvetica € 0.00
+T p2 347.2 216.1 10.0 Helvetica-Bold Invoice total amount
+T p2 347.2 228.0 10.0 Helvetica-Bold with VAT
+T p2 488.7 216.1 10.0 Helvetica-Bold € 107.72
+T p2 347.2 246.1 10.0 Helvetica Paid amount
+T p2 496.5 246.1 10.0 Helvetica -€ 0.00
+T p2 347.2 284.5 10.0 Helvetica-Bold Amount due
+T p2 488.7 284.5 10.0 Helvetica-Bold € 107.72
+T p2 66.7 322.9 7.0 Helvetica-Bold Payment
+T p2 66.7 338.8 10.0 Helvetica-Bold Payment means type code: SEPA credit transfer
+T p2 66.7 351.7 7.0 Helvetica-Bold Credit transfer
+T p2 66.7 367.3 10.0 Helvetica •
+T p2 76.7 366.3 10.0 Courier DE89370400440532013000
+T p2 56.7 491.0 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2017
+T p2 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox

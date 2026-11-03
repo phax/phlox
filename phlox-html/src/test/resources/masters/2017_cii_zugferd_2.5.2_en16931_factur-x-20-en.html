@@ -1,0 +1,355 @@
+<!--
+
+    Copyright (C) 2026 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="generator" content="phlox @VERSION@" />
+    <meta name="author" content="MUSTERLIEFERANT GMBH" />
+    <meta name="description" content="EN 16931:2017 Invoice" />
+    <meta name="keywords" content="EN 16931, Invoice, phlox" />
+    <title>Invoice: RK21012345</title>
+    <style type="text/css">:root{--phlox-ink:#1d2433;--phlox-muted:#667085;--phlox-faint:#98a2b3;--phlox-rule:#e4e7ec;--phlox-wash:#f6f7f9;--phlox-accent:#245c64;--phlox-accent-wash:#e8f1f2}
+*{box-sizing:border-box}
+body{margin:0;color:var(--phlox-ink);font:10.5pt/1.45 -apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums}
+@media screen{body{background:#eceef2}.phlox-page{margin:12mm auto;box-shadow:0 1px 3px rgba(16,24,40,.12)}}
+@page{size:A4;margin:0}
+@media print{.phlox-page{margin:0;box-shadow:none}}
+.phlox-page{width:210mm;max-width:100%;min-height:297mm;background:#fff;padding:16mm 18mm}
+.phlox-logo{max-height:14mm;max-width:50mm}
+a{color:var(--phlox-accent)}
+h1,h2,h3{margin:0}
+.phlox-title{font-size:24pt;font-weight:650;letter-spacing:-.01em;margin:1mm 0 0}
+.phlox-section-title,h2.phlox-section-title{font-size:8pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:6mm 0 2mm;padding:0;border:0}
+.phlox-subsection-title,h3.phlox-subsection-title{font-size:9pt;margin:3mm 0 1.5mm;font-weight:650}
+p{margin:0 0 2mm}
+.phlox-label{font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:0 0 1.5mm}
+.phlox-kind{font-size:8.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--phlox-accent);font-weight:600;margin:0}
+.phlox-muted{color:var(--phlox-muted);font-size:9pt}
+.phlox-party-name{font-weight:650;font-size:11.5pt;margin:0 0 1mm}
+.phlox-row>*{min-width:0}
+.phlox-row:empty{display:none}
+.phlox-row{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8mm}
+.phlox-head{grid-template-columns:1fr auto;grid-auto-flow:row}
+hr{border:0;border-top:1px solid var(--phlox-rule);margin:4mm 0}
+hr.phlox-rule{border-top:2px solid var(--phlox-accent);margin:5mm 0 6mm}
+.phlox-head-logo{text-align:right}
+.phlox-parties{margin-bottom:5mm}
+.phlox-secondary{font-size:9pt;margin-bottom:5mm}
+.phlox-table{width:100%;border-collapse:collapse;margin:0 0 3mm}
+.phlox-table th{font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;text-align:left;padding:2mm;border-bottom:1.5px solid var(--phlox-ink)}
+.phlox-table td{padding:2.4mm 2mm;border-bottom:1px solid var(--phlox-rule);vertical-align:top}
+.phlox-meta{width:auto;margin-top:4mm;font-size:9.5pt}
+.phlox-meta thead,.phlox-totals thead,.phlox-due thead,.phlox-terms thead{display:none}
+.phlox-meta td{border:0;padding:.6mm 6mm .6mm 0}
+.phlox-totals td,.phlox-due td{border:0;padding:1mm 0;font-size:9.5pt}
+.phlox-meta td:first-child{color:var(--phlox-muted)}
+.phlox-meta td:last-child{font-weight:550}
+.phlox-vat .phlox-table th,.phlox-vat .phlox-table td{font-size:8.5pt;padding:1.6mm 2mm}
+.phlox-bottom{margin-top:6mm;grid-auto-flow:row;grid-template-columns:minmax(0,1fr) 78mm;align-items:start}
+.phlox-totals{background:var(--phlox-wash);border-radius:3px;padding:3mm 4mm}
+.phlox-totals .phlox-table,.phlox-due .phlox-table{margin:0}
+.phlox-due{background:var(--phlox-accent);color:#fff;border-radius:3px;padding:3.2mm 4mm;margin-top:2mm;font-size:12pt;font-weight:650}
+.phlox-due td{padding:0;color:#fff;font-size:12pt}
+.phlox-due td:last-child{font-size:15pt}
+.phlox-pay{margin-top:6mm;padding:4mm;background:var(--phlox-accent-wash);border-radius:3px;font-size:9.5pt}
+.phlox-pay .phlox-label{color:var(--phlox-accent)}
+.phlox-pay p{margin:0 0 2mm}
+.phlox-pay code{font-family:ui-monospace,Menlo,monospace}
+code{font-family:ui-monospace,Menlo,monospace}
+blockquote{margin:0 0 2mm;padding-left:3mm;border-left:2px solid var(--phlox-rule);color:var(--phlox-muted);font-size:9pt}
+ul,ol{margin:0 0 2mm;padding-left:5mm}
+li{margin:0 0 1mm}
+.phlox-watermark-user{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:6em;color:rgba(128,128,128,0.12);pointer-events:none;z-index:9999;user-select:none}
+.phlox-watermark-program{position:fixed;bottom:4mm;right:4mm;font-size:.8em;color:rgba(100,100,100,0.6);z-index:9999}
+.phlox-watermark-program a{color:inherit}
+@media print{.phlox-watermark-user{position:fixed}}
+.phlox-foot{margin-top:10mm;padding-top:3mm;border-top:1px solid var(--phlox-rule);font-size:7.5pt;color:var(--phlox-faint)}
+.phlox-lines td:first-child{width:2em;color:var(--phlox-muted)}
+.phlox-lines td em{font-style:normal;color:var(--phlox-muted);font-size:8.5pt}
+.phlox-lines th:nth-child(n+3),.phlox-lines td:nth-child(n+3){text-align:right}
+</style>
+  </head>
+  <body>
+    <div class="phlox-watermark-program">
+      <a href="https://github.com/phax/phlox" target="phlox">Generated by phlox · open-source edition · github.com/phax/phlox</a>
+    </div>
+    <div class="phlox-page">
+      <div class="phlox-row phlox-head">
+        <div class="phlox-head-main">
+          <p class="phlox-kind">Invoice</p>
+          <h1 class="phlox-title">RK21012345</h1>
+          <table class="phlox-table phlox-meta">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Invoice issue date</td>
+                <td>May 15, 2026</td>
+              </tr>
+              <tr>
+                <td>Invoice currency code</td>
+                <td>EUR</td>
+              </tr>
+              <tr>
+                <td>Invoice type code</td>
+                <td>384 — Corrected invoice</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr class="phlox-rule" />
+      <div class="phlox-row phlox-parties">
+        <div class="phlox-party">
+          <p class="phlox-label">Seller</p>
+          <p class="phlox-party-name">MUSTERLIEFERANT GMBH</p>
+          <p>BAHNHOFSTRASSE 99<br />99199 MUSTERHAUSEN<br />Germany</p>
+          <p class="phlox-muted">Seller identifier: 0088:4333741000005, 549910<br />Seller VAT identifier: DE106008386</p>
+        </div>
+        <div class="phlox-party">
+          <p class="phlox-label">Buyer</p>
+          <p class="phlox-party-name">MUSTER-KUNDE GMBH</p>
+          <p>KUNDENWEG 88<br />40235 DUESSELDORF<br />Germany</p>
+          <p class="phlox-muted">Buyer identifier: 009420</p>
+        </div>
+      </div>
+      <hr />
+      <div class="phlox-row phlox-secondary">
+        <div class="phlox-secondary-cell">
+          <p class="phlox-label">Delivery</p>
+          <p class="phlox-muted">Actual delivery date: April 7, 2026</p>
+        </div>
+      </div>
+      <h2 class="phlox-section-title">References</h2>
+      <ul>
+        <li>
+          <p>
+            <strong>Purchase order reference:</strong> B123456789          </p>
+        </li>
+        <li>
+          <p>
+            <strong>Despatch advice reference:</strong> L87654321012345          </p>
+        </li>
+      </ul>
+      <h2 class="phlox-section-title">Notes</h2>
+      <p>
+        <em>[Price conditions]</em> Es bestehen Rabatt- oder Bonusvereinbarungen.      </p>
+      <p>
+        <em>[Regulatory information]</em> MUSTERLIEFERANT GMBH<br />BAHNHOFSTRASSE 99<br />99199 MUSTERHAUSEN<br />Geschäftsführung:<br />Max Mustermann<br />USt-IdNr: DE123456789<br />Telefon: +49 932 431 0<br />www.musterlieferant.de<br />HRB Nr. 372876<br />Amtsgericht Musterstadt<br />GLN 4304171000002      </p>
+      <p>Bei Rückfragen:<br />Telefon: +49 932 431 500<br />E-Mail : max.muster@musterlieferant.de</p>
+      <p>Ursprungsbeleg-Nr  : R87654321012345<br />Reklamationsnummer : REKLA-2018-235</p>
+      <p>Warenempfänger<br />GLN 430417088093<br />MUSTER-MARKT<br />
+        <br />HAUPTSTRASSE 44<br />31157 SARSTEDT<br />
+        <br />Abteilung : 8211</p>
+      <h2 class="phlox-section-title">Invoice lines</h2>
+      <table class="phlox-table phlox-lines">
+        <thead>
+          <tr>
+            <th style="text-align:right;">#</th>
+            <th>Description</th>
+            <th style="text-align:right;">Qty</th>
+            <th style="text-align:right;">Unit price</th>
+            <th style="text-align:right;">VAT</th>
+            <th style="text-align:right;">Line total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:right;">1</td>
+            <td>
+              <strong>Zitronensäure 100ml</strong>
+              <br />Verpackung: Flasche<br />VKE/Geb: 1<br />
+              <em>Item seller&#39;s identifier: ZS997</em>
+              <br />
+              <em>Item standard identifier: 0088:4123456000014</em>
+            </td>
+            <td style="text-align:right;">-5.0000 piece</td>
+            <td style="text-align:right;">€ 1.00<br />
+              <em>Item gross price: € 1.00</em>
+</td>
+            <td style="text-align:right;">Standard rate 19.00%</td>
+            <td style="text-align:right;">-€ 5.00</td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">2</td>
+            <td>
+              <strong>Gelierzucker Extra 250g</strong>
+              <br />Verpackung: Karton<br />VKE/Geb: 1<br />
+              <em>Item seller&#39;s identifier: GZ250</em>
+              <br />
+              <em>Item standard identifier: 0088:4123456000021</em>
+            </td>
+            <td style="text-align:right;">-2.0000 piece</td>
+            <td style="text-align:right;">€ 1.45<br />
+              <em>Item gross price: € 1.50</em>
+              <br />
+              <em>Item price discount: € 0.05</em>
+</td>
+            <td style="text-align:right;">Standard rate 7.00%</td>
+            <td style="text-align:right;">-€ 2.90</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2 class="phlox-section-title">Allowances and charges</h2>
+      <table class="phlox-table">
+        <thead>
+          <tr>
+            <th>Reason</th>
+            <th style="text-align:right;">Base amount</th>
+            <th style="text-align:right;">%</th>
+            <th style="text-align:right;">Amount</th>
+            <th>VAT category</th>
+            <th style="text-align:right;">VAT rate</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Rechnungsrabatt 1 -2,00% Basisbetrag: -5,00, MwSt. % 19,0</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">--€ 0.10</td>
+            <td>Standard rate</td>
+            <td style="text-align:right;">19.00%</td>
+          </tr>
+          <tr>
+            <td>Rechnungsrabatt 1 -2,00% Basisbetrag: -2,90, MwSt. %  7,0</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">--€ 0.06</td>
+            <td>Standard rate</td>
+            <td style="text-align:right;">7.00%</td>
+          </tr>
+          <tr>
+            <td>Rechnungsrabatt 2       Basisbetrag: -5,00, MwSt. % 19,0</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">--€ 0.05</td>
+            <td>Standard rate</td>
+            <td style="text-align:right;">19.00%</td>
+          </tr>
+          <tr>
+            <td>Rechnungsrabatt 2       Basisbetrag: -2,90, MwSt. %  7,0</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">--€ 0.02</td>
+            <td>Standard rate</td>
+            <td style="text-align:right;">7.00%</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="phlox-row phlox-bottom">
+        <div class="phlox-vat">
+          <h2 class="phlox-section-title">VAT breakdown</h2>
+          <table class="phlox-table">
+            <thead>
+              <tr>
+                <th>VAT category</th>
+                <th style="text-align:right;">Taxable amount</th>
+                <th style="text-align:right;">VAT rate</th>
+                <th style="text-align:right;">VAT amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Standard rate</td>
+                <td style="text-align:right;">-€ 4.85</td>
+                <td style="text-align:right;">19.00%</td>
+                <td style="text-align:right;">-€ 0.92</td>
+              </tr>
+              <tr>
+                <td>Standard rate</td>
+                <td style="text-align:right;">-€ 2.82</td>
+                <td style="text-align:right;">7.00%</td>
+                <td style="text-align:right;">-€ 0.20</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="phlox-totals-col">
+          <div class="phlox-totals">
+            <table class="phlox-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="text-align:right;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sum of invoice line net amounts</td>
+                  <td style="text-align:right;">-€ 7.90</td>
+                </tr>
+                <tr>
+                  <td>Sum of allowances on document level</td>
+                  <td style="text-align:right;">--€ 0.23</td>
+                </tr>
+                <tr>
+                  <td>Sum of charges and taxes on document level</td>
+                  <td style="text-align:right;">+€ 0.00</td>
+                </tr>
+                <tr>
+                  <td>Invoice total amount without VAT</td>
+                  <td style="text-align:right;">-€ 7.67</td>
+                </tr>
+                <tr>
+                  <td>Invoice total VAT amount</td>
+                  <td style="text-align:right;">-€ 1.12</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Invoice total amount with VAT</strong>
+                  </td>
+                  <td style="text-align:right;">
+                    <strong>-€ 8.79</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Paid amount</td>
+                  <td style="text-align:right;">-€ 0.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="phlox-due">
+            <table class="phlox-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="text-align:right;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Amount due</td>
+                  <td style="text-align:right;">-€ 8.79</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <p class="phlox-foot">Specification identifier: urn:cen.eu:en16931:2017</p>
+    </div>
+  </body>
+</html>

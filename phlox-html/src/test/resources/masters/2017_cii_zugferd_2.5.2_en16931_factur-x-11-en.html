@@ -1,0 +1,320 @@
+<!--
+
+    Copyright (C) 2026 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE html>
+<html xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="generator" content="phlox @VERSION@" />
+    <meta name="author" content="MVM Musterhafter Versicherungsverein Musterstadt a.G." />
+    <meta name="description" content="EN 16931:2017 Invoice" />
+    <meta name="keywords" content="EN 16931, Invoice, phlox" />
+    <title>Invoice: 01.234.567.8-2026-1</title>
+    <style type="text/css">:root{--phlox-ink:#1d2433;--phlox-muted:#667085;--phlox-faint:#98a2b3;--phlox-rule:#e4e7ec;--phlox-wash:#f6f7f9;--phlox-accent:#245c64;--phlox-accent-wash:#e8f1f2}
+*{box-sizing:border-box}
+body{margin:0;color:var(--phlox-ink);font:10.5pt/1.45 -apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums}
+@media screen{body{background:#eceef2}.phlox-page{margin:12mm auto;box-shadow:0 1px 3px rgba(16,24,40,.12)}}
+@page{size:A4;margin:0}
+@media print{.phlox-page{margin:0;box-shadow:none}}
+.phlox-page{width:210mm;max-width:100%;min-height:297mm;background:#fff;padding:16mm 18mm}
+.phlox-logo{max-height:14mm;max-width:50mm}
+a{color:var(--phlox-accent)}
+h1,h2,h3{margin:0}
+.phlox-title{font-size:24pt;font-weight:650;letter-spacing:-.01em;margin:1mm 0 0}
+.phlox-section-title,h2.phlox-section-title{font-size:8pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:6mm 0 2mm;padding:0;border:0}
+.phlox-subsection-title,h3.phlox-subsection-title{font-size:9pt;margin:3mm 0 1.5mm;font-weight:650}
+p{margin:0 0 2mm}
+.phlox-label{font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:0 0 1.5mm}
+.phlox-kind{font-size:8.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--phlox-accent);font-weight:600;margin:0}
+.phlox-muted{color:var(--phlox-muted);font-size:9pt}
+.phlox-party-name{font-weight:650;font-size:11.5pt;margin:0 0 1mm}
+.phlox-row>*{min-width:0}
+.phlox-row:empty{display:none}
+.phlox-row{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8mm}
+.phlox-head{grid-template-columns:1fr auto;grid-auto-flow:row}
+hr{border:0;border-top:1px solid var(--phlox-rule);margin:4mm 0}
+hr.phlox-rule{border-top:2px solid var(--phlox-accent);margin:5mm 0 6mm}
+.phlox-head-logo{text-align:right}
+.phlox-parties{margin-bottom:5mm}
+.phlox-secondary{font-size:9pt;margin-bottom:5mm}
+.phlox-table{width:100%;border-collapse:collapse;margin:0 0 3mm}
+.phlox-table th{font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;text-align:left;padding:2mm;border-bottom:1.5px solid var(--phlox-ink)}
+.phlox-table td{padding:2.4mm 2mm;border-bottom:1px solid var(--phlox-rule);vertical-align:top}
+.phlox-meta{width:auto;margin-top:4mm;font-size:9.5pt}
+.phlox-meta thead,.phlox-totals thead,.phlox-due thead,.phlox-terms thead{display:none}
+.phlox-meta td{border:0;padding:.6mm 6mm .6mm 0}
+.phlox-totals td,.phlox-due td{border:0;padding:1mm 0;font-size:9.5pt}
+.phlox-meta td:first-child{color:var(--phlox-muted)}
+.phlox-meta td:last-child{font-weight:550}
+.phlox-vat .phlox-table th,.phlox-vat .phlox-table td{font-size:8.5pt;padding:1.6mm 2mm}
+.phlox-bottom{margin-top:6mm;grid-auto-flow:row;grid-template-columns:minmax(0,1fr) 78mm;align-items:start}
+.phlox-totals{background:var(--phlox-wash);border-radius:3px;padding:3mm 4mm}
+.phlox-totals .phlox-table,.phlox-due .phlox-table{margin:0}
+.phlox-due{background:var(--phlox-accent);color:#fff;border-radius:3px;padding:3.2mm 4mm;margin-top:2mm;font-size:12pt;font-weight:650}
+.phlox-due td{padding:0;color:#fff;font-size:12pt}
+.phlox-due td:last-child{font-size:15pt}
+.phlox-pay{margin-top:6mm;padding:4mm;background:var(--phlox-accent-wash);border-radius:3px;font-size:9.5pt}
+.phlox-pay .phlox-label{color:var(--phlox-accent)}
+.phlox-pay p{margin:0 0 2mm}
+.phlox-pay code{font-family:ui-monospace,Menlo,monospace}
+code{font-family:ui-monospace,Menlo,monospace}
+blockquote{margin:0 0 2mm;padding-left:3mm;border-left:2px solid var(--phlox-rule);color:var(--phlox-muted);font-size:9pt}
+ul,ol{margin:0 0 2mm;padding-left:5mm}
+li{margin:0 0 1mm}
+.phlox-watermark-user{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:6em;color:rgba(128,128,128,0.12);pointer-events:none;z-index:9999;user-select:none}
+.phlox-watermark-program{position:fixed;bottom:4mm;right:4mm;font-size:.8em;color:rgba(100,100,100,0.6);z-index:9999}
+.phlox-watermark-program a{color:inherit}
+@media print{.phlox-watermark-user{position:fixed}}
+.phlox-foot{margin-top:10mm;padding-top:3mm;border-top:1px solid var(--phlox-rule);font-size:7.5pt;color:var(--phlox-faint)}
+.phlox-lines td:first-child{width:2em;color:var(--phlox-muted)}
+.phlox-lines td em{font-style:normal;color:var(--phlox-muted);font-size:8.5pt}
+.phlox-lines th:nth-child(n+3),.phlox-lines td:nth-child(n+3){text-align:right}
+</style>
+  </head>
+  <body>
+    <div class="phlox-watermark-program">
+      <a href="https://github.com/phax/phlox" target="phlox">Generated by phlox · open-source edition · github.com/phax/phlox</a>
+    </div>
+    <div class="phlox-page">
+      <div class="phlox-row phlox-head">
+        <div class="phlox-head-main">
+          <p class="phlox-kind">Invoice</p>
+          <h1 class="phlox-title">01.234.567.8-2026-1</h1>
+          <table class="phlox-table phlox-meta">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Invoice issue date</td>
+                <td>March 6, 2026</td>
+              </tr>
+              <tr>
+                <td>Payment due date</td>
+                <td>March 15, 2026</td>
+              </tr>
+              <tr>
+                <td>Invoice currency code</td>
+                <td>EUR</td>
+              </tr>
+              <tr>
+                <td>Invoice type code</td>
+                <td>575 — Insurer&#39;s invoice</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr class="phlox-rule" />
+      <div class="phlox-row phlox-parties">
+        <div class="phlox-party">
+          <p class="phlox-label">Seller</p>
+          <p class="phlox-party-name">MVM Musterhafter Versicherungsverein Musterstadt a.G.</p>
+          <p>Musterstr. 12<br />12345 Musterstadt<br />Germany</p>
+          <p class="phlox-muted">Seller identifier: 549910<br />Seller VAT identifier: DE136695976<br />Versicherungsbüro Muster · 0123/45678</p>
+        </div>
+        <div class="phlox-party">
+          <p class="phlox-label">Buyer</p>
+          <p class="phlox-party-name">Max Mustermann</p>
+          <p>Musterstr. 11<br />12346 Bad Musterhausen<br />Germany</p>
+        </div>
+      </div>
+      <hr />
+      <div class="phlox-row phlox-secondary">
+        <div class="phlox-secondary-cell">
+          <p class="phlox-label">Delivery</p>
+          <p>Germany</p>
+        </div>
+      </div>
+      <h2 class="phlox-section-title">Invoicing period</h2>
+      <p>March 1, 2026 — February 28, 2027</p>
+      <h2 class="phlox-section-title">Notes</h2>
+      <p>Allgemeine Haftpflichtversicherung VSNR: 01.234.567.8<br />		(Bei Schriftwechsel und Zahlung bitte angeben.)</p>
+      <p>
+        <em>[Regulatory information]</em> Oeffnungszeiten:<br />		  Mo.-Fr. 08.30 - 12.30 Uhr<br />		  Mo.-Fr. 14.00 - 17.00 Uhr<br />		  Sa 8.00-14.00 Uhr      </p>
+      <h2 class="phlox-section-title">Invoice lines</h2>
+      <table class="phlox-table phlox-lines">
+        <thead>
+          <tr>
+            <th style="text-align:right;">#</th>
+            <th>Description</th>
+            <th style="text-align:right;">Qty</th>
+            <th style="text-align:right;">Unit price</th>
+            <th style="text-align:right;">VAT</th>
+            <th style="text-align:right;">Line total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:right;">1</td>
+            <td>
+              <strong>Privathaftpflicht</strong>
+            </td>
+            <td style="text-align:right;">1.0000 one</td>
+            <td style="text-align:right;">€ 90.52<br />
+              <em>Item gross price: € 90.52</em>
+</td>
+            <td style="text-align:right;">Exempt from tax 0.00%</td>
+            <td style="text-align:right;">€ 107.72</td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">2</td>
+            <td>
+              <strong>Lebensgefährte/in zur Privathaftpflicht</strong>
+            </td>
+            <td style="text-align:right;">1.0000 one</td>
+            <td style="text-align:right;">€ 0.00<br />
+              <em>Item gross price: € 0.00</em>
+</td>
+            <td style="text-align:right;">Exempt from tax 0.00%</td>
+            <td style="text-align:right;">€ 0.00</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2 class="phlox-section-title">Invoice line charges and taxes</h2>
+      <table class="phlox-table phlox-line-ac">
+        <thead>
+          <tr>
+            <th style="text-align:right;">#</th>
+            <th>Reason</th>
+            <th style="text-align:right;">Base amount</th>
+            <th style="text-align:right;">%</th>
+            <th style="text-align:right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:right;">1</td>
+            <td>Versicherungssteuer</td>
+            <td style="text-align:right;">€ 90.52</td>
+            <td style="text-align:right;">19.00%</td>
+            <td style="text-align:right;">+€ 17.20</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="phlox-row phlox-bottom">
+        <div class="phlox-vat">
+          <h2 class="phlox-section-title">VAT breakdown</h2>
+          <table class="phlox-table">
+            <thead>
+              <tr>
+                <th>VAT category</th>
+                <th style="text-align:right;">Taxable amount</th>
+                <th style="text-align:right;">VAT rate</th>
+                <th style="text-align:right;">VAT amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Exempt from tax</td>
+                <td style="text-align:right;">€ 107.72</td>
+                <td style="text-align:right;">0.00%</td>
+                <td style="text-align:right;">€ 0.00</td>
+              </tr>
+            </tbody>
+          </table>
+          <blockquote>
+            <p>VAT category code E: Umsatzsteuerbefreit nach §4 Nr. 10a UStG</p>
+          </blockquote>
+        </div>
+        <div class="phlox-totals-col">
+          <div class="phlox-totals">
+            <table class="phlox-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="text-align:right;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Sum of invoice line net amounts</td>
+                  <td style="text-align:right;">€ 107.72</td>
+                </tr>
+                <tr>
+                  <td>Sum of allowances on document level</td>
+                  <td style="text-align:right;">-€ 0.00</td>
+                </tr>
+                <tr>
+                  <td>Sum of charges and taxes on document level</td>
+                  <td style="text-align:right;">+€ 0.00</td>
+                </tr>
+                <tr>
+                  <td>Invoice total amount without VAT</td>
+                  <td style="text-align:right;">€ 107.72</td>
+                </tr>
+                <tr>
+                  <td>Invoice total VAT amount</td>
+                  <td style="text-align:right;">€ 0.00</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Invoice total amount with VAT</strong>
+                  </td>
+                  <td style="text-align:right;">
+                    <strong>€ 107.72</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Paid amount</td>
+                  <td style="text-align:right;">-€ 0.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="phlox-due">
+            <table class="phlox-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="text-align:right;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Amount due</td>
+                  <td style="text-align:right;">€ 107.72</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="phlox-pay">
+        <p class="phlox-label">Payment</p>
+        <p>
+          <strong>Payment means type code:</strong> SEPA credit transfer        </p>
+        <p class="phlox-label">Credit transfer</p>
+        <ul>
+          <li>
+            <p>
+              <code>DE89370400440532013000</code>
+            </p>
+          </li>
+        </ul>
+        <p>
+          <img style="height:120px;max-height:none;max-width:none;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYgAAAGICAIAAADUIeBxAAA4M0lEQVR4Xu3UwY4jOaJs2/v/P/3eaA/OAgKGJuguZbfWsLCNpCsL8f/+v5+fn58v8//8Dz8/Pz+f9vvD9PPz83V+f5h+fn6+zu8P08/Pz9f5/WH6+fn5Or8/TD8/P1/n94fp5+fn6/z+MP38/Hyd3x+mn5+fr/P7w/Tz8/N1fn+Yfn5+vs7vD9PPz8/X+f1h+vn5+Tq/P0w/Pz9f5/eH6efn5+v8/jD9/Px8nd8fpp+fn6/z+8P08/PzdX5/mH5+fr7O7w/Tz8/P1/n9Yfr5+fk6vz9MPz8/X+f3h+nn5+fr/P4w/fz8fJ3fH6afn5+v8/vD9PPz83V+f5h+fn6+zu8P08/Pz9f5/WH6+fn5Or8/TD8/P1/n94fp5+fn6zz+h+n//SN89+J+cf8W33HKcxf3i/u3+I7YvcV3fCvffdvzF/wjfPfifnH/Ft9xynMX94v7t/iO2L3Fd3wr333b8xf8I3z34n5x/xbfccpzF/eL+7f4jti9xXd8K9992/MX/CN89+J+cf8W33HKcxf3i/u3+I7YvcV3fCvffdvzF/wjfPfifnH/Ft9xynMX94v7t/iO2L3Fd3wr333b8xf8I3z34n5x/xbfccpzF/eL+7f4jti9xXd8K9992/MX/CN89+J+cf8W33HKcxf3i/u3+I7YvcV3fCvffdvzF/wjfPfifnH/Ft9xynMX94v7t/iO2L3Fd3wr333b8xf8we4tviN2t3lf7GIXu8X94n5xH7tTnhu72MVucb+4P+W5sXuL74jdbc9f8Ae7t/iO2N3mfbGLXewW94v7xX3sTnlu7GIXu8X94v6U58buLb4jdrc9f8Ef7N7iO2J3m/fFLnaxW9wv7hf3sTvlubGLXewW94v7U54bu7f4jtjd9vwFf7B7i++I3W3eF7vYxW5xv7hf3MfulOfGLnaxW9wv7k95buze4jtid9vzF/zB7i2+I3a3eV/sYhe7xf3ifnEfu1OeG7vYxW5xv7g/5bmxe4vviN1tz1/wB7u3+I7Y3eZ9sYtd7Bb3i/vFfexOeW7sYhe7xf3i/pTnxu4tviN2tz1/wR/s3uI7Yneb98UudrFb3C/uF/exO+W5sYtd7Bb3i/tTnhu7t/iO2N32/AV/sHuL74jdbd4Xu9jFbnG/uF/cx+6U58YudrFb3C/uT3lu7N7iO2J32/MX/MEudqc8N3axi13sbvO+2MUudrE75bmxW9z/a/yexX3sYhe7U54bu9jd9vwFf7CL3SnPjV3sYhe727wvdrGLXexOeW7sFvf/Gr9ncR+72MXulOfGLna3PX/BH+xid8pzYxe72MXuNu+LXexiF7tTnhu7xf2/xu9Z3McudrE75bmxi91tz1/wB7vYnfLc2MUudrG7zftiF7vYxe6U58Zucf+v8XsW97GLXexOeW7sYnfb8xf8wS52pzw3drGLXexu877YxS52sTvlubFb3P9r/J7FfexiF7tTnhu72N32/AV/sIvdKc+NXexiF7vbvC92sYtd7E55buwW9/8av2dxH7vYxe6U58Yudrc9f8Ef7GJ3ynNjF7vYxe4274td7GIXu1OeG7vF/b/G71ncxy52sTvlubGL3W3PX/AHu9id8tzYxS52sbvN+2IXu9jF7pTnxm5x/6/xexb3sYtd7E55buxid9vzF/zBLnanPDd2sYvd4j52sYvd4j52sTvlubGLXexOee7iPnaL+9jFLnaxi90pz41d7G57/oI/2MXulOfGLnaxW9zHLnaxW9zHLnanPDd2sYvdKc9d3MducR+72MUudrE75bmxi91tz1/wB7vYnfLc2MUudov72MUudov72MXulOfGLnaxO+W5i/vYLe5jF7vYxS52pzw3drG77fkL/mAXu1OeG7vYxW5xH7vYxW5xH7vYnfLc2MUudqc8d3Efu8V97GIXu9jF7pTnxi52tz1/wR/sYnfKc2MXu9gt7mMXu9gt7mMXu1OeG7vYxe6U5y7uY7e4j13sYhe72J3y3NjF7rbnL/iDXexOeW7sYhe7xX3sYhe7xX3sYnfKc2MXu9id8tzFfewW97GLXexiF7tTnhu72N32/AV/sIvdKc+NXexit7iPXexit7iPXexOeW7sYhe7U567uI/d4j52sYtd7GJ3ynNjF7vbnr/gD3axO+W5sYtd7Bb3sYtd7Bb3sYvdKc+NXexid8pzF/exW9zHLnaxi13sTnlu7GJ32/MX/MEudqc8N3axi9238t2nPDd2sbvN+xb3i/vbvC92sYtd7E55buxid9vzF/zBLnanPDd2sYvdt/Ldpzw3drG7zfsW94v727wvdrGLXexOeW7sYnfb8xf8wS52pzw3drGL3bfy3ac8N3axu837FveL+9u8L3axi13sTnlu7GJ32/MX/MEudqc8N3axi9238t2nPDd2sbvN+xb3i/vbvC92sYtd7E55buxid9vzF/zBLnanPDd2sYvdt/Ldpzw3drG7zfsW94v727wvdrGLXexOeW7sYnfb8xf8wS52pzw3drGL3bfy3ac8N3axu837FveL+9u8L3axi13sTnlu7GJ32/MX/MEudqc8N3axi9238t2nPDd2sbvN+xb3i/vbvC92sYtd7E55buxid9vzF/zBLnanPDd2sYvdt/Ldpzw3drG7zfsW94v727wvdrGLXexOeW7sYnfb8xf8we4tviN2sVvcn/Lc2J3y3Nid8tzFfexiF7vYnfLc2J3y3Ni9xXfE7rbnL/iD3Vt8R+xit7g/5bmxO+W5sTvluYv72MUudrE75bmxO+W5sXuL74jdbc9f8Ae7t/iO2MVucX/Kc2N3ynNjd8pzF/exi13sYnfKc2N3ynNj9xbfEbvbnr/gD3Zv8R2xi93i/pTnxu6U58bulOcu7mMXu9jF7pTnxu6U58buLb4jdrc9f8Ef7N7iO2IXu8X9Kc+N3SnPjd0pz13cxy52sYvdKc+N3SnPjd1bfEfsbnv+gj/YvcV3xC52i/tTnhu7U54bu1Oeu7iPXexiF7tTnhu7U54bu7f4jtjd9vwFf7B7i++IXewW96c8N3anPDd2pzx3cR+72MUudqc8N3anPDd2b/Edsbvt+Qv+YPcW3xG72C3uT3lu7E55buxOee7iPnaxi13sTnlu7E55buze4jtid9vzF/wjfHfsYhe72MUudrGLXexiF7vYxS52sYtd7GIXu9jFLnaxi13sYhe7b+W7b3v+gn+E745d7GIXu9jFLnaxi13sYhe72MUudrGLXexiF7vYxS52sYtd7GL3rXz3bc9f8I/w3bGLXexiF7vYxS52sYtd7GIXu9jFLnaxi13sYhe72MUudrGLXey+le++7fkL/hG+O3axi13sYhe72MUudrGLXexiF7vYxS52sYtd7GIXu9jFLnaxi9238t23PX/BP8J3xy52sYtd7GIXu9jFLnaxi13sYhe72MUudrGLXexiF7vYxS52sftWvvu25y/4R/ju2MUudrGLXexiF7vYxS52sYtd7GIXu9jFLnaxi13sYhe72MUudt/Kd9/2/AX/CN8du9jFLnaxi13sYhe72MUudrGLXexi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" alt="SEPA payment QR code" />
+        </p>
+      </div>
+      <p class="phlox-foot">Specification identifier: urn:cen.eu:en16931:2017</p>
+    </div>
+  </body>
+</html>

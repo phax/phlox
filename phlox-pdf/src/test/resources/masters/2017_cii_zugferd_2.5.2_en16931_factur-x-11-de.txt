@@ -1,0 +1,362 @@
+pages 2
+page 1 595.3x841.9
+G p1 sc 0.14 0.36 0.39
+G p1 sc 0.00 0.00 0.00
+G p1 SC 0.89 0.91 0.93
+G p1 w 0.50
+G p1 m 56.69 725.85
+G p1 l 260.68 725.85
+G p1 S
+G p1 m 260.68 725.85
+G p1 l 538.58 725.85
+G p1 S
+G p1 m 56.69 707.79
+G p1 l 260.68 707.79
+G p1 S
+G p1 m 260.68 707.79
+G p1 l 538.58 707.79
+G p1 S
+G p1 m 56.69 689.73
+G p1 l 260.68 689.73
+G p1 S
+G p1 m 260.68 689.73
+G p1 l 538.58 689.73
+G p1 S
+G p1 m 56.69 671.67
+G p1 l 260.68 671.67
+G p1 S
+G p1 m 260.68 671.67
+G p1 l 538.58 671.67
+G p1 S
+G p1 SC 0.14 0.36 0.39
+G p1 w 1.50
+G p1 m 56.69 662.67
+G p1 l 538.58 662.67
+G p1 S
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 SC 0.50 0.50 0.50
+G p1 w 0.75
+G p1 m 56.69 533.28
+G p1 l 538.58 533.28
+G p1 S
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 sc 0.00 0.00 0.00
+G p1 sc 0.40 0.44 0.52
+G p1 SC 0.11 0.14 0.20
+G p1 w 1.00
+G p1 m 56.69 325.52
+G p1 l 81.92 325.52
+G p1 S
+G p1 m 81.92 325.52
+G p1 l 211.26 325.52
+G p1 S
+G p1 m 211.26 325.52
+G p1 l 260.23 325.52
+G p1 S
+G p1 m 260.23 325.52
+G p1 l 391.15 325.52
+G p1 S
+G p1 m 391.15 325.52
+G p1 l 472.81 325.52
+G p1 S
+G p1 m 472.81 325.52
+G p1 l 538.58 325.52
+G p1 S
+G p1 SC 0.89 0.91 0.93
+G p1 w 0.50
+G p1 m 56.69 295.65
+G p1 l 81.92 295.65
+G p1 S
+G p1 sc 0.00 0.00 0.00
+G p1 m 81.92 295.65
+G p1 l 211.26 295.65
+G p1 S
+G p1 m 211.26 295.65
+G p1 l 260.23 295.65
+G p1 S
+G p1 m 260.23 295.65
+G p1 l 391.15 295.65
+G p1 S
+G p1 m 391.15 295.65
+G p1 l 472.81 295.65
+G p1 S
+G p1 m 472.81 295.65
+G p1 l 538.58 295.65
+G p1 S
+G p1 m 56.69 265.35
+G p1 l 81.92 265.35
+G p1 S
+G p1 m 81.92 265.35
+G p1 l 211.26 265.35
+G p1 S
+G p1 m 211.26 265.35
+G p1 l 260.23 265.35
+G p1 S
+G p1 m 260.23 265.35
+G p1 l 391.15 265.35
+G p1 S
+G p1 m 391.15 265.35
+G p1 l 472.81 265.35
+G p1 S
+G p1 m 472.81 265.35
+G p1 l 538.58 265.35
+G p1 S
+G p1 sc 0.40 0.44 0.52
+G p1 SC 0.11 0.14 0.20
+G p1 w 1.00
+G p1 m 56.69 229.15
+G p1 l 105.88 229.15
+G p1 S
+G p1 m 105.88 229.15
+G p1 l 283.57 229.15
+G p1 S
+G p1 m 283.57 229.15
+G p1 l 378.62 229.15
+G p1 S
+G p1 m 378.62 229.15
+G p1 l 455.80 229.15
+G p1 S
+G p1 m 455.80 229.15
+G p1 l 538.58 229.15
+G p1 S
+G p1 SC 0.89 0.91 0.93
+G p1 w 0.50
+G p1 m 56.69 210.84
+G p1 l 105.88 210.84
+G p1 S
+G p1 sc 0.00 0.00 0.00
+G p1 m 105.88 210.84
+G p1 l 283.57 210.84
+G p1 S
+G p1 m 283.57 210.84
+G p1 l 378.62 210.84
+G p1 S
+G p1 m 378.62 210.84
+G p1 l 455.80 210.84
+G p1 S
+G p1 m 455.80 210.84
+G p1 l 538.58 210.84
+G p1 S
+G p1 sc 0.83 0.83 0.83
+page 2 595.3x841.9
+G p2 sc 0.40 0.44 0.52
+G p2 SC 0.11 0.14 0.20
+G p2 w 1.00
+G p2 m 56.69 749.25
+G p2 l 137.63 749.25
+G p2 S
+G p2 m 137.63 749.25
+G p2 l 205.62 749.25
+G p2 S
+G p2 m 205.62 749.25
+G p2 l 260.67 749.25
+G p2 S
+G p2 m 260.67 749.25
+G p2 l 322.19 749.25
+G p2 S
+G p2 SC 0.89 0.91 0.93
+G p2 w 0.50
+G p2 m 56.69 730.94
+G p2 l 137.63 730.94
+G p2 S
+G p2 sc 0.00 0.00 0.00
+G p2 m 137.63 730.94
+G p2 l 205.62 730.94
+G p2 S
+G p2 m 205.62 730.94
+G p2 l 260.67 730.94
+G p2 S
+G p2 m 260.67 730.94
+G p2 l 322.19 730.94
+G p2 S
+G p2 SC 0.50 0.50 0.50
+G p2 w 2.00
+G p2 m 57.69 730.69
+G p2 l 57.69 703.57
+G p2 S
+G p2 sc 0.96 0.97 0.98
+G p2 re 336.19 596.20 202.39 189.00
+G p2 f
+G p2 SC 0.89 0.91 0.93
+G p2 w 0.50
+G p2 m 344.19 747.83
+G p2 l 473.47 747.83
+G p2 S
+G p2 sc 0.00 0.00 0.00
+G p2 m 473.47 747.83
+G p2 l 530.58 747.83
+G p2 S
+G p2 m 344.19 718.21
+G p2 l 473.47 718.21
+G p2 S
+G p2 m 473.47 718.21
+G p2 l 530.58 718.21
+G p2 S
+G p2 m 344.19 677.03
+G p2 l 473.47 677.03
+G p2 S
+G p2 m 473.47 677.03
+G p2 l 530.58 677.03
+G p2 S
+G p2 m 344.19 658.97
+G p2 l 473.47 658.97
+G p2 S
+G p2 m 473.47 658.97
+G p2 l 530.58 658.97
+G p2 S
+G p2 m 344.19 640.91
+G p2 l 473.47 640.91
+G p2 S
+G p2 m 473.47 640.91
+G p2 l 530.58 640.91
+G p2 S
+G p2 m 344.19 622.51
+G p2 l 473.47 622.51
+G p2 S
+G p2 m 473.47 622.51
+G p2 l 530.58 622.51
+G p2 S
+G p2 m 344.19 604.45
+G p2 l 473.47 604.45
+G p2 S
+G p2 m 473.47 604.45
+G p2 l 530.58 604.45
+G p2 S
+G p2 sc 0.14 0.36 0.39
+G p2 re 336.19 557.80 202.39 34.40
+G p2 f
+G p2 m 344.19 566.05
+G p2 l 434.62 566.05
+G p2 S
+G p2 sc 1.00 1.00 1.00
+G p2 m 434.62 566.05
+G p2 l 530.58 566.05
+G p2 S
+G p2 sc 0.91 0.95 0.95
+G p2 re 56.69 375.50 481.89 174.30
+G p2 f
+G p2 sc 0.40 0.44 0.52
+G p2 sc 0.00 0.00 0.00
+G p2 sc 0.40 0.44 0.52
+G p2 sc 0.00 0.00 0.00
+G p2 Do /Im1
+G p2 sc 0.40 0.44 0.52
+G p2 sc 0.83 0.83 0.83
+T p1 56.7 66.8 8.0 Helvetica-Bold Rechnung
+T p1 56.7 92.2 18.0 Helvetica-Bold 01.234.567.8-2026-1
+T p1 59.7 112.8 10.0 Helvetica Rechnungsdatum
+T p1 263.7 112.8 10.0 Helvetica 6. März 2026
+T p1 59.7 130.8 10.0 Helvetica Fälligkeitsdatum
+T p1 263.7 130.8 10.0 Helvetica 15. März 2026
+T p1 59.7 148.9 10.0 Helvetica Rechnungswährung
+T p1 263.7 148.9 10.0 Helvetica EUR
+T p1 59.7 167.0 10.0 Helvetica Rechnungstyp
+T p1 263.7 167.0 10.0 Helvetica 575 — Rechnung des Versicherers
+T p1 56.7 193.9 7.0 Helvetica-Bold Verkäufer
+T p1 56.7 211.0 11.0 Helvetica-Bold MVM Musterhafter Versicherungsverein
+T p1 56.7 224.1 11.0 Helvetica-Bold Musterstadt a.G.
+T p1 56.7 239.6 10.0 Helvetica Musterstr. 12
+T p1 56.7 251.2 10.0 Helvetica 12345 Musterstadt
+T p1 56.7 262.8 10.0 Helvetica Deutschland
+T p1 56.7 276.6 8.0 Helvetica Kennung Verkäufer: 549910
+T p1 56.7 286.4 8.0 Helvetica USt-IdNr. Verkäufer: DE136695976
+T p1 56.7 296.2 8.0 Helvetica Versicherungsbüro Muster · 0123/45678
+T p1 297.6 193.9 7.0 Helvetica-Bold Käufer
+T p1 297.6 211.0 11.0 Helvetica-Bold Max Mustermann
+T p1 297.6 226.5 10.0 Helvetica Musterstr. 11
+T p1 297.6 238.1 10.0 Helvetica 12346 Bad Musterhausen
+T p1 297.6 249.7 10.0 Helvetica Deutschland
+T p1 56.7 322.9 7.0 Helvetica-Bold Lieferung
+T p1 56.7 338.5 10.0 Helvetica Deutschland
+T p1 56.7 364.0 8.0 Helvetica-Bold RECHNUNGSZEITRAUM
+T p1 56.7 378.5 10.0 Helvetica 1. März 2026 — 28. Februar 2027
+T p1 56.7 400.1 8.0 Helvetica-Bold ANMERKUNGEN
+T p1 56.7 414.6 10.0 Helvetica Allgemeine Haftpflichtversicherung VSNR: 01.234.567.8
+T p1 56.7 426.2 10.0 Helvetica (Bei Schriftwechsel und Zahlung bitte angeben.)
+T p1 56.7 441.7 10.0 Helvetica-Oblique [Regulatory information] Oeffnungszeiten:
+T p1 56.7 453.3 10.0 Helvetica Mo.-Fr. 08.30 - 12.30 Uhr
+T p1 56.7 464.9 10.0 Helvetica Mo.-Fr. 14.00 - 17.00 Uhr
+T p1 56.7 476.4 10.0 Helvetica Sa 8.00-14.00 Uhr
+T p1 56.7 497.9 8.0 Helvetica-Bold RECHNUNGSPOSITIONEN
+T p1 66.0 512.9 7.0 Helvetica-Bold NR.
+T p1 84.9 512.9 7.0 Helvetica-Bold BESCHREIBUNG
+T p1 229.7 512.9 7.0 Helvetica-Bold MENGE
+T p1 339.0 512.9 7.0 Helvetica-Bold EINZELPREIS
+T p1 454.8 512.9 7.0 Helvetica-Bold UST
+T p1 481.0 512.9 7.0 Helvetica-Bold ZEILENSUMME
+T p1 73.4 531.4 10.0 Helvetica 1
+T p1 84.9 531.8 10.0 Helvetica-Bold Privathaftpflicht
+T p1 226.7 531.4 10.0 Helvetica 1.0000
+T p1 237.8 543.0 10.0 Helvetica Eins
+T p1 354.8 531.4 10.0 Helvetica 90,52 €
+T p1 274.8 543.0 10.0 Helvetica-Oblique Bruttoeinzelpreis: 90,52 €
+T p1 422.0 531.4 10.0 Helvetica USt-befreit
+T p1 438.7 543.0 10.0 Helvetica 0,00 %
+T p1 496.7 531.4 10.0 Helvetica 107,72 €
+T p1 73.4 561.1 10.0 Helvetica 2
+T p1 84.9 561.4 10.0 Helvetica-Bold Lebensgefährte/in zur
+T p1 84.9 573.3 10.0 Helvetica-Bold Privathaftpflicht
+T p1 226.7 561.1 10.0 Helvetica 1.0000
+T p1 237.8 572.6 10.0 Helvetica Eins
+T p1 360.3 561.1 10.0 Helvetica 0,00 €
+T p1 280.3 572.6 10.0 Helvetica-Oblique Bruttoeinzelpreis: 0,00 €
+T p1 422.0 561.1 10.0 Helvetica USt-befreit
+T p1 438.7 572.6 10.0 Helvetica 0,00 %
+T p1 507.8 561.1 10.0 Helvetica 0,00 €
+T p1 56.7 594.3 8.0 Helvetica-Bold ZUSCHLÄGE UND STEUERN DER RECHNUNGSPOSITION
+T p1 90.0 609.2 7.0 Helvetica-Bold NR.
+T p1 108.9 609.2 7.0 Helvetica-Bold GRUND
+T p1 321.0 609.2 7.0 Helvetica-Bold BASISBETRAG
+T p1 446.1 609.2 7.0 Helvetica-Bold %
+T p1 503.9 609.2 7.0 Helvetica-Bold BETRAG
+T p1 97.3 627.8 10.0 Helvetica 1
+T p1 108.9 627.8 10.0 Helvetica Versicherungssteuer
+T p1 342.3 627.8 10.0 Helvetica 90,52 €
+T p1 416.1 627.8 10.0 Helvetica 19,00 %
+T p1 496.4 627.8 10.0 Helvetica +17,20 €
+T p1 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
+T p2 56.7 74.2 8.0 Helvetica-Bold STEUERAUFSCHLÜSSELUNG
+T p2 59.7 89.1 7.0 Helvetica-Bold UST-KATEGORIE
+T p2 149.3 89.1 7.0 Helvetica-Bold STEUERBASIS
+T p2 220.6 89.1 7.0 Helvetica-Bold UST-SATZ
+T p2 270.0 89.1 7.0 Helvetica-Bold UST-BETRAG
+T p2 59.7 107.7 10.0 Helvetica USt-befreit
+T p2 163.7 107.7 10.0 Helvetica 107,72 €
+T p2 226.5 107.7 10.0 Helvetica 0,00 %
+T p2 291.4 107.7 10.0 Helvetica 0,00 €
+T p2 64.7 122.8 10.0 Helvetica USt-Kategorie E: Umsatzsteuerbefreit nach §4 Nr. 10a
+T p2 64.7 134.3 10.0 Helvetica UStG
+T p2 347.2 79.3 10.0 Helvetica Summe Nettobeträge der
+T p2 347.2 90.8 10.0 Helvetica Positionen
+T p2 488.7 79.3 10.0 Helvetica 107,72 €
+T p2 347.2 108.9 10.0 Helvetica Summe Nachlässe auf
+T p2 347.2 120.4 10.0 Helvetica Dokumentenebene
+T p2 496.5 108.9 10.0 Helvetica -0,00 €
+T p2 347.2 138.5 10.0 Helvetica Summe der Zuschläge und
+T p2 347.2 150.1 10.0 Helvetica Steuern auf
+T p2 347.2 161.6 10.0 Helvetica Dokumentenebene
+T p2 493.9 138.5 10.0 Helvetica +0,00 €
+T p2 347.2 179.7 10.0 Helvetica Nettogesamtbetrag
+T p2 488.7 179.7 10.0 Helvetica 107,72 €
+T p2 347.2 197.7 10.0 Helvetica USt-Gesamtbetrag
+T p2 499.8 197.7 10.0 Helvetica 0,00 €
+T p2 347.2 216.1 10.0 Helvetica-Bold Bruttogesamtbetrag
+T p2 488.7 216.1 10.0 Helvetica-Bold 107,72 €
+T p2 347.2 234.2 10.0 Helvetica Bereits bezahlter Betrag
+T p2 496.5 234.2 10.0 Helvetica -0,00 €
+T p2 347.2 272.6 10.0 Helvetica-Bold Zahlbar
+T p2 488.7 272.6 10.0 Helvetica-Bold 107,72 €
+T p2 66.7 311.0 7.0 Helvetica-Bold Zahlung
+T p2 66.7 326.9 10.0 Helvetica-Bold Zahlungsart: SEPA-Überweisung
+T p2 66.7 339.8 7.0 Helvetica-Bold Überweisung
+T p2 66.7 355.4 10.0 Helvetica •
+T p2 76.7 354.4 10.0 Courier DE89370400440532013000
+T p2 56.7 479.1 7.0 Helvetica Spezifikationskennung: urn:cen.eu:en16931:2017
+T p2 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox

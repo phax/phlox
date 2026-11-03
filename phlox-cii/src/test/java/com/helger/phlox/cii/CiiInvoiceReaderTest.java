@@ -157,6 +157,12 @@ public final class CiiInvoiceReaderTest
   }
 
   @Test
+  public void testReadZugferdFiles ()
+  {
+    _readAllAndAssertWellFormed (MockPhloxTestFiles.getCiiD16BZugferdFiles (), "zugferd/2.5.2", 3);
+  }
+
+  @Test
   public void testReadEntireCorpus ()
   {
     // Sanity check: the union accessor returns every well-formed file across all tiers.

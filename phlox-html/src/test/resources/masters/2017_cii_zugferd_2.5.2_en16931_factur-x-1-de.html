@@ -1,0 +1,404 @@
+<!--
+
+    Copyright (C) 2026 Philip Helger (www.helger.com)
+    philip[at]helger[dot]com
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+            http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE html>
+<html xml:lang="de" lang="de" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="generator" content="phlox @VERSION@" />
+    <meta name="author" content="Lieferant GmbH" />
+    <meta name="description" content="EN 16931:2017 Rechnung" />
+    <meta name="keywords" content="EN 16931, Rechnung, phlox" />
+    <title>Rechnung: 471102</title>
+    <style type="text/css">:root{--phlox-ink:#1d2433;--phlox-muted:#667085;--phlox-faint:#98a2b3;--phlox-rule:#e4e7ec;--phlox-wash:#f6f7f9;--phlox-accent:#245c64;--phlox-accent-wash:#e8f1f2}
+*{box-sizing:border-box}
+body{margin:0;color:var(--phlox-ink);font:10.5pt/1.45 -apple-system,"Segoe UI",Inter,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums}
+@media screen{body{background:#eceef2}.phlox-page{margin:12mm auto;box-shadow:0 1px 3px rgba(16,24,40,.12)}}
+@page{size:A4;margin:0}
+@media print{.phlox-page{margin:0;box-shadow:none}}
+.phlox-page{width:210mm;max-width:100%;min-height:297mm;background:#fff;padding:16mm 18mm}
+.phlox-logo{max-height:14mm;max-width:50mm}
+a{color:var(--phlox-accent)}
+h1,h2,h3{margin:0}
+.phlox-title{font-size:24pt;font-weight:650;letter-spacing:-.01em;margin:1mm 0 0}
+.phlox-section-title,h2.phlox-section-title{font-size:8pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:6mm 0 2mm;padding:0;border:0}
+.phlox-subsection-title,h3.phlox-subsection-title{font-size:9pt;margin:3mm 0 1.5mm;font-weight:650}
+p{margin:0 0 2mm}
+.phlox-label{font-size:7.5pt;letter-spacing:.12em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;margin:0 0 1.5mm}
+.phlox-kind{font-size:8.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--phlox-accent);font-weight:600;margin:0}
+.phlox-muted{color:var(--phlox-muted);font-size:9pt}
+.phlox-party-name{font-weight:650;font-size:11.5pt;margin:0 0 1mm}
+.phlox-row>*{min-width:0}
+.phlox-row:empty{display:none}
+.phlox-row{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8mm}
+.phlox-head{grid-template-columns:1fr auto;grid-auto-flow:row}
+hr{border:0;border-top:1px solid var(--phlox-rule);margin:4mm 0}
+hr.phlox-rule{border-top:2px solid var(--phlox-accent);margin:5mm 0 6mm}
+.phlox-head-logo{text-align:right}
+.phlox-parties{margin-bottom:5mm}
+.phlox-secondary{font-size:9pt;margin-bottom:5mm}
+.phlox-table{width:100%;border-collapse:collapse;margin:0 0 3mm}
+.phlox-table th{font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;color:var(--phlox-muted);font-weight:600;text-align:left;padding:2mm;border-bottom:1.5px solid var(--phlox-ink)}
+.phlox-table td{padding:2.4mm 2mm;border-bottom:1px solid var(--phlox-rule);vertical-align:top}
+.phlox-meta{width:auto;margin-top:4mm;font-size:9.5pt}
+.phlox-meta thead,.phlox-totals thead,.phlox-due thead,.phlox-terms thead{display:none}
+.phlox-meta td{border:0;padding:.6mm 6mm .6mm 0}
+.phlox-totals td,.phlox-due td{border:0;padding:1mm 0;font-size:9.5pt}
+.phlox-meta td:first-child{color:var(--phlox-muted)}
+.phlox-meta td:last-child{font-weight:550}
+.phlox-vat .phlox-table th,.phlox-vat .phlox-table td{font-size:8.5pt;padding:1.6mm 2mm}
+.phlox-bottom{margin-top:6mm;grid-auto-flow:row;grid-template-columns:minmax(0,1fr) 78mm;align-items:start}
+.phlox-totals{background:var(--phlox-wash);border-radius:3px;padding:3mm 4mm}
+.phlox-totals .phlox-table,.phlox-due .phlox-table{margin:0}
+.phlox-due{background:var(--phlox-accent);color:#fff;border-radius:3px;padding:3.2mm 4mm;margin-top:2mm;font-size:12pt;font-weight:650}
+.phlox-due td{padding:0;color:#fff;font-size:12pt}
+.phlox-due td:last-child{font-size:15pt}
+.phlox-pay{margin-top:6mm;padding:4mm;background:var(--phlox-accent-wash);border-radius:3px;font-size:9.5pt}
+.phlox-pay .phlox-label{color:var(--phlox-accent)}
+.phlox-pay p{margin:0 0 2mm}
+.phlox-pay code{font-family:ui-monospace,Menlo,monospace}
+code{font-family:ui-monospace,Menlo,monospace}
+blockquote{margin:0 0 2mm;padding-left:3mm;border-left:2px solid var(--phlox-rule);color:var(--phlox-muted);font-size:9pt}
+ul,ol{margin:0 0 2mm;padding-left:5mm}
+li{margin:0 0 1mm}
+.phlox-watermark-user{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-45deg);font-size:6em;color:rgba(128,128,128,0.12);pointer-events:none;z-index:9999;user-select:none}
+.phlox-watermark-program{position:fixed;bottom:4mm;right:4mm;font-size:.8em;color:rgba(100,100,100,0.6);z-index:9999}
+.phlox-watermark-program a{color:inherit}
+@media print{.phlox-watermark-user{position:fixed}}
+.phlox-foot{margin-top:10mm;padding-top:3mm;border-top:1px solid var(--phlox-rule);font-size:7.5pt;color:var(--phlox-faint)}
+.phlox-lines td:first-child{width:2em;color:var(--phlox-muted)}
+.phlox-lines td em{font-style:normal;color:var(--phlox-muted);font-size:8.5pt}
+.phlox-lines th:nth-child(n+3),.phlox-lines td:nth-child(n+3){text-align:right}
+</style>
+  </head>
+  <body>
+    <div class="phlox-watermark-program">
+      <a href="https://github.com/phax/phlox" target="phlox">Generated by phlox · open-source edition · github.com/phax/phlox</a>
+    </div>
+    <div class="phlox-page">
+      <div class="phlox-row phlox-head">
+        <div class="phlox-head-main">
+          <p class="phlox-kind">Rechnung</p>
+          <h1 class="phlox-title">471102</h1>
+          <table class="phlox-table phlox-meta">
+            <thead>
+              <tr>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Rechnungsdatum</td>
+                <td>11. Februar 2026</td>
+              </tr>
+              <tr>
+                <td>Rechnungswährung</td>
+                <td>EUR</td>
+              </tr>
+              <tr>
+                <td>Rechnungstyp</td>
+                <td>380 — Handelsrechnung</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <hr class="phlox-rule" />
+      <div class="phlox-row phlox-parties">
+        <div class="phlox-party">
+          <p class="phlox-label">Verkäufer</p>
+          <p class="phlox-party-name">Lieferant GmbH</p>
+          <p>Lieferantenstraße 20<br />80333 München<br />Deutschland</p>
+          <p class="phlox-muted">Kennung Verkäufer: 0088:4000001123452, 549910<br />USt-IdNr. Verkäufer: DE136695976<br />Steuernummer Verkäufer: 201/113/40209 (FC)</p>
+        </div>
+        <div class="phlox-party">
+          <p class="phlox-label">Käufer</p>
+          <p class="phlox-party-name">Kunden AG Mitte</p>
+          <p>Kundenstraße 15<br />69876 Frankfurt<br />Deutschland</p>
+          <p class="phlox-muted">Kennung Käufer: GE2020211</p>
+        </div>
+      </div>
+      <hr />
+      <div class="phlox-row phlox-secondary">
+        <div class="phlox-secondary-cell">
+          <p class="phlox-label">Lieferung</p>
+          <p class="phlox-muted">Tatsächliches Lieferdatum: 8. Februar 2026</p>
+        </div>
+      </div>
+      <h2 class="phlox-section-title">Referenzen</h2>
+      <ul>
+        <li>
+          <p>
+            <strong>Bestellreferenz:</strong> 2025-471331          </p>
+        </li>
+      </ul>
+      <h2 class="phlox-section-title">Anmerkungen</h2>
+      <p>Rechnung gemäß Bestellung Nr. 2025-471331 vom 30.01.2026.</p>
+      <p>
+        <em>[Price conditions]</em> Es bestehen Rabatt- und Bonusvereinbarungen.      </p>
+      <p>
+        <em>[Regulatory information]</em> Geschäftsführer: Hans Muster      </p>
+      <p>
+        <em>[Regulatory information]</em> Handelsregisternummer: H A 123      </p>
+      <p>
+        <em>[Additional information]</em> ZUGFeRD vers 2.5.0 EN16931 (Comfort)      </p>
+      <h2 class="phlox-section-title">Rechnungspositionen</h2>
+      <table class="phlox-table phlox-lines">
+        <thead>
+          <tr>
+            <th style="text-align:right;">Nr.</th>
+            <th>Beschreibung</th>
+            <th style="text-align:right;">Menge</th>
+            <th style="text-align:right;">Einzelpreis</th>
+            <th style="text-align:right;">USt</th>
+            <th style="text-align:right;">Zeilensumme</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align:right;">1</td>
+            <td>
+              <strong>Kunstrasen grün 3m breit</strong>
+              <br />300cm x 100 cm<br />
+              <em>Artikel-ID Verkäufer: KR3M</em>
+              <br />
+              <em>Artikel-ID Käufer: SE_KR</em>
+              <br />
+              <em>Standardartikelkennung: 0160:4012345001235</em>
+            </td>
+            <td style="text-align:right;">3.0000 Quadratmeter</td>
+            <td style="text-align:right;">3,3333 €<br />
+              <em>Bruttoeinzelpreis: 4,00 €</em>
+              <br />
+              <em>Artikel-Preisnachlass: 0,6667 €</em>
+</td>
+            <td style="text-align:right;">Regelsteuersatz 19,00 %</td>
+            <td style="text-align:right;">10,00 €</td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">2</td>
+            <td>
+              <strong>Schweinesteak</strong>
+              <br />Schweinesteak aus Deutschland<br />
+              <em>Artikel-ID Verkäufer: SFK5</em>
+              <br />
+              <em>Artikel-ID Käufer: SE_SFK5</em>
+              <br />
+              <em>Standardartikelkennung: 0160:4000050986428</em>
+            </td>
+            <td style="text-align:right;">1.0000 Kilogramm</td>
+            <td style="text-align:right;">5,50 €<br />
+              <em>Bruttoeinzelpreis: 5,50 €</em>
+</td>
+            <td style="text-align:right;">Regelsteuersatz 7,00 %</td>
+            <td style="text-align:right;">5,50 €</td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">3</td>
+            <td>
+              <strong>Mineralwasser Medium 12 x 1,0l PET</strong>
+              <br />
+              <em>Artikel-ID Verkäufer: GTRWA5</em>
+              <br />
+              <em>Artikel-ID Käufer: SE_GTRWA5</em>
+              <br />
+              <em>Standardartikelkennung: 0160:4000001234561</em>
+            </td>
+            <td style="text-align:right;">20.0000 Stück</td>
+            <td style="text-align:right;">5,49 €<br />
+              <em>Bruttoeinzelpreis: 5,49 €</em>
+</td>
+            <td style="text-align:right;">Regelsteuersatz 7,00 %</td>
+            <td style="text-align:right;">109,80 €</td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">4</td>
+            <td>
+              <strong>Pfand</strong>
+              <br />
+              <em>Artikel-ID Verkäufer: PFA5</em>
+              <br />
+              <em>Artikel-ID Käufer: SE_PFA5</em>
+              <br />
+              <em>Standardartikelkennung: 0160:4000001234578</em>
+            </td>
+            <td style="text-align:right;">20.0000 Stück</td>
+            <td style="text-align:right;">2,77 €<br />
+              <em>Bruttoeinzelpreis: 2,77 €</em>
+</td>
+            <td style="text-align:right;">Regelsteuersatz 19,00 %</td>
+            <td style="text-align:right;">55,40 €</td>
+          </tr>
+        </tbody>
+      </table>
+      <blockquote>
+        <p>
+          <strong>Positionsnummer 1 — Positionshinweis:</strong> Wir erlauben uns Ihnen folgende Positionen aus der Lieferung Nr. 2025-51112 in Rechnung zu stellen:<br />
+          <strong>Positionsnummer 2 — Positionshinweis:</strong> Bestellt wurden 5 kg Schweinesteak. Mit dieser Rechnung werden nur die bereits gelieferten Steaks berechnet. Die noch offenen 4 kg Schweinesteak werden separat geliefert und berechnet.        </p>
+      </blockquote>
+      <h2 class="phlox-section-title">Nachlässe und Gebühren</h2>
+      <table class="phlox-table">
+        <thead>
+          <tr>
+            <th>Grund</th>
+            <th style="text-align:right;">Basisbetrag</th>
+            <th style="text-align:right;">%</th>
+            <th style="text-align:right;">Betrag</th>
+            <th>USt-Kategorie</th>
+            <th style="text-align:right;">USt-Satz</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sondernachlass</td>
+            <td style="text-align:right;">10,00 €</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">-1,00 €</td>
+            <td>Regelsteuersatz</td>
+            <td style="text-align:right;">19,00 %</td>
+          </tr>
+          <tr>
+            <td>Sondernachlass</td>
+            <td style="text-align:right;">115,30 €</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">-8,07 €</td>
+            <td>Regelsteuersatz</td>
+            <td style="text-align:right;">7,00 %</td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="phlox-table">
+        <thead>
+          <tr>
+            <th>Grund</th>
+            <th style="text-align:right;">Basisbetrag</th>
+            <th style="text-align:right;">%</th>
+            <th style="text-align:right;">Betrag</th>
+            <th>USt-Kategorie</th>
+            <th style="text-align:right;">USt-Satz</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Versandkosten</td>
+            <td style="text-align:right;">115,30 €</td>
+            <td style="text-align:right;"></td>
+            <td style="text-align:right;">+5,80 €</td>
+            <td>Regelsteuersatz</td>
+            <td style="text-align:right;">7,00 %</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="phlox-row phlox-bottom">
+        <div class="phlox-vat">
+          <h2 class="phlox-section-title">Steueraufschlüsselung</h2>
+          <table class="phlox-table">
+            <thead>
+              <tr>
+                <th>USt-Kategorie</th>
+                <th style="text-align:right;">Steuerbasis</th>
+                <th style="text-align:right;">USt-Satz</th>
+                <th style="text-align:right;">USt-Betrag</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Regelsteuersatz</td>
+                <td style="text-align:right;">113,03 €</td>
+                <td style="text-align:right;">7,00 %</td>
+                <td style="text-align:right;">7,91 €</td>
+              </tr>
+              <tr>
+                <td>Regelsteuersatz</td>
+                <td style="text-align:right;">64,40 €</td>
+                <td style="text-align:right;">19,00 %</td>
+                <td style="text-align:right;">12,24 €</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="phlox-totals-col">
+          <div class="phlox-totals">
+            <table class="phlox-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="text-align:right;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Summe Nettobeträge der Positionen</td>
+                  <td style="text-align:right;">180,70 €</td>
+                </tr>
+                <tr>
+                  <td>Summe Nachlässe auf Dokumentenebene</td>
+                  <td style="text-align:right;">-9,07 €</td>
+                </tr>
+                <tr>
+                  <td>Summe der Zuschläge und Steuern auf Dokumentenebene</td>
+                  <td style="text-align:right;">+5,80 €</td>
+                </tr>
+                <tr>
+                  <td>Nettogesamtbetrag</td>
+                  <td style="text-align:right;">177,43 €</td>
+                </tr>
+                <tr>
+                  <td>USt-Gesamtbetrag</td>
+                  <td style="text-align:right;">20,15 €</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Bruttogesamtbetrag</strong>
+                  </td>
+                  <td style="text-align:right;">
+                    <strong>197,58 €</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Bereits bezahlter Betrag</td>
+                  <td style="text-align:right;">-50,00 €</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="phlox-due">
+            <table class="phlox-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th style="text-align:right;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Zahlbar</td>
+                  <td style="text-align:right;">147,58 €</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <h2 class="phlox-section-title">Zahlungsbedingungen</h2>
+      <p>Zahlbar innerhalb 30 Tagen netto bis 11.03.2026, 3% Skonto innerhalb 10 Tagen bis 21.02.2026</p>
+      <p class="phlox-foot">Spezifikationskennung: urn:cen.eu:en16931:2017</p>
+    </div>
+  </body>
+</html>
