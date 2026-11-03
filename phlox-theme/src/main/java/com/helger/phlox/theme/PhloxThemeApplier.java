@@ -44,7 +44,11 @@ import com.helger.phlox.template.PhloxTemplate;
  * <code>negativeStyle</code> - how negative numbers are shown</li>
  * <li><code>annotateBtIDs</code> - append the BT/BG identifier to every label (<code>true</code> or
  * <code>false</code>)</li>
- * <li><code>template</code> - <code>default</code>, <code>classpath:path</code> or the path of a
+ * <li><code>showPageHeader</code>, <code>showPageFooter</code> - show the page header or footer of
+ * the template in the PDF and in the printed HTML (<code>true</code> or <code>false</code>)</li>
+ * <li><code>showPageHeaderOnFirstPage</code>, <code>showPageFooterOnFirstPage</code> - show them on
+ * the first page too (<code>true</code> or <code>false</code>)</li>
+ * <li><code>template</code> -<code>default</code>, <code>classpath:path</code> or the path of a
  * <code>.ptpl</code> file</li>
  * <li><code>logo</code> - the path of a PNG, JPEG or GIF file, or <code>classpath:path</code></li>
  * <li><code>watermark</code> - an object with the keys <code>text</code> (required),
@@ -111,6 +115,10 @@ public final class PhloxThemeApplier
                        "percentMinFractionDigits",
                        "negativeStyle",
                        "annotateBtIDs",
+                       "showPageHeader",
+                       "showPageHeaderOnFirstPage",
+                       "showPageFooter",
+                       "showPageFooterOnFirstPage",
                        "template",
                        "logo",
                        "watermark");
@@ -137,6 +145,19 @@ public final class PhloxThemeApplier
     final Boolean aAnnotate = aCommon.getBoolean ("annotateBtIDs");
     if (aAnnotate != null)
       aCtx.setAnnotateBtIDs (aAnnotate.booleanValue ());
+
+    final Boolean aShowPageHeader = aCommon.getBoolean ("showPageHeader");
+    if (aShowPageHeader != null)
+      aCtx.setShowPageHeader (aShowPageHeader.booleanValue ());
+    final Boolean aShowPageHeaderOnFirstPage = aCommon.getBoolean ("showPageHeaderOnFirstPage");
+    if (aShowPageHeaderOnFirstPage != null)
+      aCtx.setShowPageHeaderOnFirstPage (aShowPageHeaderOnFirstPage.booleanValue ());
+    final Boolean aShowPageFooter = aCommon.getBoolean ("showPageFooter");
+    if (aShowPageFooter != null)
+      aCtx.setShowPageFooter (aShowPageFooter.booleanValue ());
+    final Boolean aShowPageFooterOnFirstPage = aCommon.getBoolean ("showPageFooterOnFirstPage");
+    if (aShowPageFooterOnFirstPage != null)
+      aCtx.setShowPageFooterOnFirstPage (aShowPageFooterOnFirstPage.booleanValue ());
 
     final String sTemplate = aCommon.getString ("template");
     if (sTemplate != null)

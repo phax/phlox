@@ -76,6 +76,18 @@ public final class PhloxTemplateCoverageTest
   }
 
   @Test
+  public void testPageFooterDoesNotCount ()
+  {
+    // Plain text has no page header or footer
+    assertTrue (_isMissing ("{{footer}}\n\n{{BT-1}}\n\n{{end}}", "BT-1"));
+    assertTrue (_isMissing ("{{header}}\n\n{{BT-1}}\n\n{{end}}", "BT-1"));
+    assertTrue (_isMissing ("{{footer}}\n\n{{group:g}}\n\n{{end}}\n\n{{BT-1}}\n\n{{end}}", "BT-1"));
+    // After its end and in a group it counts
+    assertFalse (_isMissing ("{{footer}}\n\nx\n\n{{end}}\n\n{{BT-1}}", "BT-1"));
+    assertFalse (_isMissing ("{{group:g}}\n\n{{BT-1}}\n\n{{end}}", "BT-1"));
+  }
+
+  @Test
   public void testAddress ()
   {
     final String sInPath = "{{BG-4.BG-5.address}}";

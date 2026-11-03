@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import java.util.Locale;
 
 import org.commonmark.node.AbstractVisitor;
@@ -45,6 +46,8 @@ import com.helger.phlox.template.PhloxTemplateException.EStage;
 import com.helger.phlox.template.adapter.PhloxInvoiceMustacheContext;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
+import com.helger.phlox.template.ast.PhloxPageMarginNode;
+import com.helger.phlox.template.ast.PhloxPageNumberNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
@@ -325,5 +328,38 @@ public final class PhloxTemplatePostParserTest
                                        .setLocale (Locale.forLanguageTag ("es"));
     final PhloxTemplateAst aAst = PhloxTemplate.getDefault ().renderAst (_invoice (), aCtx);
     assertEquals ("Logotipo", aAst.getResolvedImage (_findImage (aAst)).getAltText ());
+  }
+
+  @Test
+  public void testPageHeaderAndFooter ()
+  {
+    final PhloxTemplateAst aAst = _ast ("{{header}}\n\nH {{page}}\n\n{{end}}\n\nbody\n\n{{footer}}\n\n{{BT-1}} {{page}}/{{pages}}\n\n{{end}}\n");
+    final Node aHeader = aAst.getRoot ().getFirstChild ();
+    assertTrue (((PhloxPageMarginNode) aHeader).isHeader ());
+    assertEquals (List.of (PhloxPageMarginNode.BLOCK_CLASS_HEADER), aAst.getBlockClasses (aHeader));
+    assertTrue (aHeader.getFirstChild ().getLastChild () instanceof PhloxPageNumberNode);
+    final Node aFooter = aAst.getRoot ().getLastChild ();
+    assertFalse (((PhloxPageMarginNode) aFooter).isHeader ());
+    assertEquals (List.of (PhloxPageMarginNode.BLOCK_CLASS_FOOTER), aAst.getBlockClasses (aFooter));
+    final Node aParagraph = aFooter.getFirstChild ();
+    assertEquals ("INV ", ((Text) aParagraph.getFirstChild ()).getLiteral ());
+    final PhloxPageNumberNode aPage = (PhloxPageNumberNode) aParagraph.getFirstChild ().getNext ();
+    assertFalse (aPage.isPageCount ());
+    assertEquals ("/", ((Text) aPage.getNext ()).getLiteral ());
+    assertTrue (((PhloxPageNumberNode) aPage.getNext ().getNext ()).isPageCount ());
+
+    // Outside of the footer the page is unknown
+    final String sText = _collectText (_ast ("a {{page}} b\n"));
+    assertEquals ("a  b", sText);
+
+    // A footer alone is no content, and a page break before it is removed
+    _assertParseError ("{{footer}}\n\nx\n\n{{end}}\n");
+    assertEquals (0, _countPageBreaks ("x\n\n{{pagebreak}}\n\n{{footer}}\n\ny\n\n{{end}}\n"));
+
+    // Only one of each, at the top level
+    _assertParseError ("x\n\n{{footer}}\n\na\n\n{{end}}\n\n{{footer}}\n\nb\n\n{{end}}\n");
+    _assertParseError ("x\n\n{{header}}\n\na\n\n{{end}}\n\n{{header}}\n\nb\n\n{{end}}\n");
+    _assertParseError ("{{group:g}}\n\nx\n\n{{footer}}\n\na\n\n{{end}}\n\n{{end}}\n");
+    _assertParseError ("{{group:g}}\n\nx\n\n{{header}}\n\na\n\n{{end}}\n\n{{end}}\n");
   }
 }

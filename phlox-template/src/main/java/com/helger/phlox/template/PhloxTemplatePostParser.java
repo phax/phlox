@@ -35,6 +35,7 @@ import org.commonmark.ext.gfm.tables.TableCell;
 import org.commonmark.ext.gfm.tables.TableRow;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Code;
+import org.commonmark.node.CustomBlock;
 import org.commonmark.node.CustomNode;
 import org.commonmark.node.Image;
 import org.commonmark.node.Node;
@@ -61,6 +62,8 @@ import com.helger.phlox.template.PhloxTemplateException.EStage;
 import com.helger.phlox.template.adapter.PhloxInvoiceMustacheContext;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
+import com.helger.phlox.template.ast.PhloxPageMarginNode;
+import com.helger.phlox.template.ast.PhloxPageNumberNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxSpanNode;
 
@@ -69,7 +72,8 @@ import com.helger.phlox.template.ast.PhloxSpanNode;
  * on the wiki page Template-Processing, section "Stage 2a":
  * <ol>
  * <li>Builds a {@link PhloxGroupNode} from the sentinels of {@code {{group:name}}},
- * {@code {{row:name}}} and {@code {{end}}}.</li>
+ * {@code {{row:name}}} and {@code {{end}}}, and a {@link PhloxPageMarginNode} from the sentinel of
+ * {@code {{header}}} or {@code {{footer}}} up to its {@code {{end}}}.</li>
  * <li>Extracts the sentinels of {@code {{class:name}}} from {@link Text} nodes and attaches the
  * class to the next sibling block via a {@code Map<Node, String>}.</li>
  * <li>Replaces the sentinels of {@code {{pagebreak}}} with {@link PhloxPageBreakNode} and removes
@@ -78,6 +82,8 @@ import com.helger.phlox.template.ast.PhloxSpanNode;
  * <li>Builds a {@link PhloxSpanNode} from the sentinels of {@code {{color:#rrggbb}}} up to
  * {@code {{endcolor}}} and of {@code {{bg:#rrggbb}}} up to {@code {{endbg}}}, within the inline
  * content of one block.</li>
+ * <li>Replaces the sentinels of {@code {{page}}} and {@code {{pages}}} in the page header or footer with
+ * {@link PhloxPageNumberNode}.</li>
  * <li>Drops all other sentinels with a warning.</li>
  * <li>Resolves {@link Image} {@code destination} URLs ({@code data:}, {@code attachment:logo},
  * {@code attachment:BG-24[i]}, {@code classpath:/…}, {@code qrcode:…}) into
@@ -119,8 +125,11 @@ public final class PhloxTemplatePostParser
   private static final Pattern SPAN_SENTINEL = Pattern.compile (MARKER +
                                                                 "PHLOX:(?:(COLOR|BG)=(\\p{XDigit}{6})|END(COLOR|BG))" +
                                                                 MARKER);
+  private static final Pattern PAGE_SENTINEL = Pattern.compile (MARKER + "PHLOX:PAGE(S?)" + MARKER);
   private static final Pattern ANY_SENTINEL = Pattern.compile (MARKER + "PHLOX:[^" + MARKER + "]*" + MARKER);
   private static final String END_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_END;
+  private static final String HEADER_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_HEADER;
+  private static final String FOOTER_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_FOOTER;
   private static final String PAGEBREAK_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_PAGEBREAK;
   private static final String DATA_URL_PREFIX = "data:";
   private static final int MAX_DATA_URL_DISPLAY_LENGTH = 40;
@@ -206,6 +215,56 @@ public final class PhloxTemplatePostParser
   }
 
   /**
+   * Replaces the sentinels of {@code {{page}}} and {@code {{pages}}} in the page header or footer
+   * with {@link PhloxPageNumberNode}. Outside of them the page is not known: they stay there
+   * and are removed as stray ones. An image is skipped, because its text is the alternative text.
+   */
+  private static final class PageNumberSplitter extends AbstractVisitor
+  {
+    private boolean m_bInPageMargin;
+
+    @Override
+    public void visit (final CustomBlock aCustomBlock)
+    {
+      final boolean bOld = m_bInPageMargin;
+      if (aCustomBlock instanceof PhloxPageMarginNode)
+        m_bInPageMargin = true;
+      visitChildren (aCustomBlock);
+      m_bInPageMargin = bOld;
+    }
+
+    @Override
+    public void visit (final Text aText)
+    {
+      final String sLiteral = aText.getLiteral ();
+      if (!m_bInPageMargin || sLiteral.indexOf (PhloxInvoiceMustacheContext.SENTINEL_MARKER) < 0)
+        return;
+      final Matcher aMatcher = PAGE_SENTINEL.matcher (sLiteral);
+      int nLastEnd = 0;
+      while (aMatcher.find ())
+      {
+        if (aMatcher.start () > nLastEnd)
+          aText.insertBefore (new Text (sLiteral.substring (nLastEnd, aMatcher.start ())));
+        aText.insertBefore (new PhloxPageNumberNode (!aMatcher.group (1).isEmpty ()));
+        nLastEnd = aMatcher.end ();
+      }
+      if (nLastEnd > 0)
+      {
+        if (nLastEnd < sLiteral.length ())
+          aText.setLiteral (sLiteral.substring (nLastEnd));
+        else
+          aText.unlink ();
+      }
+    }
+
+    @Override
+    public void visit (final Image aImage)
+    {
+      // Skip the alternative text
+    }
+  }
+
+  /**
    * Removes the sentinels that are left after the layout was built: a layout tag next to text or
    * below the top level, and a class in a heading or a table cell. They have no effect.
    */
@@ -216,7 +275,7 @@ public final class PhloxTemplatePostParser
     {
       if (sText.indexOf (PhloxInvoiceMustacheContext.SENTINEL_MARKER) < 0)
         return sText;
-      LOGGER.warn ("A template tag has no effect here: a group, row or end tag needs a top-level paragraph of its own, and a class tag a line in front of the block");
+      LOGGER.warn ("A template tag has no effect here: a group, row, header, footer or end tag needs a top-level paragraph of its own, a class tag a line in front of the block, and a page or pages tag the header or footer");
       return ANY_SENTINEL.matcher (sText).replaceAll ("");
     }
 
@@ -441,7 +500,10 @@ public final class PhloxTemplatePostParser
 
   private static boolean _isLayoutSentinel (@NonNull final String sLine)
   {
-    return END_SENTINEL.equals (sLine) || GROUP_SENTINEL.matcher (sLine).matches ();
+    return END_SENTINEL.equals (sLine) ||
+           HEADER_SENTINEL.equals (sLine) ||
+           FOOTER_SENTINEL.equals (sLine) ||
+           GROUP_SENTINEL.matcher (sLine).matches ();
   }
 
   /**
@@ -461,8 +523,13 @@ public final class PhloxTemplatePostParser
   }
 
   /**
-   * Turn the paragraphs holding group, row or end sentinels into {@link PhloxGroupNode}s that
-   * contain the blocks up to the matching end. Only the top level of the document is handled.
+   * Turn the paragraphs holding group, row, header, footer or end sentinels into
+   * {@link PhloxGroupNode}s and {@link PhloxPageMarginNode}s that contain the blocks up to the
+   * matching end. Only the top level of the document is handled.
+   *
+   * @throws PhloxTemplateException
+   *         when groups are nested too deeply, or a header or footer is not at the top level or not
+   *         the only one.
    *
    * @param aRoot
    *        The document root. Never <code>null</code>.
@@ -485,6 +552,8 @@ public final class PhloxTemplatePostParser
 
     final Deque <Node> aStack = new ArrayDeque <> ();
     Node aCurrent = aRoot;
+    boolean bHasPageHeader = false;
+    boolean bHasPageFooter = false;
     for (final Node aChild : aChildren)
     {
       final List <String> aSentinels = _getLayoutSentinels (aChild);
@@ -496,27 +565,50 @@ public final class PhloxTemplatePostParser
       for (final String sSentinel : aSentinels)
       {
         final Matcher aMatcher = GROUP_SENTINEL.matcher (sSentinel);
-        if (aMatcher.matches ())
+        if (HEADER_SENTINEL.equals (sSentinel) || FOOTER_SENTINEL.equals (sSentinel))
         {
-          if (aStack.size () >= MAX_GROUP_DEPTH)
+          final boolean bHeader = HEADER_SENTINEL.equals (sSentinel);
+          final String sTag = bHeader ? "header" : "footer";
+          if (!aStack.isEmpty ())
             throw new PhloxTemplateException (EStage.PARSE,
-                                              aMatcher.group (2),
-                                              "groups and rows are nested deeper than " + MAX_GROUP_DEPTH + " levels");
-          final PhloxGroupNode aGroup = new PhloxGroupNode ("ROW".equals (aMatcher.group (1)));
-          m_aBlockClassMap.put (aGroup, aMatcher.group (2).strip ());
-          aCurrent.appendChild (aGroup);
+                                              sTag,
+                                              "'{{" + sTag + "}}' must be at the top level, not in a group or row");
+          if (bHeader ? bHasPageHeader : bHasPageFooter)
+            throw new PhloxTemplateException (EStage.PARSE, sTag, "a template can only have one '{{" + sTag + "}}'");
+          if (bHeader)
+            bHasPageHeader = true;
+          else
+            bHasPageFooter = true;
+          final PhloxPageMarginNode aPageMargin = new PhloxPageMarginNode (bHeader);
+          m_aBlockClassMap.put (aPageMargin, aPageMargin.getBlockClass ());
+          aCurrent.appendChild (aPageMargin);
           aStack.push (aCurrent);
-          aCurrent = aGroup;
+          aCurrent = aPageMargin;
         }
         else
-          if (aStack.isEmpty ())
-            LOGGER.warn ("Template tag '{{end}}' has no matching '{{group:...}}' or '{{row:...}}'");
+          if (aMatcher.matches ())
+          {
+            if (aStack.size () >= MAX_GROUP_DEPTH)
+              throw new PhloxTemplateException (EStage.PARSE,
+                                                aMatcher.group (2),
+                                                "groups and rows are nested deeper than " + MAX_GROUP_DEPTH + " levels");
+            final PhloxGroupNode aGroup = new PhloxGroupNode ("ROW".equals (aMatcher.group (1)));
+            m_aBlockClassMap.put (aGroup, aMatcher.group (2).strip ());
+            aCurrent.appendChild (aGroup);
+            aStack.push (aCurrent);
+            aCurrent = aGroup;
+          }
           else
-            aCurrent = aStack.pop ();
+            if (aStack.isEmpty ())
+              LOGGER.warn ("Template tag '{{end}}' has no matching '{{group:...}}', '{{row:...}}', '{{header}}' or '{{footer}}'");
+            else
+              aCurrent = aStack.pop ();
       }
     }
     if (!aStack.isEmpty ())
-      LOGGER.warn ("Template has " + aStack.size () + " '{{group:...}}' or '{{row:...}}' without '{{end}}'");
+      LOGGER.warn ("Template has " +
+                   aStack.size () +
+                   " '{{group:...}}', '{{row:...}}', '{{header}}' or '{{footer}}' without '{{end}}'");
   }
 
   /**
@@ -756,7 +848,7 @@ public final class PhloxTemplatePostParser
           return true;
       }
       else
-        if (!(aChild instanceof PhloxPageBreakNode))
+        if (!(aChild instanceof PhloxPageBreakNode) && !(aChild instanceof PhloxPageMarginNode))
           return true;
     }
     return false;
@@ -764,7 +856,8 @@ public final class PhloxTemplatePostParser
 
   /**
    * Remove the page breaks at one edge of a parent. A group below each other can have them too, and
-   * is removed if nothing is left of it. A row is left alone, because it has no page breaks.
+   * is removed if nothing is left of it. A row is left alone, because it has no page breaks. The
+   * page header and the page footer are not part of the flow, so they are skipped.
    *
    * @param aParent
    *        The document root or a group. Never {@code null}.
@@ -777,6 +870,11 @@ public final class PhloxTemplatePostParser
     while (aNode != null)
     {
       final Node aNext = bStart ? aNode.getNext () : aNode.getPrevious ();
+      if (aNode instanceof PhloxPageMarginNode)
+      {
+        aNode = aNext;
+        continue;
+      }
       if (aNode instanceof final PhloxGroupNode aGroup && !aGroup.isRow ())
       {
         _removeEdgePageBreaksRecursive (aGroup, bStart);
@@ -804,6 +902,7 @@ public final class PhloxTemplatePostParser
   {
     _buildGroups (aRoot);
     _processSentinels (aRoot);
+    aRoot.accept (new PageNumberSplitter ());
     final SpanTagSplitter aSpanTagSplitter = new SpanTagSplitter ();
     aRoot.accept (aSpanTagSplitter);
     aSpanTagSplitter.m_aParents.forEach (PhloxTemplatePostParser::_buildSpans);

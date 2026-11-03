@@ -25,7 +25,7 @@ Total: 107 files.
 
 Everything under `xrechnung/` and `issues/` was imported from `en16931-cii2ubl` at `../en16931-cii2ubl/en16931-cii2ubl/src/test/resources/external/cii/`, preserving the original subdirectory structure and filenames. The license of that project is Apache 2.0 (matching this project), and the files are EN 16931-conformant CII D16B `CrossIndustryInvoice` instances — they happen to be packaged as XRechnung tests because XRechnung is a EN 16931 binding profile, but the CII semantics they exercise are EN 16931 itself.
 
-The files under `zugferd/` were imported from `phive-rules-zugferd` at `../phive-rules/phive-rules-zugferd/src/test/resources/external/test-files/2.5.2/en16931/`, keeping their filenames. They are samples of the ZUGFeRD package of FeRD (https://www.ferd-net.de/standards/paket-downloads/index.html); the usage rights of FeRD are in the comment at the top of each file.
+The files under `zugferd/` were imported from `phive-rules-zugferd` at `../phive-rules/phive-rules-zugferd/src/test/resources/external/test-files/2.5.2/en16931/`, keeping their filenames. They are samples of the ZUGFeRD package of FeRD (https://www.ferd-net.de/standards/paket-downloads/index.html); the usage rights of FeRD are in the comment at the top of each file. Their PDF masters in `phlox-pdf/src/test/resources/masters/2017_cii_zugferd_*` are real ZUGFeRD / Factur-X invoices (PDF/A-3b with the XML embedded), checked with kaltblut.
 
 The `CII_*.xml` files and `XRechnung-O.xml` in this directory's root were already in `phlox-testfiles` from inception and originated from various publicly available EN 16931 example sets.
 

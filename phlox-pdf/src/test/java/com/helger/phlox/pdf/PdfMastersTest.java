@@ -16,6 +16,7 @@
  */
 package com.helger.phlox.pdf;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -53,6 +56,15 @@ import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.font.roboto.EFontResourceRoboto;
 import com.helger.io.resource.ClassPathResource;
+import com.helger.kaltblut.core.extract.HybridExtractor;
+import com.helger.kaltblut.core.inspect.HybridInspector;
+import com.helger.kaltblut.core.model.EZugferdCountry;
+import com.helger.kaltblut.core.model.HybridMetadata;
+import com.helger.kaltblut.core.source.HybridSource;
+import com.helger.kaltblut.core.source.IHybridSource;
+import com.helger.kaltblut.core.validate.HybridValidationResult;
+import com.helger.kaltblut.core.validate.HybridValidator;
+import com.helger.pdflayout.pdfa.EPdfALevel;
 import com.helger.phlox.api.CPhloxVersion;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxInvoice;
@@ -71,6 +83,10 @@ import de.redsix.pdfcompare.PdfComparator;
  * difference readable in the version control system, and it does not depend on the date, on the
  * platform or on how a viewer draws the page. If a change is wanted, write the reference files
  * again with <code>mvn test -Dtest=PdfMastersTest -Dphlox.updateMasters=true</code>.
+ * <p>
+ * The reference PDFs of the ZUGFeRD samples (folder <code>zugferd</code>) are real ZUGFeRD /
+ * Factur-X invoices: PDF/A-3b with the Roboto fonts and the source XML as
+ * <code>factur-x.xml</code>. kaltblut checks each of them, so they can be used to test other tools.
  *
  * @author Philip Helger
  */
@@ -81,6 +97,8 @@ public final class PdfMastersTest
   // The PDFs of this run and the differences to the reference files
   private static final File ACTUAL_DIR = new File ("target/masters-actual");
   private static final String LOGO_CASE = "2017/ubl/invoice/ubl-tc434-example1.xml";
+  // The masters of these sources are real ZUGFeRD / Factur-X invoices: PDF/A-3b with the XML
+  private static final String ZUGFERD_FOLDER = "/zugferd/";
   // Drawing operators of the content stream of a page, without the text operators
   private static final Set <String> GRAPHICS_OPERATORS = new CommonsHashSet <> ("re",
                                                                                 "m",
@@ -146,6 +164,36 @@ public final class PdfMastersTest
   private static String _format (final float fValue)
   {
     return String.format (Locale.ROOT, "%.1f", Float.valueOf (fValue));
+  }
+
+  private static byte @NonNull [] _readBytes (@NonNull final String sPath)
+  {
+    try (final InputStream aIS = new ClassPathResource (MockPhloxTestFiles.BASE_PATH + sPath).getInputStream ())
+    {
+      return aIS.readAllBytes ();
+    }
+    catch (final IOException ex)
+    {
+      throw new IllegalStateException ("Failed to open " + sPath, ex);
+    }
+  }
+
+  /**
+   * Check that a PDF is a valid ZUGFeRD / Factur-X invoice that carries the given XML, with the
+   * rules of kaltblut including PDF/A-3.
+   */
+  private static void _assertFacturX (@NonNull final String sPath,
+                                      final byte @NonNull [] aXml,
+                                      final byte @NonNull [] aPdf) throws Exception
+  {
+    final IHybridSource aSource = HybridSource.fromBytes (aPdf);
+    final HybridValidator aValidator = new HybridValidator ();
+    aValidator.getSettings ().setCountry (EZugferdCountry.DE).setCheckPdfA3 (true);
+    final HybridValidationResult aResult = aValidator.validate (aSource);
+    assertTrue (sPath + ": " + aResult.getAllFindings (), aResult.isValid ());
+    final HybridMetadata aMeta = HybridInspector.readMetadata (aSource);
+    assertTrue (sPath + ": " + aMeta, aMeta.isRecognisedHybridInvoice ());
+    assertArrayEquals (sPath, aXml, HybridExtractor.extractInvoiceXml (aSource));
   }
 
   @NonNull
@@ -230,8 +278,9 @@ public final class PdfMastersTest
                                 final boolean bLogo) throws Exception
   {
     final PdfRenderContext aCtx = new PdfRenderContext ().setLocale (Locale.forLanguageTag (sLang));
-    // The standard fonts of PDF have no Cyrillic and Greek letters
-    if (MockPhloxTestFiles.SYNTHETIC_CYRILLIC_GREEK_INVOICE.equals (sPath))
+    final boolean bZugferd = sPath.contains (ZUGFERD_FOLDER);
+    // The standard fonts of PDF have no Cyrillic and Greek letters, and PDF/A needs embedded fonts
+    if (MockPhloxTestFiles.SYNTHETIC_CYRILLIC_GREEK_INVOICE.equals (sPath) || bZugferd)
       aCtx.setFontFamily (PdfFontFamily.of (EFontResourceRoboto.ROBOTO_NORMAL,
                                             EFontResourceRoboto.ROBOTO_BOLD,
                                             EFontResourceRoboto.ROBOTO_NORMAL_ITALIC,
@@ -245,9 +294,16 @@ public final class PdfMastersTest
                                             .setFilename ("phoss.png"));
       }
     }
+    final byte [] aXml = bZugferd ? _readBytes (sPath) : null;
+    if (bZugferd)
+      aCtx.setPdfALevel (EPdfALevel.PDF_A_3B)
+          .setEmbeddedSource (PdfEmbeddedSource.ofFacturX (aXml))
+          .setDocumentCreationDateTime (ZonedDateTime.of (2026, 11, 3, 12, 0, 0, 0, ZoneOffset.UTC));
     final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
     new PdfInvoiceWriter ().writeTo (_read (sPath), aCtx, aBAOS);
     final byte [] aPdf = aBAOS.toByteArray ();
+    if (bZugferd)
+      _assertFacturX (sPath, aXml, aPdf);
     final String sActual = _describe (aPdf);
 
     final String sName = _masterName (sPath, sLang, bLogo);

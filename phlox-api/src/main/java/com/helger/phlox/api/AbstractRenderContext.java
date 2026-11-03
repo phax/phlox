@@ -50,6 +50,14 @@ public abstract class AbstractRenderContext <IMPLTYPE extends AbstractRenderCont
 {
   /** Default for appending the BT/BG identifier to each label. */
   public static final boolean DEFAULT_ANNOTATE_BT_IDS = false;
+  /** Default for showing the page header of the template. */
+  public static final boolean DEFAULT_SHOW_PAGE_HEADER = true;
+  /** Default for showing the page header of the template on the first page too. */
+  public static final boolean DEFAULT_SHOW_PAGE_HEADER_ON_FIRST_PAGE = false;
+  /** Default for showing the page footer of the template. */
+  public static final boolean DEFAULT_SHOW_PAGE_FOOTER = true;
+  /** Default for showing the page footer of the template on the first page too. */
+  public static final boolean DEFAULT_SHOW_PAGE_FOOTER_ON_FIRST_PAGE = true;
 
   private Locale m_aLocale = Locale.ENGLISH;
   private PhloxFormatOptions m_aFormatOptions = PhloxFormatOptions.defaults ();
@@ -58,6 +66,10 @@ public abstract class AbstractRenderContext <IMPLTYPE extends AbstractRenderCont
   private boolean m_bAnnotateBtIDs = DEFAULT_ANNOTATE_BT_IDS;
   private WatermarkSpec m_aUserWatermark;
   private IPhloxTemplate m_aTemplate;
+  private boolean m_bShowPageHeader = DEFAULT_SHOW_PAGE_HEADER;
+  private boolean m_bShowPageHeaderOnFirstPage = DEFAULT_SHOW_PAGE_HEADER_ON_FIRST_PAGE;
+  private boolean m_bShowPageFooter = DEFAULT_SHOW_PAGE_FOOTER;
+  private boolean m_bShowPageFooterOnFirstPage = DEFAULT_SHOW_PAGE_FOOTER_ON_FIRST_PAGE;
 
   /** Subclass-only constructor. */
   protected AbstractRenderContext ()
@@ -240,6 +252,114 @@ public abstract class AbstractRenderContext <IMPLTYPE extends AbstractRenderCont
   }
 
   /**
+   * Check whether the page header of the template (<code>{{header}}</code>) is shown. Only the
+   * outputs with pages show it: the PDF on every page, the HTML when it is printed. See also
+   * {@link #isShowPageHeaderOnFirstPage()}.
+   *
+   * @return {@code true} if the page header is shown. The default is
+   *         {@link #DEFAULT_SHOW_PAGE_HEADER}.
+   */
+  public boolean isShowPageHeader ()
+  {
+    return m_bShowPageHeader;
+  }
+
+  /**
+   * Set whether the page header of the template (<code>{{header}}</code>) is shown.
+   *
+   * @param bShowPageHeader
+   *        {@code true} to show it, {@code false} to leave it out.
+   * @return this for chaining.
+   */
+  @NonNull
+  public IMPLTYPE setShowPageHeader (final boolean bShowPageHeader)
+  {
+    m_bShowPageHeader = bShowPageHeader;
+    return thisAsT ();
+  }
+
+  /**
+   * Check whether the page header is shown on the first page too. The first page of the default
+   * template already starts with the number of the invoice.
+   *
+   * @return {@code true} if the page header is shown on the first page too. The default is
+   *         {@link #DEFAULT_SHOW_PAGE_HEADER_ON_FIRST_PAGE}.
+   */
+  public boolean isShowPageHeaderOnFirstPage ()
+  {
+    return m_bShowPageHeaderOnFirstPage;
+  }
+
+  /**
+   * Set whether the page header is shown on the first page too. Without
+   * {@link #isShowPageHeader()} it is shown on no page.
+   *
+   * @param bShowPageHeaderOnFirstPage
+   *        {@code true} to show it on the first page too, {@code false} to start on the second page.
+   * @return this for chaining.
+   */
+  @NonNull
+  public IMPLTYPE setShowPageHeaderOnFirstPage (final boolean bShowPageHeaderOnFirstPage)
+  {
+    m_bShowPageHeaderOnFirstPage = bShowPageHeaderOnFirstPage;
+    return thisAsT ();
+  }
+
+  /**
+   * Check whether the page footer of the template (<code>{{footer}}</code>) is shown. Only the
+   * outputs with pages show it: the PDF on every page, the HTML when it is printed.
+   *
+   * See also {@link #isShowPageFooterOnFirstPage()}.
+   *
+   * @return {@code true} if the page footer is shown. The default is
+   *         {@link #DEFAULT_SHOW_PAGE_FOOTER}.
+   */
+  public boolean isShowPageFooter ()
+  {
+    return m_bShowPageFooter;
+  }
+
+  /**
+   * Set whether the page footer of the template (<code>{{footer}}</code>) is shown.
+   *
+   * @param bShowPageFooter
+   *        {@code true} to show it, {@code false} to leave it out.
+   * @return this for chaining.
+   */
+  @NonNull
+  public IMPLTYPE setShowPageFooter (final boolean bShowPageFooter)
+  {
+    m_bShowPageFooter = bShowPageFooter;
+    return thisAsT ();
+  }
+
+  /**
+   * Check whether the page footer is shown on the first page too.
+   *
+   * @return {@code true} if the page footer is shown on the first page too. The default is
+   *         {@link #DEFAULT_SHOW_PAGE_FOOTER_ON_FIRST_PAGE}.
+   */
+  public boolean isShowPageFooterOnFirstPage ()
+  {
+    return m_bShowPageFooterOnFirstPage;
+  }
+
+  /**
+   * Set whether the page footer is shown on the first page too. Without
+   * {@link #isShowPageFooter()} it is shown on no page.
+   *
+   * @param bShowPageFooterOnFirstPage
+   *        {@code true} to show it on the first page too, {@code false} to start on the second page.
+   * @return this for chaining.
+   */
+  @NonNull
+  public IMPLTYPE setShowPageFooterOnFirstPage (final boolean bShowPageFooterOnFirstPage)
+  {
+    m_bShowPageFooterOnFirstPage = bShowPageFooterOnFirstPage;
+    return thisAsT ();
+  }
+
+  /**
    * Copy all base fields from another context into this one. Used by subclass static factories
    * (e.g. {@code PdfRenderContext.copyFrom(...)}) to share settings across formats. The format
    * options are copied by value, so changing them here does not change the source.
@@ -258,6 +378,10 @@ public abstract class AbstractRenderContext <IMPLTYPE extends AbstractRenderCont
     m_bAnnotateBtIDs = aSource.m_bAnnotateBtIDs;
     m_aUserWatermark = aSource.m_aUserWatermark;
     m_aTemplate = aSource.m_aTemplate;
+    m_bShowPageHeader = aSource.m_bShowPageHeader;
+    m_bShowPageHeaderOnFirstPage = aSource.m_bShowPageHeaderOnFirstPage;
+    m_bShowPageFooter = aSource.m_bShowPageFooter;
+    m_bShowPageFooterOnFirstPage = aSource.m_bShowPageFooterOnFirstPage;
     return thisAsT ();
   }
 

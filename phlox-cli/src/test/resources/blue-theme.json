@@ -16,5 +16,12 @@
     "--phlox-wash": "var(--frost)",
     "--phlox-accent": "var(--blue)",
     "--phlox-accent-wash": "var(--sky)"
+  },
+  "common": {
+    "$comment": "The page header (seller and invoice number) and the page footer (invoice number and page) of the default template, in --phlox-faint. These are the defaults: the header starts on the second page, because the first page starts with the invoice number.",
+    "showPageHeader": true,
+    "showPageHeaderOnFirstPage": false,
+    "showPageFooter": true,
+    "showPageFooterOnFirstPage": true
   }
 }

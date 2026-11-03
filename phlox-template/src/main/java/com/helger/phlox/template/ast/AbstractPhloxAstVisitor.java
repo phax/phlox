@@ -410,6 +410,36 @@ public abstract class AbstractPhloxAstVisitor <BLOCKCTXTYPE, INLINECTXTYPE>
                                           @NonNull BLOCKCTXTYPE aCtx);
 
   /**
+   * Handle the <code>{{header}}</code> or the <code>{{footer}}</code> of the template. It is not
+   * part of the flow of the document, so the implementation decides where it goes, if anywhere.
+   *
+   * @param aAst
+   *        The template AST. Never <code>null</code>.
+   * @param aPageMargin
+   *        The node to handle. Never <code>null</code>.
+   * @param aCtx
+   *        The context. Never <code>null</code>.
+   */
+  protected abstract void visitPageMargin (@NonNull PhloxTemplateAst aAst,
+                                           @NonNull PhloxPageMarginNode aPageMargin,
+                                           @NonNull BLOCKCTXTYPE aCtx);
+
+  /**
+   * Handle a <code>{{page}}</code> or <code>{{pages}}</code> in the page header or footer of the
+   * template.
+   *
+   * @param aAst
+   *        The template AST. Never <code>null</code>.
+   * @param aPageNumber
+   *        The node to handle. Never <code>null</code>.
+   * @param aCtx
+   *        The context. Never <code>null</code>.
+   */
+  protected abstract void visitPageNumber (@NonNull PhloxTemplateAst aAst,
+                                           @NonNull PhloxPageNumberNode aPageNumber,
+                                           @NonNull INLINECTXTYPE aCtx);
+
+  /**
    * Handle an inline node of a type that has no <code>visitXxx</code> method, e.g. because a
    * commonmark extension was added to the parser. The default implementation logs a warning and
    * visits the children, so that their content is kept.
@@ -496,7 +526,10 @@ public abstract class AbstractPhloxAstVisitor <BLOCKCTXTYPE, INLINECTXTYPE>
                         if (aNode instanceof final PhloxSpanNode aSpan)
                           visitSpan (aAst, aSpan, aCtx);
                         else
-                          visitUnknownInline (aAst, aNode, aCtx);
+                          if (aNode instanceof final PhloxPageNumberNode aPageNumber)
+                            visitPageNumber (aAst, aPageNumber, aCtx);
+                          else
+                            visitUnknownInline (aAst, aNode, aCtx);
   }
 
   /**
@@ -570,7 +603,10 @@ public abstract class AbstractPhloxAstVisitor <BLOCKCTXTYPE, INLINECTXTYPE>
                             if (aNode instanceof final PhloxPageBreakNode aPageBreak)
                               visitPageBreak (aAst, aPageBreak, aCtx);
                             else
-                              visitUnknownBlock (aAst, aNode, aCtx);
+                              if (aNode instanceof final PhloxPageMarginNode aPageMargin)
+                                visitPageMargin (aAst, aPageMargin, aCtx);
+                              else
+                                visitUnknownBlock (aAst, aNode, aCtx);
   }
 
   /**

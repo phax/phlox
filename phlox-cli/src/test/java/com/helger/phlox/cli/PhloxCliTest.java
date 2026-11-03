@@ -945,6 +945,43 @@ public final class PhloxCliTest
   }
 
   @Test
+  public void testNoPageFooter () throws IOException
+  {
+    final String sUbl = _copyInvoice ().toString ();
+    final Path aOut = _tempFile (".html");
+    assertEquals (0, _run ("-i", sUbl, "-o", aOut.toString ()));
+    assertTrue (Files.readString (aOut, StandardCharsets.UTF_8).contains ("counter(pages)"));
+    assertEquals (0, _run ("-i", sUbl, "--no-page-footer", "-o", aOut.toString ()));
+    assertFalse (Files.readString (aOut, StandardCharsets.UTF_8).contains ("counter(pages)"));
+  }
+
+  @Test
+  public void testPageHeaderOptions () throws IOException
+  {
+    final String sUbl = _copyInvoice ().toString ();
+    final Path aOut = _tempFile (".html");
+    assertEquals (0, _run ("-i", sUbl, "-o", aOut.toString ()));
+    String sHtml = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertTrue (sHtml, sHtml.contains ("@top-left"));
+    assertTrue (sHtml, sHtml.contains ("@page:first{margin-top:0;@top-left{content:none}}"));
+
+    assertEquals (0,
+                  _run ("-i",
+                        sUbl,
+                        "--page-header-on-first-page",
+                        "true",
+                        "--page-footer-on-first-page",
+                        "false",
+                        "-o",
+                        aOut.toString ()));
+    sHtml = Files.readString (aOut, StandardCharsets.UTF_8);
+    assertTrue (sHtml, sHtml.contains ("@page:first{margin-bottom:0;@bottom-left{content:none}}"));
+
+    assertEquals (0, _run ("-i", sUbl, "--no-page-header", "-o", aOut.toString ()));
+    assertFalse (Files.readString (aOut, StandardCharsets.UTF_8).contains ("@top-left"));
+  }
+
+  @Test
   public void testCreationDateTime () throws IOException
   {
     final String sUbl = _copyInvoice ().toString ();

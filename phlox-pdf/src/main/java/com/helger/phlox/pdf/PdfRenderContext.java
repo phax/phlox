@@ -645,6 +645,16 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
                                 .textColor (m_aPalette.getMuted ())
                                 .fontSize (Float.valueOf (7.5f))
                                 .build ());
+    putBlockStyle ("page-header",
+                   PdfBlockStyle.builder ()
+                                .textColor (m_aPalette.getFaint ())
+                                .fontSize (Float.valueOf (7.5f))
+                                .build ());
+    putBlockStyle ("page-footer",
+                   PdfBlockStyle.builder ()
+                                .textColor (m_aPalette.getFaint ())
+                                .fontSize (Float.valueOf (7.5f))
+                                .build ());
   }
 
   /** Create a new context with the default PDF settings. */

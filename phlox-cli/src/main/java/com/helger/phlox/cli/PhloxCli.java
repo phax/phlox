@@ -210,6 +210,26 @@ public class PhloxCli implements Callable <Integer>
            description = "Show the number of the Business Term after each label, like 'Invoice number [BT-1]'.")
   boolean m_bAnnotateBtIDs;
 
+  @Option (names = "--no-page-header",
+           description = "PDF and HTML: leave out the page header of the template (seller and invoice number from the second page on).")
+  boolean m_bNoPageHeader;
+
+  @Option (names = "--page-header-on-first-page",
+           arity = "1",
+           paramLabel = "<true|false>",
+           description = "PDF and HTML: show the page header on the first page too. Default: the theme or false.")
+  Boolean m_aPageHeaderOnFirstPage;
+
+  @Option (names = "--no-page-footer",
+           description = "PDF and HTML: leave out the page footer of the template (invoice number and page number on every page).")
+  boolean m_bNoPageFooter;
+
+  @Option (names = "--page-footer-on-first-page",
+           arity = "1",
+           paramLabel = "<true|false>",
+           description = "PDF and HTML: show the page footer on the first page too. Default: the theme or true.")
+  Boolean m_aPageFooterOnFirstPage;
+
   @Option (names = "--date-style",
            description = "Style of formatted dates: SHORT, MEDIUM, LONG or FULL. Default: the theme or LONG.")
   FormatStyle m_eDateStyle;
@@ -372,6 +392,14 @@ public class PhloxCli implements Callable <Integer>
       }
       if (m_bAnnotateBtIDs)
         aCtx.setAnnotateBtIDs (true);
+      if (m_bNoPageHeader)
+        aCtx.setShowPageHeader (false);
+      if (m_aPageHeaderOnFirstPage != null)
+        aCtx.setShowPageHeaderOnFirstPage (m_aPageHeaderOnFirstPage.booleanValue ());
+      if (m_bNoPageFooter)
+        aCtx.setShowPageFooter (false);
+      if (m_aPageFooterOnFirstPage != null)
+        aCtx.setShowPageFooterOnFirstPage (m_aPageFooterOnFirstPage.booleanValue ());
       final PhloxFormatOptions aOptions = aCtx.getFormatOptions ();
       if (m_eDateStyle != null)
         aOptions.setDateStyle (m_eDateStyle);

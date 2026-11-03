@@ -273,4 +273,11 @@ public final class TextTemplateEmitterTest
     assertEquals ("a\u200Eb\u200Fc", _render ("a\u200Eb\u200Fc"));
     assertEquals ("\u05D0\u05D1 \u00E4", _render ("\u05D0\u05D1 \u00E4"));
   }
+
+  @Test
+  public void testNoPageFooter ()
+  {
+    assertEquals ("x", _render ("x\n\n{{footer}}\n\n{{BT-1}} {{page}}/{{pages}}\n\n{{end}}\n"));
+    assertEquals ("x", _render ("{{header}}\n\n{{BT-1}} {{page}}\n\n{{end}}\n\nx\n"));
+  }
 }

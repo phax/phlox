@@ -38,7 +38,9 @@ import com.helger.collection.commons.ICommonsSet;
  * The result depends on the template alone, not on the invoice or the locale.
  * <p>
  * The check does not look at conditions: a placeholder inside of {@code {{?BT-x}}} counts as shown,
- * even though it stays hidden without BT-x.
+ * even though it stays hidden without BT-x. A placeholder in the page header or footer
+ * (<code>{{header}}</code>, <code>{{footer}}</code>) does not count, because the plain text does
+ * not show it.
  *
  * @author Philip Helger
  */
@@ -136,6 +138,9 @@ public final class PhloxTemplateCoverage
     final ICommonsSet <String> ret = new CommonsHashSet <> ();
     // The model paths of the open sections, innermost first
     final Deque <List <String>> aSections = new ArrayDeque <> ();
+    // The open groups, rows, headers and footers: true for a header or footer. They are not shown in
+    // every output, so what they show does not count
+    final Deque <Boolean> aLayouts = new ArrayDeque <> ();
     final Matcher aMatcher = TAG.matcher (PhloxInvoiceMustacheContext.stripComments (sSource));
     while (aMatcher.find ())
     {
@@ -148,7 +153,20 @@ public final class PhloxTemplateCoverage
         // These do not change the context of the enclosed placeholders
         case '?', '^' -> aSections.push (List.of ());
         case '/' -> aSections.poll ();
-        default -> _addShownBTs (sTag, aSections, ret);
+        default ->
+        {
+          if (sTag.startsWith ("group:") || sTag.startsWith ("row:"))
+            aLayouts.push (Boolean.FALSE);
+          else
+            if ("header".equals (sTag) || "footer".equals (sTag))
+              aLayouts.push (Boolean.TRUE);
+            else
+              if ("end".equals (sTag))
+                aLayouts.poll ();
+              else
+                if (!aLayouts.contains (Boolean.TRUE))
+                  _addShownBTs (sTag, aSections, ret);
+        }
       }
     }
     return ret;

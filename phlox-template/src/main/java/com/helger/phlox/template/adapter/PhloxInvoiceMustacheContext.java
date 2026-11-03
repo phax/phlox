@@ -103,7 +103,22 @@ public final class PhloxInvoiceMustacheContext
   /** The sentinel prefix of <code>{{row:name}}</code>. */
   public static final String SENTINEL_ROW_PREFIX = SENTINEL_MARKER + "PHLOX:ROW=";
 
-  /** The sentinel of <code>{{end}}</code>, which closes the innermost group or row. */
+  /** The sentinel of <code>{{header}}</code>, which starts the page header. */
+  public static final String SENTINEL_HEADER = SENTINEL_MARKER + "PHLOX:HEADER" + SENTINEL_MARKER;
+
+  /** The sentinel of <code>{{footer}}</code>, which starts the page footer. */
+  public static final String SENTINEL_FOOTER = SENTINEL_MARKER + "PHLOX:FOOTER" + SENTINEL_MARKER;
+
+  /**
+   * The sentinel of <code>{{page}}</code>, the number of the current page in the page header or
+   * footer.
+   */
+  public static final String SENTINEL_PAGE = SENTINEL_MARKER + "PHLOX:PAGE" + SENTINEL_MARKER;
+
+  /** The sentinel of <code>{{pages}}</code>, the number of pages in the page header or footer. */
+  public static final String SENTINEL_PAGES = SENTINEL_MARKER + "PHLOX:PAGES" + SENTINEL_MARKER;
+
+  /** The sentinel of <code>{{end}}</code>, which closes the innermost group, row, header or footer. */
   public static final String SENTINEL_END = SENTINEL_MARKER + "PHLOX:END" + SENTINEL_MARKER;
 
   /** Prefix of the sentinel of {@code {{color:#rrggbb}}}, followed by the six hex digits. */
@@ -992,6 +1007,10 @@ public final class PhloxInvoiceMustacheContext
                 !sTag.startsWith ("group:") &&
                 !sTag.startsWith ("row:") &&
                 !"end".equals (sTag) &&
+                !"header".equals (sTag) &&
+                !"footer".equals (sTag) &&
+                !"page".equals (sTag) &&
+                !"pages".equals (sTag) &&
                 !"endcolor".equals (sTag) &&
                 !"endbg".equals (sTag) &&
                 !"pagebreak".equals (sTag))
@@ -1050,6 +1069,14 @@ public final class PhloxInvoiceMustacheContext
       return SENTINEL_BG_PREFIX + sHead.substring ("bg:#".length ()) + SENTINEL_CLASS_SUFFIX;
     if ("end".equals (sHead))
       return SENTINEL_END;
+    if ("header".equals (sHead))
+      return SENTINEL_HEADER;
+    if ("footer".equals (sHead))
+      return SENTINEL_FOOTER;
+    if ("page".equals (sHead))
+      return SENTINEL_PAGE;
+    if ("pages".equals (sHead))
+      return SENTINEL_PAGES;
     if ("endcolor".equals (sHead))
       return SENTINEL_END_COLOR;
     if ("endbg".equals (sHead))

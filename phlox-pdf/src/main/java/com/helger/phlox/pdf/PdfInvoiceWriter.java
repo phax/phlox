@@ -43,6 +43,7 @@ import com.helger.pdflayout.base.IPLRenderableObject;
 import com.helger.pdflayout.base.PLColor;
 import com.helger.pdflayout.base.PLPageSet;
 import com.helger.pdflayout.element.box.PLBox;
+import com.helger.pdflayout.element.vbox.PLVBox;
 import com.helger.pdflayout.pdfa.EPdfAFRelationship;
 import com.helger.pdflayout.pdfa.EPdfALevel;
 import com.helger.pdflayout.pdfa.PdfAXmpExtensionSchema;
@@ -366,10 +367,18 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
         aPdf.setDocumentCustomizer (aDoc -> _drawOnFirstPage (aDoc, aWatermark, aPdf.isCompressPDF ()));
     }
 
-    // The attribution of the program is a link to the project, so it is part of the layout
+    // The attribution of the program is a link to the project, so it is part of the layout. It goes
+    // below the page footer of the template, and is on the first page also without that
     final WatermarkSpec aPW = PhloxProgramWatermark.getInstance ();
     if (aPW != null)
-      aPS.setPageFooter (_createProgramFooter (aCtx.getFontFamily (), aPW));
+    {
+      final IPLRenderableObject <?> aProgramFooter = _createProgramFooter (aCtx.getFontFamily (), aPW);
+      final IPLRenderableObject <?> aTemplateFooter = aPS.getPageFooter ();
+      aPS.setPageFooter (aTemplateFooter == null ? aProgramFooter
+                                                 : new PLVBox ().addRow (aTemplateFooter).addRow (aProgramFooter));
+      if (aPS.isDifferentFirstPageFooter ())
+        aPS.setFirstPageFooter (_createProgramFooter (aCtx.getFontFamily (), aPW));
+    }
 
     return aPdf;
   }

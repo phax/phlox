@@ -53,7 +53,8 @@ public final class PhloxThemeApplierTest
     final PhloxTheme aTheme = PhloxThemeReader.readFromString ("{\"variables\":{\"--c\":\"#336699\"},\"common\":{"
                                                                + "\"locale\":\"de_AT\",\"dateStyle\":\"long\","
                                                                + "\"amountMinFractionDigits\":3,\"percentMinFractionDigits\":1,"
-                                                               + "\"negativeStyle\":\"minus-sign\",\"annotateBtIDs\":true,"
+                                                               + "\"negativeStyle\":\"minus-sign\",\"annotateBtIDs\":true,\"showPageFooter\":false,\"showPageHeader\":false,"
+                                                               + "\"showPageHeaderOnFirstPage\":true,\"showPageFooterOnFirstPage\":false,"
                                                                + "\"template\":\"default\","
                                                                + "\"watermark\":{\"text\":\"DRAFT\",\"opacity\":0.5,\"rotation\":-30,"
                                                                + "\"color\":\"var(--c)\",\"position\":\"footer-right\",\"fontSize\":20,\"repeatPerPage\":false}}}",
@@ -67,6 +68,10 @@ public final class PhloxThemeApplierTest
     assertEquals (1, aCtx.getFormatOptions ().getPercentMinFractionDigits ());
     assertEquals (ENegativeStyle.MINUS_SIGN, aCtx.getFormatOptions ().getNegativeStyle ());
     assertTrue (aCtx.isAnnotateBtIDs ());
+    assertFalse (aCtx.isShowPageFooter ());
+    assertFalse (aCtx.isShowPageHeader ());
+    assertTrue (aCtx.isShowPageHeaderOnFirstPage ());
+    assertFalse (aCtx.isShowPageFooterOnFirstPage ());
     assertSame (PhloxTemplate.getDefault (), aCtx.getTemplate ());
 
     final WatermarkSpec aWM = aCtx.getUserWatermark ();

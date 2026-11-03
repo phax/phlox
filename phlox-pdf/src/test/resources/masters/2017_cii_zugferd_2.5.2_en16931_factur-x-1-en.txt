@@ -4,28 +4,28 @@ G p1 sc 0.14 0.36 0.39
 G p1 sc 0.00 0.00 0.00
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
-G p1 m 56.69 725.85
-G p1 l 279.82 725.85
+G p1 m 56.69 720.51
+G p1 l 279.82 720.51
 G p1 S
-G p1 m 279.82 725.85
-G p1 l 538.58 725.85
+G p1 m 279.82 720.51
+G p1 l 538.58 720.51
 G p1 S
-G p1 m 56.69 707.79
-G p1 l 279.82 707.79
+G p1 m 56.69 700.73
+G p1 l 279.82 700.73
 G p1 S
-G p1 m 279.82 707.79
-G p1 l 538.58 707.79
+G p1 m 279.82 700.73
+G p1 l 538.58 700.73
 G p1 S
-G p1 m 56.69 689.73
-G p1 l 279.82 689.73
+G p1 m 56.69 680.96
+G p1 l 279.82 680.96
 G p1 S
-G p1 m 279.82 689.73
-G p1 l 538.58 689.73
+G p1 m 279.82 680.96
+G p1 l 538.58 680.96
 G p1 S
 G p1 SC 0.14 0.36 0.39
 G p1 w 1.50
-G p1 m 56.69 680.73
-G p1 l 538.58 680.73
+G p1 m 56.69 671.96
+G p1 l 538.58 671.96
 G p1 S
 G p1 sc 0.40 0.44 0.52
 G p1 sc 0.00 0.00 0.00
@@ -34,8 +34,8 @@ G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.50 0.50 0.50
 G p1 w 0.75
-G p1 m 56.69 564.43
-G p1 l 538.58 564.43
+G p1 m 56.69 543.63
+G p1 l 538.58 543.63
 G p1 S
 G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
@@ -43,513 +43,515 @@ G p1 sc 0.00 0.00 0.00
 G p1 sc 0.40 0.44 0.52
 G p1 SC 0.11 0.14 0.20
 G p1 w 1.00
-G p1 m 56.69 353.62
-G p1 l 79.60 353.62
+G p1 m 56.69 316.09
+G p1 l 79.60 316.09
 G p1 S
-G p1 m 79.60 353.62
-G p1 l 229.76 353.62
+G p1 m 79.60 316.09
+G p1 l 229.76 316.09
 G p1 S
-G p1 m 229.76 353.62
-G p1 l 302.20 353.62
+G p1 m 229.76 316.09
+G p1 l 302.20 316.09
 G p1 S
-G p1 m 302.20 353.62
-G p1 l 401.96 353.62
+G p1 m 302.20 316.09
+G p1 l 401.96 316.09
 G p1 S
-G p1 m 401.96 353.62
-G p1 l 475.44 353.62
+G p1 m 401.96 316.09
+G p1 l 475.44 316.09
 G p1 S
-G p1 m 475.44 353.62
-G p1 l 538.58 353.62
+G p1 m 475.44 316.09
+G p1 l 538.58 316.09
 G p1 S
 G p1 SC 0.89 0.91 0.93
 G p1 w 0.50
-G p1 m 56.69 275.47
-G p1 l 79.60 275.47
+G p1 m 56.69 229.71
+G p1 l 79.60 229.71
 G p1 S
 G p1 sc 0.00 0.00 0.00
-G p1 m 79.60 275.47
-G p1 l 229.76 275.47
+G p1 m 79.60 229.71
+G p1 l 229.76 229.71
 G p1 S
-G p1 m 229.76 275.47
-G p1 l 302.20 275.47
+G p1 m 229.76 229.71
+G p1 l 302.20 229.71
 G p1 S
-G p1 m 302.20 275.47
-G p1 l 401.96 275.47
+G p1 m 302.20 229.71
+G p1 l 401.96 229.71
 G p1 S
-G p1 m 401.96 275.47
-G p1 l 475.44 275.47
+G p1 m 401.96 229.71
+G p1 l 475.44 229.71
 G p1 S
-G p1 m 475.44 275.47
-G p1 l 538.58 275.47
+G p1 m 475.44 229.71
+G p1 l 538.58 229.71
 G p1 S
-G p1 m 56.69 173.77
-G p1 l 79.60 173.77
+G p1 m 56.69 143.58
+G p1 l 79.60 143.58
 G p1 S
-G p1 m 79.60 173.77
-G p1 l 229.76 173.77
+G p1 m 79.60 143.58
+G p1 l 229.76 143.58
 G p1 S
-G p1 m 229.76 173.77
-G p1 l 302.20 173.77
+G p1 m 229.76 143.58
+G p1 l 302.20 143.58
 G p1 S
-G p1 m 302.20 173.77
-G p1 l 401.96 173.77
+G p1 m 302.20 143.58
+G p1 l 401.96 143.58
 G p1 S
-G p1 m 401.96 173.77
-G p1 l 475.44 173.77
+G p1 m 401.96 143.58
+G p1 l 475.44 143.58
 G p1 S
-G p1 m 475.44 173.77
-G p1 l 538.58 173.77
+G p1 m 475.44 143.58
+G p1 l 538.58 143.58
 G p1 S
-G p1 m 56.69 83.97
-G p1 l 79.60 83.97
-G p1 S
-G p1 m 79.60 83.97
-G p1 l 229.76 83.97
-G p1 S
-G p1 m 229.76 83.97
-G p1 l 302.20 83.97
-G p1 S
-G p1 m 302.20 83.97
-G p1 l 401.96 83.97
-G p1 S
-G p1 m 401.96 83.97
-G p1 l 475.44 83.97
-G p1 S
-G p1 m 475.44 83.97
-G p1 l 538.58 83.97
-G p1 S
+G p1 sc 0.60 0.64 0.70
 G p1 sc 0.83 0.83 0.83
 page 2 595.3x841.9
+G p2 sc 0.60 0.64 0.70
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 769.77
-G p2 l 79.60 769.77
+G p2 m 56.69 768.74
+G p2 l 79.60 768.74
 G p2 S
 G p2 sc 0.40 0.44 0.52
-G p2 m 79.60 769.77
-G p2 l 229.76 769.77
+G p2 m 79.60 768.74
+G p2 l 229.76 768.74
 G p2 S
-G p2 m 229.76 769.77
-G p2 l 302.20 769.77
+G p2 m 229.76 768.74
+G p2 l 302.20 768.74
 G p2 S
-G p2 m 302.20 769.77
-G p2 l 401.96 769.77
+G p2 m 302.20 768.74
+G p2 l 401.96 768.74
 G p2 S
-G p2 m 401.96 769.77
-G p2 l 475.44 769.77
+G p2 m 401.96 768.74
+G p2 l 475.44 768.74
 G p2 S
-G p2 m 475.44 769.77
-G p2 l 538.58 769.77
+G p2 m 475.44 768.74
+G p2 l 538.58 768.74
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 691.62
-G p2 l 79.60 691.62
+G p2 m 56.69 669.09
+G p2 l 79.60 669.09
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 79.60 691.62
-G p2 l 229.76 691.62
+G p2 m 79.60 669.09
+G p2 l 229.76 669.09
 G p2 S
-G p2 m 229.76 691.62
-G p2 l 302.20 691.62
+G p2 m 229.76 669.09
+G p2 l 302.20 669.09
 G p2 S
-G p2 m 302.20 691.62
-G p2 l 401.96 691.62
+G p2 m 302.20 669.09
+G p2 l 401.96 669.09
 G p2 S
-G p2 m 401.96 691.62
-G p2 l 475.44 691.62
+G p2 m 401.96 669.09
+G p2 l 475.44 669.09
 G p2 S
-G p2 m 475.44 691.62
-G p2 l 538.58 691.62
+G p2 m 475.44 669.09
+G p2 l 538.58 669.09
+G p2 S
+G p2 m 56.69 596.24
+G p2 l 79.60 596.24
+G p2 S
+G p2 m 79.60 596.24
+G p2 l 229.76 596.24
+G p2 S
+G p2 m 229.76 596.24
+G p2 l 302.20 596.24
+G p2 S
+G p2 m 302.20 596.24
+G p2 l 401.96 596.24
+G p2 S
+G p2 m 401.96 596.24
+G p2 l 475.44 596.24
+G p2 S
+G p2 m 475.44 596.24
+G p2 l 538.58 596.24
 G p2 S
 G p2 SC 0.50 0.50 0.50
 G p2 w 2.00
-G p2 m 57.69 691.37
-G p2 l 57.69 627.87
+G p2 m 57.69 595.99
+G p2 l 57.69 525.63
 G p2 S
 G p2 sc 0.40 0.44 0.52
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 587.93
-G p2 l 183.48 587.93
+G p2 m 56.69 483.56
+G p2 l 183.48 483.56
 G p2 S
-G p2 m 183.48 587.93
-G p2 l 268.00 587.93
+G p2 m 183.48 483.56
+G p2 l 268.00 483.56
 G p2 S
-G p2 m 268.00 587.93
-G p2 l 307.56 587.93
+G p2 m 268.00 483.56
+G p2 l 307.56 483.56
 G p2 S
-G p2 m 307.56 587.93
-G p2 l 380.72 587.93
+G p2 m 307.56 483.56
+G p2 l 380.72 483.56
 G p2 S
-G p2 m 380.72 587.93
-G p2 l 471.02 587.93
+G p2 m 380.72 483.56
+G p2 l 471.02 483.56
 G p2 S
-G p2 m 471.02 587.93
-G p2 l 538.58 587.93
+G p2 m 471.02 483.56
+G p2 l 538.58 483.56
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 569.62
-G p2 l 183.48 569.62
+G p2 m 56.69 463.54
+G p2 l 183.48 463.54
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 183.48 569.62
-G p2 l 268.00 569.62
+G p2 m 183.48 463.54
+G p2 l 268.00 463.54
 G p2 S
-G p2 m 268.00 569.62
-G p2 l 307.56 569.62
+G p2 m 268.00 463.54
+G p2 l 307.56 463.54
 G p2 S
-G p2 m 307.56 569.62
-G p2 l 380.72 569.62
+G p2 m 307.56 463.54
+G p2 l 380.72 463.54
 G p2 S
-G p2 m 380.72 569.62
-G p2 l 471.02 569.62
+G p2 m 380.72 463.54
+G p2 l 471.02 463.54
 G p2 S
-G p2 m 471.02 569.62
-G p2 l 538.58 569.62
+G p2 m 471.02 463.54
+G p2 l 538.58 463.54
 G p2 S
-G p2 m 56.69 551.56
-G p2 l 183.48 551.56
+G p2 m 56.69 443.76
+G p2 l 183.48 443.76
 G p2 S
-G p2 m 183.48 551.56
-G p2 l 268.00 551.56
+G p2 m 183.48 443.76
+G p2 l 268.00 443.76
 G p2 S
-G p2 m 268.00 551.56
-G p2 l 307.56 551.56
+G p2 m 268.00 443.76
+G p2 l 307.56 443.76
 G p2 S
-G p2 m 307.56 551.56
-G p2 l 380.72 551.56
+G p2 m 307.56 443.76
+G p2 l 380.72 443.76
 G p2 S
-G p2 m 380.72 551.56
-G p2 l 471.02 551.56
+G p2 m 380.72 443.76
+G p2 l 471.02 443.76
 G p2 S
-G p2 m 471.02 551.56
-G p2 l 538.58 551.56
+G p2 m 471.02 443.76
+G p2 l 538.58 443.76
 G p2 S
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 535.88
-G p2 l 177.85 535.88
+G p2 m 56.69 427.06
+G p2 l 177.85 427.06
 G p2 S
 G p2 sc 0.40 0.44 0.52
-G p2 m 177.85 535.88
-G p2 l 264.80 535.88
+G p2 m 177.85 427.06
+G p2 l 264.80 427.06
 G p2 S
-G p2 m 264.80 535.88
-G p2 l 306.34 535.88
+G p2 m 264.80 427.06
+G p2 l 306.34 427.06
 G p2 S
-G p2 m 306.34 535.88
-G p2 l 381.48 535.88
+G p2 m 306.34 427.06
+G p2 l 381.48 427.06
 G p2 S
-G p2 m 381.48 535.88
-G p2 l 474.64 535.88
+G p2 m 381.48 427.06
+G p2 l 474.64 427.06
 G p2 S
-G p2 m 474.64 535.88
-G p2 l 538.58 535.88
+G p2 m 474.64 427.06
+G p2 l 538.58 427.06
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 517.57
-G p2 l 177.85 517.57
+G p2 m 56.69 407.04
+G p2 l 177.85 407.04
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 177.85 517.57
-G p2 l 264.80 517.57
+G p2 m 177.85 407.04
+G p2 l 264.80 407.04
 G p2 S
-G p2 m 264.80 517.57
-G p2 l 306.34 517.57
+G p2 m 264.80 407.04
+G p2 l 306.34 407.04
 G p2 S
-G p2 m 306.34 517.57
-G p2 l 381.48 517.57
+G p2 m 306.34 407.04
+G p2 l 381.48 407.04
 G p2 S
-G p2 m 381.48 517.57
-G p2 l 474.64 517.57
+G p2 m 381.48 407.04
+G p2 l 474.64 407.04
 G p2 S
-G p2 m 474.64 517.57
-G p2 l 538.58 517.57
+G p2 m 474.64 407.04
+G p2 l 538.58 407.04
 G p2 S
 G p2 sc 0.40 0.44 0.52
 G p2 SC 0.11 0.14 0.20
 G p2 w 1.00
-G p2 m 56.69 472.45
-G p2 l 129.59 472.45
+G p2 m 56.69 368.72
+G p2 l 129.59 368.72
 G p2 S
-G p2 m 129.59 472.45
-G p2 l 204.02 472.45
+G p2 m 129.59 368.72
+G p2 l 204.02 368.72
 G p2 S
-G p2 m 204.02 472.45
-G p2 l 259.53 472.45
+G p2 m 204.02 368.72
+G p2 l 259.53 368.72
 G p2 S
-G p2 m 259.53 472.45
-G p2 l 322.19 472.45
+G p2 m 259.53 368.72
+G p2 l 322.19 368.72
 G p2 S
 G p2 SC 0.89 0.91 0.93
 G p2 w 0.50
-G p2 m 56.69 454.14
-G p2 l 129.59 454.14
+G p2 m 56.69 348.70
+G p2 l 129.59 348.70
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 129.59 454.14
-G p2 l 204.02 454.14
+G p2 m 129.59 348.70
+G p2 l 204.02 348.70
 G p2 S
-G p2 m 204.02 454.14
-G p2 l 259.53 454.14
+G p2 m 204.02 348.70
+G p2 l 259.53 348.70
 G p2 S
-G p2 m 259.53 454.14
-G p2 l 322.19 454.14
+G p2 m 259.53 348.70
+G p2 l 322.19 348.70
 G p2 S
-G p2 m 56.69 436.08
-G p2 l 129.59 436.08
+G p2 m 56.69 328.93
+G p2 l 129.59 328.93
 G p2 S
-G p2 m 129.59 436.08
-G p2 l 204.02 436.08
+G p2 m 129.59 328.93
+G p2 l 204.02 328.93
 G p2 S
-G p2 m 204.02 436.08
-G p2 l 259.53 436.08
+G p2 m 204.02 328.93
+G p2 l 259.53 328.93
 G p2 S
-G p2 m 259.53 436.08
-G p2 l 322.19 436.08
+G p2 m 259.53 328.93
+G p2 l 322.19 328.93
 G p2 S
 G p2 sc 0.96 0.97 0.98
-G p2 re 336.19 316.42 202.39 200.90
+G p2 re 336.19 186.03 202.39 220.76
 G p2 f
-G p2 m 344.19 479.95
-G p2 l 465.33 479.95
+G p2 m 344.19 366.00
+G p2 l 465.33 366.00
 G p2 S
 G p2 sc 0.00 0.00 0.00
-G p2 m 465.33 479.95
-G p2 l 530.58 479.95
+G p2 m 465.33 366.00
+G p2 l 530.58 366.00
 G p2 S
-G p2 m 344.19 450.33
-G p2 l 465.33 450.33
+G p2 m 344.19 332.95
+G p2 l 465.33 332.95
 G p2 S
-G p2 m 465.33 450.33
-G p2 l 530.58 450.33
+G p2 m 465.33 332.95
+G p2 l 530.58 332.95
 G p2 S
-G p2 m 344.19 420.71
-G p2 l 465.33 420.71
+G p2 m 344.19 299.91
+G p2 l 465.33 299.91
 G p2 S
-G p2 m 465.33 420.71
-G p2 l 530.58 420.71
+G p2 m 465.33 299.91
+G p2 l 530.58 299.91
 G p2 S
-G p2 m 344.19 391.09
-G p2 l 465.33 391.09
+G p2 m 344.19 266.87
+G p2 l 465.33 266.87
 G p2 S
-G p2 m 465.33 391.09
-G p2 l 530.58 391.09
+G p2 m 465.33 266.87
+G p2 l 530.58 266.87
 G p2 S
-G p2 m 344.19 373.03
-G p2 l 465.33 373.03
+G p2 m 344.19 247.10
+G p2 l 465.33 247.10
 G p2 S
-G p2 m 465.33 373.03
-G p2 l 530.58 373.03
+G p2 m 465.33 247.10
+G p2 l 530.58 247.10
 G p2 S
-G p2 m 344.19 342.73
-G p2 l 465.33 342.73
+G p2 m 344.19 214.05
+G p2 l 465.33 214.05
 G p2 S
-G p2 m 465.33 342.73
-G p2 l 530.58 342.73
+G p2 m 465.33 214.05
+G p2 l 530.58 214.05
 G p2 S
-G p2 m 344.19 324.67
-G p2 l 465.33 324.67
+G p2 m 344.19 194.28
+G p2 l 465.33 194.28
 G p2 S
-G p2 m 465.33 324.67
-G p2 l 530.58 324.67
+G p2 m 465.33 194.28
+G p2 l 530.58 194.28
 G p2 S
 G p2 sc 0.14 0.36 0.39
-G p2 re 336.19 278.02 202.39 34.40
+G p2 re 336.19 146.26 202.39 35.77
 G p2 f
-G p2 m 344.19 286.27
-G p2 l 434.29 286.27
+G p2 m 344.19 154.51
+G p2 l 434.29 154.51
 G p2 S
 G p2 sc 1.00 1.00 1.00
-G p2 m 434.29 286.27
-G p2 l 530.58 286.27
+G p2 m 434.29 154.51
+G p2 l 530.58 154.51
 G p2 S
 G p2 sc 0.40 0.44 0.52
 G p2 sc 0.00 0.00 0.00
 G p2 sc 0.40 0.44 0.52
+G p2 sc 0.60 0.64 0.70
 G p2 sc 0.83 0.83 0.83
-T p1 56.7 66.8 8.0 Helvetica-Bold Invoice
-T p1 56.7 92.2 18.0 Helvetica-Bold 471102
-T p1 59.7 112.8 10.0 Helvetica Invoice issue date
-T p1 282.8 112.8 10.0 Helvetica February 11, 2026
-T p1 59.7 130.8 10.0 Helvetica Invoice currency code
-T p1 282.8 130.8 10.0 Helvetica EUR
-T p1 59.7 148.9 10.0 Helvetica Invoice type code
-T p1 282.8 148.9 10.0 Helvetica 380 — Commercial invoice
-T p1 56.7 175.8 7.0 Helvetica-Bold Seller
-T p1 56.7 192.9 11.0 Helvetica-Bold Lieferant GmbH
-T p1 56.7 208.5 10.0 Helvetica Lieferantenstraße 20
-T p1 56.7 220.0 10.0 Helvetica 80333 München
-T p1 56.7 231.6 10.0 Helvetica Germany
-T p1 56.7 245.4 8.0 Helvetica Seller identifier: 0088:4000001123452, 549910
-T p1 56.7 255.3 8.0 Helvetica Seller VAT identifier: DE136695976
-T p1 56.7 265.1 8.0 Helvetica Seller tax registration identifier: 201/113/40209 (FC)
-T p1 297.6 175.8 7.0 Helvetica-Bold Buyer
-T p1 297.6 192.9 11.0 Helvetica-Bold Kunden AG Mitte
-T p1 297.6 208.5 10.0 Helvetica Kundenstraße 15
-T p1 297.6 220.0 10.0 Helvetica 69876 Frankfurt
-T p1 297.6 231.6 10.0 Helvetica Germany
-T p1 297.6 245.4 8.0 Helvetica Buyer identifier: GE2020211
-T p1 56.7 291.8 7.0 Helvetica-Bold Delivery
-T p1 56.7 305.6 8.0 Helvetica Actual delivery date: February 8, 2026
-T p1 56.7 331.1 8.0 Helvetica-Bold REFERENCES
-T p1 56.7 345.7 10.0 Helvetica •
-T p1 66.7 346.0 10.0 Helvetica-Bold Purchase order reference: 2025-471331
-T p1 56.7 371.5 8.0 Helvetica-Bold NOTES
-T p1 56.7 386.1 10.0 Helvetica Rechnung gemäß Bestellung Nr. 2025-471331 vom 30.01.2026.
-T p1 56.7 401.6 10.0 Helvetica-Oblique [Price conditions] Es bestehen Rabatt- und Bonusvereinbarungen.
-T p1 56.7 417.2 10.0 Helvetica-Oblique [Regulatory information] Geschäftsführer: Hans Muster
-T p1 56.7 432.8 10.0 Helvetica-Oblique [Regulatory information] Handelsregisternummer: H A 123
-T p1 56.7 448.3 10.0 Helvetica-Oblique [Additional information] ZUGFeRD vers 2.5.0 EN16931 (Comfort)
-T p1 56.7 469.8 8.0 Helvetica-Bold INVOICE LINES
-T p1 72.4 484.8 7.0 Helvetica-Bold #
-T p1 82.6 484.8 7.0 Helvetica-Bold DESCRIPTION
-T p1 283.8 484.8 7.0 Helvetica-Bold QTY
-T p1 356.5 484.8 7.0 Helvetica-Bold UNIT PRICE
-T p1 457.4 484.8 7.0 Helvetica-Bold VAT
-T p1 491.4 484.8 7.0 Helvetica-Bold LINE TOTAL
-T p1 71.0 503.3 10.0 Helvetica 1
-T p1 82.6 503.7 10.0 Helvetica-Bold Kunstrasen grün 3m breit
-T p1 82.6 515.6 10.0 Helvetica 300cm x 100 cm
-T p1 82.6 527.5 10.0 Helvetica-Oblique Item seller's identifier: KR3M
-T p1 82.6 539.4 10.0 Helvetica-Oblique Item buyer's identifier: SE_KR
-T p1 82.6 551.3 10.0 Helvetica-Oblique Item standard identifier:
-T p1 82.6 563.2 10.0 Helvetica-Oblique 0160:4012345001235
-T p1 268.6 503.3 10.0 Helvetica 3.0000
-T p1 240.3 514.9 10.0 Helvetica square metre
-T p1 360.0 503.3 10.0 Helvetica € 3.3333
-T p1 325.1 514.9 10.0 Helvetica-Oblique Item gross price:
-T p1 371.2 526.4 10.0 Helvetica-Oblique € 4.00
-T p1 312.3 538.0 10.0 Helvetica-Oblique Item price discount:
-T p1 360.0 549.6 10.0 Helvetica-Oblique € 0.6667
-T p1 411.9 503.3 10.0 Helvetica Standard rate
-T p1 438.5 514.9 10.0 Helvetica 19.00%
-T p1 502.2 503.3 10.0 Helvetica € 10.00
-T p1 71.0 581.2 10.0 Helvetica 2
-T p1 82.6 581.6 10.0 Helvetica-Bold Schweinesteak
-T p1 82.6 593.5 10.0 Helvetica Schweinesteak aus
-T p1 82.6 605.4 10.0 Helvetica Deutschland
-T p1 82.6 617.3 10.0 Helvetica-Oblique Item seller's identifier: SFK5
-T p1 82.6 629.2 10.0 Helvetica-Oblique Item buyer's identifier:
-T p1 82.6 641.1 10.0 Helvetica-Oblique SE_SFK5
-T p1 82.6 653.0 10.0 Helvetica-Oblique Item standard identifier:
-T p1 82.6 664.9 10.0 Helvetica-Oblique 0160:4000050986428
-T p1 268.6 581.2 10.0 Helvetica 1.0000
-T p1 261.4 592.8 10.0 Helvetica kilogram
-T p1 371.2 581.2 10.0 Helvetica € 5.50
-T p1 325.1 592.8 10.0 Helvetica-Oblique Item gross price:
-T p1 371.2 604.3 10.0 Helvetica-Oblique € 5.50
-T p1 411.9 581.2 10.0 Helvetica Standard rate
-T p1 444.1 592.8 10.0 Helvetica 7.00%
-T p1 507.8 581.2 10.0 Helvetica € 5.50
-T p1 71.0 682.9 10.0 Helvetica 3
-T p1 82.6 683.3 10.0 Helvetica-Bold Mineralwasser Medium 12 x
-T p1 82.6 695.2 10.0 Helvetica-Bold 1,0l PET
-T p1 82.6 707.1 10.0 Helvetica-Oblique Item seller's identifier: GTRWA5
-T p1 82.6 719.0 10.0 Helvetica-Oblique Item buyer's identifier:
-T p1 82.6 730.9 10.0 Helvetica-Oblique SE_GTRWA5
-T p1 82.6 742.8 10.0 Helvetica-Oblique Item standard identifier:
-T p1 82.6 754.7 10.0 Helvetica-Oblique 0160:4000001234561
-T p1 236.4 682.9 10.0 Helvetica 20.0000 piece
-T p1 371.2 682.9 10.0 Helvetica € 5.49
-T p1 325.1 694.5 10.0 Helvetica-Oblique Item gross price:
-T p1 371.2 706.0 10.0 Helvetica-Oblique € 5.49
-T p1 411.9 682.9 10.0 Helvetica Standard rate
-T p1 444.1 694.5 10.0 Helvetica 7.00%
-T p1 496.7 682.9 10.0 Helvetica € 109.80
-T p1 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
-T p2 72.4 68.6 7.0 Helvetica-Bold #
-T p2 82.6 68.6 7.0 Helvetica-Bold DESCRIPTION
-T p2 283.8 68.6 7.0 Helvetica-Bold QTY
-T p2 356.5 68.6 7.0 Helvetica-Bold UNIT PRICE
-T p2 457.4 68.6 7.0 Helvetica-Bold VAT
-T p2 491.4 68.6 7.0 Helvetica-Bold LINE TOTAL
-T p2 71.0 87.2 10.0 Helvetica 4
-T p2 82.6 87.5 10.0 Helvetica-Bold Pfand
-T p2 82.6 99.4 10.0 Helvetica-Oblique Item seller's identifier: PFA5
-T p2 82.6 111.3 10.0 Helvetica-Oblique Item buyer's identifier:
-T p2 82.6 123.2 10.0 Helvetica-Oblique SE_PFA5
-T p2 82.6 135.1 10.0 Helvetica-Oblique Item standard identifier:
-T p2 82.6 147.0 10.0 Helvetica-Oblique 0160:4000001234578
-T p2 236.4 87.2 10.0 Helvetica 20.0000 piece
-T p2 371.2 87.2 10.0 Helvetica € 2.77
-T p2 325.1 98.7 10.0 Helvetica-Oblique Item gross price:
-T p2 371.2 110.3 10.0 Helvetica-Oblique € 2.77
-T p2 411.9 87.2 10.0 Helvetica Standard rate
-T p2 438.5 98.7 10.0 Helvetica 19.00%
-T p2 502.2 87.2 10.0 Helvetica € 55.40
-T p2 64.7 162.4 10.0 Helvetica-Bold Invoice line identifier 1 — Invoice line note: Wir erlauben uns Ihnen folgende Positionen aus der
-T p2 64.7 174.3 10.0 Helvetica Lieferung Nr. 2025-51112 in Rechnung zu stellen:
-T p2 64.7 186.2 10.0 Helvetica-Bold Invoice line identifier 2 — Invoice line note: Bestellt wurden 5 kg Schweinesteak. Mit dieser Rechnung
-T p2 64.7 198.1 10.0 Helvetica werden nur die bereits gelieferten Steaks berechnet. Die noch offenen 4 kg Schweinesteak werden
-T p2 64.7 210.0 10.0 Helvetica separat geliefert und berechnet.
-T p2 56.7 235.5 8.0 Helvetica-Bold ALLOWANCES AND CHARGES
-T p2 59.7 250.5 7.0 Helvetica-Bold REASON
-T p2 209.2 250.5 7.0 Helvetica-Bold BASE AMOUNT
-T p2 297.9 250.5 7.0 Helvetica-Bold %
-T p2 344.8 250.5 7.0 Helvetica-Bold AMOUNT
-T p2 383.7 250.5 7.0 Helvetica-Bold VAT CATEGORY
-T p2 498.1 250.5 7.0 Helvetica-Bold VAT RATE
-T p2 59.7 269.0 10.0 Helvetica Sondernachlass
-T p2 231.6 269.0 10.0 Helvetica € 10.00
-T p2 346.6 269.0 10.0 Helvetica -€ 1.00
-T p2 383.7 269.0 10.0 Helvetica Standard rate
-T p2 501.7 269.0 10.0 Helvetica 19.00%
-T p2 59.7 287.1 10.0 Helvetica Sondernachlass
-T p2 226.1 287.1 10.0 Helvetica € 115.30
-T p2 346.6 287.1 10.0 Helvetica -€ 8.07
-T p2 383.7 287.1 10.0 Helvetica Standard rate
-T p2 507.2 287.1 10.0 Helvetica 7.00%
-T p2 59.7 302.5 7.0 Helvetica-Bold REASON
-T p2 206.0 302.5 7.0 Helvetica-Bold BASE AMOUNT
-T p2 296.7 302.5 7.0 Helvetica-Bold %
-T p2 345.6 302.5 7.0 Helvetica-Bold AMOUNT
-T p2 384.5 302.5 7.0 Helvetica-Bold VAT CATEGORY
-T p2 498.1 302.5 7.0 Helvetica-Bold VAT RATE
-T p2 59.7 321.1 10.0 Helvetica Versandkosten
-T p2 222.9 321.1 10.0 Helvetica € 115.30
-T p2 344.8 321.1 10.0 Helvetica +€ 5.80
-T p2 384.5 321.1 10.0 Helvetica Standard rate
-T p2 507.2 321.1 10.0 Helvetica 7.00%
-T p2 56.7 342.1 8.0 Helvetica-Bold VAT BREAKDOWN
-T p2 59.7 357.0 7.0 Helvetica-Bold VAT CATEGORY
-T p2 165.6 357.0 7.0 Helvetica-Bold TAXABLE
-T p2 168.1 365.9 7.0 Helvetica-Bold AMOUNT
-T p2 219.0 357.0 7.0 Helvetica-Bold VAT RATE
-T p2 269.2 357.0 7.0 Helvetica-Bold VAT AMOUNT
-T p2 59.7 384.5 10.0 Helvetica Standard rate
-T p2 162.1 384.5 10.0 Helvetica € 113.03
-T p2 228.2 384.5 10.0 Helvetica 7.00%
-T p2 291.4 384.5 10.0 Helvetica € 7.91
-T p2 59.7 402.6 10.0 Helvetica Standard rate
-T p2 167.7 402.6 10.0 Helvetica € 64.40
-T p2 222.6 402.6 10.0 Helvetica 19.00%
-T p2 285.8 402.6 10.0 Helvetica € 12.24
-T p2 347.2 347.1 10.0 Helvetica Sum of invoice line net
-T p2 347.2 358.7 10.0 Helvetica amounts
-T p2 488.7 347.1 10.0 Helvetica € 180.70
-T p2 347.2 376.7 10.0 Helvetica Sum of allowances on
-T p2 347.2 388.3 10.0 Helvetica document level
-T p2 496.5 376.7 10.0 Helvetica -€ 9.07
-T p2 347.2 406.4 10.0 Helvetica Sum of charges and
-T p2 347.2 417.9 10.0 Helvetica taxes on document level
-T p2 493.9 406.4 10.0 Helvetica +€ 5.80
-T p2 347.2 436.0 10.0 Helvetica Invoice total amount
-T p2 347.2 447.5 10.0 Helvetica without VAT
-T p2 488.7 436.0 10.0 Helvetica € 177.43
-T p2 347.2 465.6 10.0 Helvetica Invoice total VAT amount
-T p2 494.2 465.6 10.0 Helvetica € 20.15
-T p2 347.2 484.0 10.0 Helvetica-Bold Invoice total amount
-T p2 347.2 495.9 10.0 Helvetica-Bold with VAT
-T p2 488.7 484.0 10.0 Helvetica-Bold € 197.58
-T p2 347.2 514.0 10.0 Helvetica Paid amount
-T p2 490.9 514.0 10.0 Helvetica -€ 50.00
-T p2 347.2 552.4 10.0 Helvetica-Bold Amount due
-T p2 488.7 552.4 10.0 Helvetica-Bold € 147.58
-T p2 56.7 589.4 8.0 Helvetica-Bold PAYMENT TERMS
-T p2 56.7 603.9 10.0 Helvetica Zahlbar innerhalb 30 Tagen netto bis 11.03.2026, 3% Skonto innerhalb 10 Tagen bis 21.02.2026
-T p2 56.7 616.6 7.0 Helvetica Specification identifier: urn:cen.eu:en16931:2017
-T p2 363.5 796.1 6.0 Helvetica Generated by phlox · open-source edition · github.com/phax/phlox
+T p1 56.7 68.0 8.0 Roboto-Bold Invoice
+T p1 56.7 95.9 18.0 Roboto-Bold 471102
+T p1 59.7 118.1 10.0 Roboto-Regular Invoice issue date
+T p1 282.8 118.1 10.0 Roboto-Regular February 11, 2026
+T p1 59.7 137.9 10.0 Roboto-Regular Invoice currency code
+T p1 282.8 137.9 10.0 Roboto-Regular EUR
+T p1 59.7 157.7 10.0 Roboto-Regular Invoice type code
+T p1 282.8 157.7 10.0 Roboto-Regular 380 — Commercial invoice
+T p1 56.7 185.6 7.0 Roboto-Bold Seller
+T p1 56.7 204.2 11.0 Roboto-Bold Lieferant GmbH
+T p1 56.7 221.5 10.0 Roboto-Regular Lieferantenstraße 20
+T p1 56.7 234.8 10.0 Roboto-Regular 80333 München
+T p1 56.7 248.0 10.0 Roboto-Regular Germany
+T p1 56.7 263.3 8.0 Roboto-Regular Seller identifier: 0088:4000001123452, 549910
+T p1 56.7 274.6 8.0 Roboto-Regular Seller VAT identifier: DE136695976
+T p1 56.7 285.9 8.0 Roboto-Regular Seller tax registration identifier: 201/113/40209 (FC)
+T p1 297.6 185.6 7.0 Roboto-Bold Buyer
+T p1 297.6 204.2 11.0 Roboto-Bold Kunden AG Mitte
+T p1 297.6 221.5 10.0 Roboto-Regular Kundenstraße 15
+T p1 297.6 234.8 10.0 Roboto-Regular 69876 Frankfurt
+T p1 297.6 248.0 10.0 Roboto-Regular Germany
+T p1 297.6 263.3 8.0 Roboto-Regular Buyer identifier: GE2020211
+T p1 56.7 313.6 7.0 Roboto-Bold Delivery
+T p1 56.7 328.9 8.0 Roboto-Regular Actual delivery date: February 8, 2026
+T p1 56.7 355.5 8.0 Roboto-Bold REFERENCES
+T p1 56.7 371.8 10.0 Roboto-Regular •
+T p1 66.7 371.8 10.0 Roboto-Bold Purchase order reference: 2025-471331
+T p1 56.7 398.4 8.0 Roboto-Bold NOTES
+T p1 56.7 414.6 10.0 Roboto-Regular Rechnung gemäß Bestellung Nr. 2025-471331 vom 30.01.2026.
+T p1 56.7 431.9 10.0 Roboto-Italic [Price conditions] Es bestehen Rabatt- und Bonusvereinbarungen.
+T p1 56.7 449.2 10.0 Roboto-Italic [Regulatory information] Geschäftsführer: Hans Muster
+T p1 56.7 466.5 10.0 Roboto-Italic [Regulatory information] Handelsregisternummer: H A 123
+T p1 56.7 483.7 10.0 Roboto-Italic [Additional information] ZUGFeRD vers 2.5.0 EN16931 (Comfort)
+T p1 56.7 506.4 8.0 Roboto-Bold INVOICE LINES
+T p1 72.1 522.3 7.0 Roboto-Bold #
+T p1 82.6 522.3 7.0 Roboto-Bold DESCRIPTION
+T p1 284.8 522.3 7.0 Roboto-Bold QTY
+T p1 359.1 522.3 7.0 Roboto-Bold UNIT PRICE
+T p1 457.8 522.3 7.0 Roboto-Bold VAT
+T p1 494.4 522.3 7.0 Roboto-Bold LINE TOTAL
+T p1 71.0 542.6 10.0 Roboto-Regular 1
+T p1 82.6 542.6 10.0 Roboto-Bold Kunstrasen grün 3m breit
+T p1 82.6 555.8 10.0 Roboto-Regular 300cm x 100 cm
+T p1 82.6 569.1 10.0 Roboto-Italic Item seller's identifier: KR3M
+T p1 82.6 582.4 10.0 Roboto-Italic Item buyer's identifier: SE_KR
+T p1 82.6 595.7 10.0 Roboto-Italic Item standard identifier:
+T p1 82.6 608.9 10.0 Roboto-Italic 0160:4012345001235
+T p1 235.5 542.6 10.0 Roboto-Regular 3.0000 square
+T p1 273.2 555.8 10.0 Roboto-Regular metre
+T p1 360.1 542.6 10.0 Roboto-Regular € 3.3333
+T p1 326.0 555.8 10.0 Roboto-Italic Item gross price:
+T p1 371.9 569.1 10.0 Roboto-Italic € 4.00
+T p1 312.8 582.4 10.0 Roboto-Italic Item price discount:
+T p1 360.9 595.7 10.0 Roboto-Italic € 0.6667
+T p1 412.3 542.6 10.0 Roboto-Regular Standard rate
+T p1 440.0 555.8 10.0 Roboto-Regular 19.00%
+T p1 502.4 542.6 10.0 Roboto-Regular € 10.00
+T p1 71.0 628.7 10.0 Roboto-Regular 2
+T p1 82.6 628.7 10.0 Roboto-Bold Schweinesteak
+T p1 82.6 642.0 10.0 Roboto-Regular Schweinesteak aus Deutschland
+T p1 82.6 655.2 10.0 Roboto-Italic Item seller's identifier: SFK5
+T p1 82.6 668.5 10.0 Roboto-Italic Item buyer's identifier: SE_SFK5
+T p1 82.6 681.8 10.0 Roboto-Italic Item standard identifier:
+T p1 82.6 695.1 10.0 Roboto-Italic 0160:4000050986428
+T p1 268.5 628.7 10.0 Roboto-Regular 1.0000
+T p1 260.4 642.0 10.0 Roboto-Regular kilogram
+T p1 371.4 628.7 10.0 Roboto-Regular € 5.50
+T p1 326.0 642.0 10.0 Roboto-Italic Item gross price:
+T p1 371.9 655.2 10.0 Roboto-Italic € 5.50
+T p1 412.3 628.7 10.0 Roboto-Regular Standard rate
+T p1 445.6 642.0 10.0 Roboto-Regular 7.00%
+T p1 508.0 628.7 10.0 Roboto-Regular € 5.50
+T p1 56.7 799.2 7.0 Roboto-Regular 471102 · Page 1 of 2
+T p1 362.9 815.1 6.0 Roboto-Regular Generated by phlox · open-source edition · github.com/phax/phlox
+T p2 56.7 38.3 7.0 Roboto-Regular Lieferant GmbH · Invoice 471102
+T p2 72.1 69.6 7.0 Roboto-Bold #
+T p2 82.6 69.6 7.0 Roboto-Bold DESCRIPTION
+T p2 284.8 69.6 7.0 Roboto-Bold QTY
+T p2 359.1 69.6 7.0 Roboto-Bold UNIT PRICE
+T p2 457.8 69.6 7.0 Roboto-Bold VAT
+T p2 494.4 69.6 7.0 Roboto-Bold LINE TOTAL
+T p2 71.0 89.9 10.0 Roboto-Regular 3
+T p2 82.6 89.9 10.0 Roboto-Bold Mineralwasser Medium 12 x
+T p2 82.6 103.2 10.0 Roboto-Bold 1,0l PET
+T p2 82.6 116.5 10.0 Roboto-Italic Item seller's identifier: GTRWA5
+T p2 82.6 129.7 10.0 Roboto-Italic Item buyer's identifier:
+T p2 82.6 143.0 10.0 Roboto-Italic SE_GTRWA5
+T p2 82.6 156.3 10.0 Roboto-Italic Item standard identifier:
+T p2 82.6 169.5 10.0 Roboto-Italic 0160:4000001234561
+T p2 236.5 89.9 10.0 Roboto-Regular 20.0000 piece
+T p2 371.4 89.9 10.0 Roboto-Regular € 5.49
+T p2 326.0 103.2 10.0 Roboto-Italic Item gross price:
+T p2 371.9 116.5 10.0 Roboto-Italic € 5.49
+T p2 412.3 89.9 10.0 Roboto-Regular Standard rate
+T p2 445.6 103.2 10.0 Roboto-Regular 7.00%
+T p2 496.8 89.9 10.0 Roboto-Regular € 109.80
+T p2 71.0 189.3 10.0 Roboto-Regular 4
+T p2 82.6 189.3 10.0 Roboto-Bold Pfand
+T p2 82.6 202.6 10.0 Roboto-Italic Item seller's identifier: PFA5
+T p2 82.6 215.9 10.0 Roboto-Italic Item buyer's identifier: SE_PFA5
+T p2 82.6 229.1 10.0 Roboto-Italic Item standard identifier:
+T p2 82.6 242.4 10.0 Roboto-Italic 0160:4000001234578
+T p2 236.5 189.3 10.0 Roboto-Regular 20.0000 piece
+T p2 371.4 189.3 10.0 Roboto-Regular € 2.77
+T p2 326.0 202.6 10.0 Roboto-Italic Item gross price:
+T p2 371.9 215.9 10.0 Roboto-Italic € 2.77
+T p2 412.3 189.3 10.0 Roboto-Regular Standard rate
+T p2 440.0 202.6 10.0 Roboto-Regular 19.00%
+T p2 502.4 189.3 10.0 Roboto-Regular € 55.40
+T p2 64.7 259.2 10.0 Roboto-Bold Invoice line identifier 1 — Invoice line note: Wir erlauben uns Ihnen folgende Positionen aus der Lieferung
+T p2 64.7 272.4 10.0 Roboto-Regular Nr. 2025-51112 in Rechnung zu stellen:
+T p2 64.7 285.7 10.0 Roboto-Bold Invoice line identifier 2 — Invoice line note: Bestellt wurden 5 kg Schweinesteak. Mit dieser Rechnung
+T p2 64.7 299.0 10.0 Roboto-Regular werden nur die bereits gelieferten Steaks berechnet. Die noch offenen 4 kg Schweinesteak werden separat
+T p2 64.7 312.3 10.0 Roboto-Regular geliefert und berechnet.
+T p2 56.7 338.9 8.0 Roboto-Bold ALLOWANCES AND CHARGES
+T p2 59.7 354.8 7.0 Roboto-Bold REASON
+T p2 212.8 354.8 7.0 Roboto-Bold BASE AMOUNT
+T p2 299.0 354.8 7.0 Roboto-Bold %
+T p2 346.1 354.8 7.0 Roboto-Bold AMOUNT
+T p2 383.7 354.8 7.0 Roboto-Bold VAT CATEGORY
+T p2 500.4 354.8 7.0 Roboto-Bold VAT RATE
+T p2 59.7 375.1 10.0 Roboto-Regular Sondernachlass
+T p2 231.8 375.1 10.0 Roboto-Regular € 10.00
+T p2 347.4 375.1 10.0 Roboto-Regular -€ 1.00
+T p2 383.7 375.1 10.0 Roboto-Regular Standard rate
+T p2 503.2 375.1 10.0 Roboto-Regular 19.00%
+T p2 59.7 394.9 10.0 Roboto-Regular Sondernachlass
+T p2 226.2 394.9 10.0 Roboto-Regular € 115.30
+T p2 347.4 394.9 10.0 Roboto-Regular -€ 8.07
+T p2 383.7 394.9 10.0 Roboto-Regular Standard rate
+T p2 508.8 394.9 10.0 Roboto-Regular 7.00%
+T p2 59.7 411.3 7.0 Roboto-Bold REASON
+T p2 209.6 411.3 7.0 Roboto-Bold BASE AMOUNT
+T p2 297.8 411.3 7.0 Roboto-Bold %
+T p2 346.8 411.3 7.0 Roboto-Bold AMOUNT
+T p2 384.5 411.3 7.0 Roboto-Bold VAT CATEGORY
+T p2 500.4 411.3 7.0 Roboto-Bold VAT RATE
+T p2 59.7 431.6 10.0 Roboto-Regular Versandkosten
+T p2 223.0 431.6 10.0 Roboto-Regular € 115.30
+T p2 345.2 431.6 10.0 Roboto-Regular +€ 5.80
+T p2 384.5 431.6 10.0 Roboto-Regular Standard rate
+T p2 508.8 431.6 10.0 Roboto-Regular 7.00%
+T p2 56.7 453.7 8.0 Roboto-Bold VAT BREAKDOWN
+T p2 59.7 469.7 7.0 Roboto-Bold VAT CATEGORY
+T p2 134.9 469.7 7.0 Roboto-Bold TAXABLE AMOUNT
+T p2 221.4 469.7 7.0 Roboto-Bold VAT RATE
+T p2 271.1 469.7 7.0 Roboto-Bold VAT AMOUNT
+T p2 59.7 489.9 10.0 Roboto-Regular Standard rate
+T p2 162.2 489.9 10.0 Roboto-Regular € 113.03
+T p2 229.7 489.9 10.0 Roboto-Regular 7.00%
+T p2 291.6 489.9 10.0 Roboto-Regular € 7.91
+T p2 59.7 509.7 10.0 Roboto-Regular Standard rate
+T p2 167.8 509.7 10.0 Roboto-Regular € 64.40
+T p2 224.1 509.7 10.0 Roboto-Regular 19.00%
+T p2 286.0 509.7 10.0 Roboto-Regular € 12.24
+T p2 347.2 459.4 10.0 Roboto-Regular Sum of invoice line net
+T p2 347.2 472.6 10.0 Roboto-Regular amounts
+T p2 488.8 459.4 10.0 Roboto-Regular € 180.70
+T p2 347.2 492.4 10.0 Roboto-Regular Sum of allowances on
+T p2 347.2 505.7 10.0 Roboto-Regular document level
+T p2 497.2 492.4 10.0 Roboto-Regular -€ 9.07
+T p2 347.2 525.5 10.0 Roboto-Regular Sum of charges and
+T p2 347.2 538.7 10.0 Roboto-Regular taxes on document level
+T p2 494.3 525.5 10.0 Roboto-Regular +€ 5.80
+T p2 347.2 558.5 10.0 Roboto-Regular Invoice total amount
+T p2 347.2 571.8 10.0 Roboto-Regular without VAT
+T p2 488.8 558.5 10.0 Roboto-Regular € 177.43
+T p2 347.2 591.5 10.0 Roboto-Regular Invoice total VAT amount
+T p2 494.4 591.5 10.0 Roboto-Regular € 20.15
+T p2 347.2 611.3 10.0 Roboto-Bold Invoice total amount
+T p2 347.2 624.6 10.0 Roboto-Bold with VAT
+T p2 487.7 611.3 10.0 Roboto-Bold € 197.58
+T p2 347.2 644.4 10.0 Roboto-Regular Paid amount
+T p2 491.6 644.4 10.0 Roboto-Regular -€ 50.00
+T p2 347.2 684.1 10.0 Roboto-Bold Amount due
+T p2 487.7 684.1 10.0 Roboto-Bold € 147.58
+T p2 56.7 722.2 8.0 Roboto-Bold PAYMENT TERMS
+T p2 56.7 738.5 10.0 Roboto-Regular Zahlbar innerhalb 30 Tagen netto bis 11.03.2026, 3% Skonto innerhalb 10 Tagen bis 21.02.2026
+T p2 56.7 752.5 7.0 Roboto-Regular Specification identifier: urn:cen.eu:en16931:2017
+T p2 56.7 799.2 7.0 Roboto-Regular 471102 · Page 2 of 2
+T p2 362.9 815.1 6.0 Roboto-Regular Generated by phlox · open-source edition · github.com/phax/phlox

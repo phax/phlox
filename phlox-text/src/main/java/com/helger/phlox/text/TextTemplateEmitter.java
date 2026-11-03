@@ -57,6 +57,8 @@ import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
+import com.helger.phlox.template.ast.PhloxPageMarginNode;
+import com.helger.phlox.template.ast.PhloxPageNumberNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
@@ -67,7 +69,8 @@ import com.helger.phlox.template.ast.PhloxTemplateAst;
  * are laid out in aligned columns, groups and rows are stacked, and paragraphs are wrapped at
  * {@link TextRenderContext#getLineWidth()}. An image is replaced by its alternative text in
  * brackets. The user watermark is the first line and the program watermark the last line of the
- * output. Block classes set with {@code {{class:name}}} have no effect.
+ * output. Block classes set with {@code {{class:name}}} have no effect. Plain text has no pages, so
+ * the page header and footer of the template ({@code {{header}}}, {@code {{footer}}}) are left out.
  * <p>
  * The output may go to a terminal, so all control characters except the line feed and the tab, and
  * the bidirectional embedding, override and isolate controls are removed from every text. They
@@ -622,6 +625,22 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
   {
     // Plain text has no pages - a page break is shown as a rule
     aSink.addLine (_getRule (aSink));
+  }
+
+  @Override
+  protected void visitPageMargin (@NonNull final PhloxTemplateAst aAst,
+                                  @NonNull final PhloxPageMarginNode aPageMargin,
+                                  @NonNull final TextBlockSink aSink)
+  {
+    // Plain text has no pages, so it has no page header or footer
+  }
+
+  @Override
+  protected void visitPageNumber (@NonNull final PhloxTemplateAst aAst,
+                                  @NonNull final PhloxPageNumberNode aPageNumber,
+                                  @NonNull final StringBuilder aTarget)
+  {
+    // Only part of the page header or footer, which plain text does not have
   }
 
   /**

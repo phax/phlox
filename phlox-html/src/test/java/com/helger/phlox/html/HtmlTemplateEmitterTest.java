@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.junit.Test;
 
+import com.helger.base.string.StringCount;
 import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
@@ -402,5 +403,47 @@ public final class HtmlTemplateEmitterTest
     assertTrue (sFenced, sFenced.contains ("<pre class=\"phlox-c\">"));
     final String sIndented = _render (_example1 (), PhloxTemplate.fromString ("{{class:c}}\n\n    code\n"), Locale.ENGLISH);
     assertTrue (sIndented, sIndented.contains ("<pre class=\"phlox-c\">"));
+  }
+
+  @Test
+  public void testPageFooter ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    aModel.setNumber ("A\"</style>B");
+    final PhloxTemplate aTemplate = PhloxTemplate.fromString ("x\n\n{{footer}}\n\n{{BT-1}} {{page}}/{{pages}}\n\nFOOTNEXT\n\n{{end}}\n");
+    final String sHtml = _render (aModel, aTemplate, Locale.ENGLISH);
+    // The text of the footer is quoted for CSS and not part of the page
+    assertTrue (sHtml,
+                sHtml.contains ("content:\"A\\22 \\3c /style\\3e B \" counter(page) \"/\" counter(pages) \"\\a FOOTNEXT\";"));
+    assertFalse (sHtml, sHtml.contains ("</style>B"));
+    assertEquals (sHtml, 1, StringCount.getOccurrenceCount (sHtml, "FOOTNEXT"));
+
+    final String sOff = new HtmlInvoiceWriter ().writeAsString (aModel,
+                                                                new HtmlRenderContext ().setTemplate (aTemplate)
+                                                                                        .setShowPageFooter (false));
+    assertFalse (sOff, sOff.contains ("@page{margin-bottom"));
+    assertFalse (sOff, sOff.contains ("FOOTNEXT"));
+  }
+
+  @Test
+  public void testPageHeaderAndFirstPage ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final PhloxTemplate aTemplate = PhloxTemplate.fromString ("x\n\n{{header}}\n\nHEAD {{page}}\n\n{{end}}\n\n{{footer}}\n\nFOOT\n\n{{end}}\n");
+    // By default the header starts on the second page
+    String sHtml = _render (aModel, aTemplate, Locale.ENGLISH);
+    assertTrue (sHtml, sHtml.contains ("@top-left{content:\"HEAD \" counter(page);"));
+    assertTrue (sHtml, sHtml.contains ("@page:first{margin-top:0;@top-left{content:none}}"));
+
+    sHtml = new HtmlInvoiceWriter ().writeAsString (aModel,
+                                                    new HtmlRenderContext ().setTemplate (aTemplate)
+                                                                            .setShowPageHeaderOnFirstPage (true)
+                                                                            .setShowPageFooterOnFirstPage (false));
+    assertTrue (sHtml, sHtml.contains ("@page:first{margin-bottom:0;@bottom-left{content:none}}"));
+
+    sHtml = new HtmlInvoiceWriter ().writeAsString (aModel,
+                                                    new HtmlRenderContext ().setTemplate (aTemplate).setShowPageHeader (false));
+    assertFalse (sHtml, sHtml.contains ("@top-left"));
+    assertFalse (sHtml, sHtml.contains ("@page:first"));
   }
 }

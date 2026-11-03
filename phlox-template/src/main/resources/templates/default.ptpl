@@ -4,7 +4,10 @@
 
   Layout tags: {{row:name}} lays the groups up to its {{end}} side by side, {{group:name}} stacks
   the blocks up to its {{end}}. The name is the CSS class (HTML) and the key of the block style
-  (PDF). {{class:name}} on a line of its own styles the next block.
+  (PDF). {{class:name}} on a line of its own styles the next block. {{header}} and {{footer}} up to
+  their {{end}} are the page header and footer: the PDF shows them on every page, the HTML on every
+  printed page, {{page}} and {{pages}} are the page number and the number of pages. By default the
+  header starts on the second page, because the first page starts with the invoice number.
 }}
 {{row:head}}
 
@@ -624,3 +627,15 @@
 {{class:foot}}
 
 {{?BG-2.BT-24}}{{label:BT-24}}: {{BG-2.BT-24}}{{/BG-2.BT-24}}{{?BG-2.BT-23}} · {{label:BT-23}}: {{BG-2.BT-23}}{{/BG-2.BT-23}}
+
+{{header}}
+
+{{BG-4.BT-27}} · {{?is_invoice}}{{label:section.header.title.invoice}}{{/is_invoice}}{{?is_credit_note}}{{label:section.header.title.creditnote}}{{/is_credit_note}} {{BT-1}}
+
+{{end}}
+
+{{footer}}
+
+{{BT-1}} · {{label:page.footer.page}} {{page}} {{label:page.footer.of}} {{pages}}
+
+{{end}}

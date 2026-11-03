@@ -69,6 +69,7 @@ public final class BlueThemeTest
   private static final PLColor BLUE = new PLColor (0x1a, 0x56, 0xdb);
   private static final PLColor SKY = new PLColor (0xe6, 0xef, 0xfd);
   private static final PLColor NAVY = new PLColor (0x0b, 0x1f, 0x3a);
+  private static final PLColor MIST = new PLColor (0x8a, 0xa0, 0xbf);
 
   private static PhloxTheme _readTheme ()
   {
@@ -185,6 +186,10 @@ public final class BlueThemeTest
     assertTrue (nAccent > nDefault);
     // The default layout uses the variables, not the colours
     assertTrue (sHtml.contains ("background:var(--phlox-accent)"));
+    // The page header and footer of the printed page use the faint colour of the theme
+    assertTrue (sHtml, sHtml.contains ("@top-left"));
+    assertTrue (sHtml, sHtml.contains ("counter(pages)"));
+    assertTrue (sHtml, sHtml.contains ("color:var(--phlox-faint,"));
   }
 
   @Test
@@ -201,6 +206,8 @@ public final class BlueThemeTest
     assertTrue ("Colours: " + aColors, aColors.contains (SKY));
     // The line below the table headers is navy
     assertTrue ("Colours: " + aColors, aColors.contains (NAVY));
+    // The page footer is mist (the header starts on the second page, which this invoice does not have)
+    assertTrue ("Colours: " + aColors, aColors.contains (MIST));
     // The accent of the default layout is gone
     assertFalse (aColors.contains (PdfPalette.DEFAULT.getAccent ()));
     assertFalse (aColors.contains (PdfPalette.DEFAULT.getAccentWash ()));

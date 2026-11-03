@@ -987,4 +987,56 @@ public final class PdfTemplateEmitterTest
     assertTrue (_pageText (aFirst, 2).contains ("two"));
     assertTrue (_pageText (aFirst, 3).contains ("three"));
   }
+
+  @Test
+  public void testPageFooter () throws Exception
+  {
+    final String sTemplate = "one\n\n{{pagebreak}}\n\ntwo\n\n{{footer}}\n\nNo. {{BT-1}} - {{page}} of {{pages}}\n\n{{end}}\n";
+    final PhloxInvoice aModel = _example1 ();
+    aModel.setNumber ("INV-1");
+    final byte [] aPdf = _render (aModel, PhloxTemplate.fromString (sTemplate), Locale.ENGLISH);
+    assertEquals (2, _pageCount (aPdf));
+    assertTrue (_pageText (aPdf, 1), _pageText (aPdf, 1).contains ("No. INV-1 - 1 of 2"));
+    assertTrue (_pageText (aPdf, 2), _pageText (aPdf, 2).contains ("No. INV-1 - 2 of 2"));
+
+    // A value of the invoice never becomes a page number
+    aModel.setNumber ("${total-page-count}");
+    final String sValue = _pageText (_render (aModel, PhloxTemplate.fromString (sTemplate), Locale.ENGLISH), 1);
+    assertTrue (sValue, sValue.contains ("No. ${total-page-count} - 1 of 2"));
+
+    // Switched off
+    final byte [] aOff = _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate))
+                                                         .setShowPageFooter (false));
+    assertFalse (_pageText (aOff, 1), _pageText (aOff, 1).contains ("No."));
+
+    // The default template has one
+    final String sDefault = _pageText (_render (new PdfRenderContext ()), 1);
+    assertTrue (sDefault, sDefault.contains ("12115118 \u00B7 Page 1 of "));
+  }
+
+  @Test
+  public void testPageHeaderAndFirstPage () throws Exception
+  {
+    final String sTemplate = "one\n\n{{pagebreak}}\n\ntwo\n\n{{header}}\n\nHEAD {{page}}\n\n{{end}}\n\n{{footer}}\n\nFOOT {{page}}\n\n{{end}}\n";
+    // By default the header starts on the second page, the footer on the first
+    byte [] aPdf = _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate)));
+    assertFalse (_pageText (aPdf, 1), _pageText (aPdf, 1).contains ("HEAD"));
+    assertTrue (_pageText (aPdf, 1), _pageText (aPdf, 1).contains ("FOOT 1"));
+    assertTrue (_pageText (aPdf, 2), _pageText (aPdf, 2).contains ("HEAD 2"));
+    assertTrue (_pageText (aPdf, 2), _pageText (aPdf, 2).contains ("FOOT 2"));
+    // The attribution of the program stays on the first page
+    aPdf = _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate))
+                                           .setShowPageHeaderOnFirstPage (true)
+                                           .setShowPageFooterOnFirstPage (false));
+    assertTrue (_pageText (aPdf, 1), _pageText (aPdf, 1).contains ("HEAD 1"));
+    assertFalse (_pageText (aPdf, 1), _pageText (aPdf, 1).contains ("FOOT"));
+    assertTrue (_pageText (aPdf, 1), _pageText (aPdf, 1).contains ("phlox"));
+    assertTrue (_pageText (aPdf, 2), _pageText (aPdf, 2).contains ("FOOT 2"));
+    // The header is above the content
+    final String sPage2 = _pageText (aPdf, 2);
+    assertTrue (sPage2, sPage2.indexOf ("HEAD 2") < sPage2.indexOf ("two"));
+
+    aPdf = _render (new PdfRenderContext ().setTemplate (PhloxTemplate.fromString (sTemplate)).setShowPageHeader (false));
+    assertFalse (_pageText (aPdf, 2), _pageText (aPdf, 2).contains ("HEAD"));
+  }
 }

@@ -47,6 +47,7 @@ import com.helger.base.string.StringReplace;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.pdflayout.base.AbstractPLRenderableObject;
+import com.helger.pdflayout.base.EPLPlaceholder;
 import com.helger.pdflayout.base.IPLRenderableObject;
 import com.helger.pdflayout.base.PLColor;
 import com.helger.pdflayout.base.PLPageSet;
@@ -81,6 +82,8 @@ import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
+import com.helger.phlox.template.ast.PhloxPageMarginNode;
+import com.helger.phlox.template.ast.PhloxPageNumberNode;
 import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
@@ -152,6 +155,18 @@ public final class PdfTemplateEmitter extends
 
   /** The background at the current position of a block of text, as six hex digits, if any. */
   private String m_sBackgroundColor;
+
+  /**
+   * <code>true</code> while the page header or footer is built, where the page numbers are
+   * replaced.
+   */
+  private boolean m_bInPageMargin;
+
+  /** The page header of the template, if it has one and it is shown. */
+  private IPLRenderableObject <?> m_aPageHeader;
+
+  /** The page footer of the template, if it has one and it is shown. */
+  private IPLRenderableObject <?> m_aPageFooter;
 
   /**
    * Create a new emitter.
@@ -303,6 +318,19 @@ public final class PdfTemplateEmitter extends
     _getLastLine (aLines).append (sClose);
   }
 
+  /**
+   * The page numbers are replaced in each run of the page header and footer. There a marker that
+   * changes nothing starts a new run after each dollar sign of a text, so that a value of the
+   * invoice never becomes a page number.
+   */
+  @NonNull
+  private String _getProtected (@NonNull final String sMarkup)
+  {
+    if (!m_bInPageMargin)
+      return sMarkup;
+    return StringReplace.replaceAll (sMarkup, "$", "${color:#" + m_sTextColor + "}");
+  }
+
   @NonNull
   private PLFontFamily _fontFamily (@NonNull final FontSpec aBase)
   {
@@ -356,6 +384,7 @@ public final class PdfTemplateEmitter extends
     final PLRichText aRichText = bKeepTogether ? new PdfKeepTogether.RichText (aRuns, m_fMaxKeepTogetherHeight)
                                                : new PLRichText (aRuns);
     aRichText.setHorzAlign (eAlign);
+    aRichText.setReplacePlaceholder (m_bInPageMargin);
     return aRichText;
   }
 
@@ -948,7 +977,7 @@ public final class PdfTemplateEmitter extends
                             @NonNull final List <StringBuilder> aLines)
   {
     final String sText = m_bUppercase ? aText.getLiteral ().toUpperCase (m_aCtx.getLocale ()) : aText.getLiteral ();
-    _getLastLine (aLines).append (PdfTextSupport.escapeMarkup (PdfTextSupport.separateCurrencySymbol (sText)));
+    _getLastLine (aLines).append (_getProtected (PdfTextSupport.escapeMarkup (PdfTextSupport.separateCurrencySymbol (sText))));
   }
 
   @Override
@@ -996,7 +1025,7 @@ public final class PdfTemplateEmitter extends
                             @NonNull final Code aCode,
                             @NonNull final List <StringBuilder> aLines)
   {
-    _getLastLine (aLines).append ('`').append (PdfTextSupport.escapeMarkup (aCode.getLiteral ())).append ('`');
+    _getLastLine (aLines).append ('`').append (_getProtected (PdfTextSupport.escapeMarkup (aCode.getLiteral ()))).append ('`');
   }
 
   @Override
@@ -1065,7 +1094,7 @@ public final class PdfTemplateEmitter extends
     if (BR_TAG.matcher (aHtml.getLiteral ()).matches ())
       aLines.add (new StringBuilder ());
     else
-      _getLastLine (aLines).append (PdfTextSupport.escapeMarkup (aHtml.getLiteral ()));
+      _getLastLine (aLines).append (_getProtected (PdfTextSupport.escapeMarkup (aHtml.getLiteral ())));
   }
 
   @Override
@@ -1190,12 +1219,66 @@ public final class PdfTemplateEmitter extends
       LOGGER.warn ("A page break inside a row, list or block quote is not possible in PDF - ignoring it");
   }
 
+  @Override
+  protected void visitPageMargin (@NonNull final PhloxTemplateAst aAst,
+                                  @NonNull final PhloxPageMarginNode aPageMargin,
+                                  @NonNull final Consumer <IPLRenderableObject <?>> aSink)
+  {
+    // The page header and footer are not part of the flow: the page set shows them on every page
+    final boolean bHeader = aPageMargin.isHeader ();
+    if (bHeader ? !m_aCtx.isShowPageHeader () : !m_aCtx.isShowPageFooter ())
+      return;
+    final PdfBlockStyle aStyle = _getStyle (aAst, aPageMargin);
+    final PLVBox aContent = new PLVBox ();
+    m_bInPageMargin = true;
+    try
+    {
+      _withInheritedStyle (aStyle, () -> visitBlockChildren (aAst, aPageMargin, aContent::addRow));
+    }
+    finally
+    {
+      m_bInPageMargin = false;
+    }
+    if (aContent.getRowCount () > 0)
+    {
+      final PLBox aBox = new PLBox (aContent);
+      if (bHeader)
+      {
+        // The page set draws the header from the top edge of the sheet: move it into the margin
+        aBox.setMarginTop (m_aCtx.getMargins ().getTop () / 2).setMarginBottom (PARAGRAPH_GAP);
+        m_aPageHeader = _decorate (aBox, aStyle);
+      }
+      else
+      {
+        aBox.setMarginTop (PARAGRAPH_GAP);
+        m_aPageFooter = _decorate (aBox, aStyle);
+      }
+    }
+  }
+
+  @Override
+  protected void visitPageNumber (@NonNull final PhloxTemplateAst aAst,
+                                  @NonNull final PhloxPageNumberNode aPageNumber,
+                                  @NonNull final List <StringBuilder> aLines)
+  {
+    if (m_bInPageMargin)
+    {
+      final EPLPlaceholder ePlaceholder = aPageNumber.isPageCount () ? EPLPlaceholder.TOTAL_PAGE_COUNT
+                                                                     : EPLPlaceholder.TOTAL_PAGE_NUMBER;
+      _getLastLine (aLines).append (PdfTextSupport.escapeMarkup (ePlaceholder.getVariable ()));
+    }
+  }
+
   /**
    * Convert the template AST to the content of a PDF page set.
    *
    * @param aAst
    *        The rendered template. Never {@code null}.
-   * @return The page set with the size and the margins of the render context. Never {@code null}.
+   * @return The page set with the size and the margins of the render context, and the page header
+   *         and footer of the template if it has them and they are shown. Without
+   *         {@link PdfRenderContext#isShowPageHeaderOnFirstPage()} the first page has no header (a
+   *         different first page header that is <code>null</code>), and likewise for the footer.
+   *         Never {@code null}.
    * @throws PhloxRuntimeException
    *         If the template has no content that can be shown in a PDF.
    */
@@ -1205,6 +1288,16 @@ public final class PdfTemplateEmitter extends
     final PLPageSet aPS = new PLPageSet (m_aCtx.getPageSize ()).setMargin (m_aCtx.getMargins ());
     m_aPageSink = aPS::addElement;
     visitBlockChildren (aAst, aAst.getRoot (), m_aPageSink);
+    if (m_aPageHeader != null)
+    {
+      aPS.setPageHeader (m_aPageHeader);
+      aPS.setDifferentFirstPageHeader (!m_aCtx.isShowPageHeaderOnFirstPage ());
+    }
+    if (m_aPageFooter != null)
+    {
+      aPS.setPageFooter (m_aPageFooter);
+      aPS.setDifferentFirstPageFooter (!m_aCtx.isShowPageFooterOnFirstPage ());
+    }
     if (aPS.getElementCount () == 0)
       throw new PhloxRuntimeException ("The template produced no content for the PDF. The reason may be an image that could not be resolved or that PDF cannot show, like SVG.");
     return aPS;

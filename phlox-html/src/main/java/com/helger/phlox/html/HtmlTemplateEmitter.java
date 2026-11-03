@@ -57,6 +57,7 @@ import com.helger.html.hc.html.tabular.HCTable;
 import com.helger.html.hc.html.tabular.IHCCell;
 import com.helger.html.hc.html.textlevel.HCA;
 import com.helger.html.hc.html.textlevel.HCBR;
+import com.helger.html.hc.html.metadata.HCStyle;
 import com.helger.html.hc.html.textlevel.HCCode;
 import com.helger.html.hc.html.textlevel.HCEM;
 import com.helger.html.hc.html.textlevel.HCS;
@@ -69,6 +70,8 @@ import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
+import com.helger.phlox.template.ast.PhloxPageMarginNode;
+import com.helger.phlox.template.ast.PhloxPageNumberNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
@@ -79,7 +82,10 @@ import com.helger.url.SimpleURL;
  * head, the watermarks and the page wrapper are the same as in {@link HtmlInvoiceWriter}; the
  * content is built by walking the CommonMark tree. A block class that was attached with
  * {@code {{class:name}}} is added to the emitted element, prefixed with
- * {@link HtmlRenderContext#getCssClassPrefix()}.
+ * {@link HtmlRenderContext#getCssClassPrefix()}. The page header and footer of the
+ * template ({@code {{header}}}, {@code {{footer}}}) are not part of the page: they become CSS page
+ * margin boxes, so a browser shows them at the top and the bottom of every printed page, with their
+ * styling removed.
  *
  * @author Philip Helger
  */
@@ -94,6 +100,12 @@ public final class HtmlTemplateEmitter extends
 
   private final HtmlRenderContext m_aCtx;
 
+  /** The CSS <code>content</code> of the page header, if the template has one and it is shown. */
+  private String m_sPageHeaderContent;
+
+  /** The CSS <code>content</code> of the page footer, if the template has one and it is shown. */
+  private String m_sPageFooterContent;
+
   /**
    * Create a new emitter.
    *
@@ -104,6 +116,99 @@ public final class HtmlTemplateEmitter extends
   public HtmlTemplateEmitter (@NonNull final HtmlRenderContext aCtx)
   {
     m_aCtx = aCtx;
+  }
+
+  /**
+   * Quote a text as a CSS string. All characters that could end the string, the style element or
+   * the rule are written as escapes.
+   */
+  @NonNull
+  private static String _getCssString (@NonNull final String sText)
+  {
+    final StringBuilder aSB = new StringBuilder (sText.length () + 2).append ('"');
+    sText.codePoints ().forEach (nCP -> {
+      if (nCP < 0x20 || nCP == 0x7f || nCP == '"' || nCP == '\\' || nCP == '<' || nCP == '>' || nCP == '&')
+        aSB.append ('\\').append (Integer.toHexString (nCP)).append (' ');
+      else
+        aSB.appendCodePoint (nCP);
+    });
+    return aSB.append ('"').toString ();
+  }
+
+  /**
+   * Add the text of the page header or footer to the CSS <code>content</code> value: the texts as strings, the
+   * page numbers as counters, and a line break between two blocks.
+   */
+  private static void _appendPageMarginContentRecursive (@NonNull final Node aNode,
+                                                         @NonNull final StringBuilder aText,
+                                                         @NonNull final StringBuilder aContent)
+  {
+    for (Node aChild = aNode.getFirstChild (); aChild != null; aChild = aChild.getNext ())
+    {
+      if (aChild instanceof final Text aTextNode)
+        aText.append (aTextNode.getLiteral ());
+      else
+        if (aChild instanceof final Code aCode)
+          aText.append (aCode.getLiteral ());
+        else
+          if (aChild instanceof final HtmlInline aHtml)
+            aText.append (aHtml.getLiteral ());
+          else
+            if (aChild instanceof SoftLineBreak)
+              aText.append (' ');
+            else
+              if (aChild instanceof HardLineBreak)
+                aText.append ('\n');
+              else
+                if (aChild instanceof final PhloxPageNumberNode aPageNumber)
+                {
+                  if (aText.length () > 0)
+                  {
+                    aContent.append (_getCssString (aText.toString ())).append (' ');
+                    aText.setLength (0);
+                  }
+                  aContent.append (aPageNumber.isPageCount () ? "counter(pages) " : "counter(page) ");
+                }
+                else
+                  if (!(aChild instanceof Image))
+                  {
+                    _appendPageMarginContentRecursive (aChild, aText, aContent);
+                    if (aChild instanceof Block && aChild.getNext () != null)
+                      aText.append ('\n');
+                  }
+    }
+  }
+
+  @NonNull
+  private String _getPageMarginCss ()
+  {
+    // A page margin box only exists with a margin of the page; the page wrapper must not fill a
+    // whole sheet then
+    final String sBoxStyle = ";white-space:pre-line;font:7.5pt/1.4 -apple-system,\"Segoe UI\",Inter,Helvetica,Arial,sans-serif;color:var(--phlox-faint,#98a2b3)}";
+    final StringBuilder aSB = new StringBuilder ("@page{");
+    final StringBuilder aFirst = new StringBuilder ();
+    if (m_sPageHeaderContent != null)
+    {
+      aSB.append ("margin-top:12mm;@top-left{content:")
+         .append (m_sPageHeaderContent)
+         .append (";padding:4mm 18mm 0;vertical-align:bottom")
+         .append (sBoxStyle);
+      if (!m_aCtx.isShowPageHeaderOnFirstPage ())
+        aFirst.append ("margin-top:0;@top-left{content:none}");
+    }
+    if (m_sPageFooterContent != null)
+    {
+      aSB.append ("margin-bottom:12mm;@bottom-left{content:")
+         .append (m_sPageFooterContent)
+         .append (";padding:0 18mm 4mm;vertical-align:top")
+         .append (sBoxStyle);
+      if (!m_aCtx.isShowPageFooterOnFirstPage ())
+        aFirst.append ("margin-bottom:0;@bottom-left{content:none}");
+    }
+    aSB.append ("}\n");
+    if (aFirst.length () > 0)
+      aSB.append ("@page:first{").append (aFirst).append ("}\n");
+    return aSB.append ("@media print{.").append (m_aCtx.getCssClassPrefix ()).append ("page{min-height:0}}").toString ();
   }
 
   private void _addClass (@NonNull final PhloxTemplateAst aAst,
@@ -504,6 +609,37 @@ public final class HtmlTemplateEmitter extends
     aTarget.addChild (new HCDiv ().addStyle (CCSSProperties.PAGE_BREAK_AFTER.newValue ("always")));
   }
 
+  @Override
+  protected void visitPageMargin (@NonNull final PhloxTemplateAst aAst,
+                                  @NonNull final PhloxPageMarginNode aPageMargin,
+                                  @NonNull final IHCNodeWithChildren <?> aTarget)
+  {
+    final boolean bHeader = aPageMargin.isHeader ();
+    if (bHeader ? !m_aCtx.isShowPageHeader () : !m_aCtx.isShowPageFooter ())
+      return;
+    final StringBuilder aText = new StringBuilder ();
+    final StringBuilder aContent = new StringBuilder ();
+    _appendPageMarginContentRecursive (aPageMargin, aText, aContent);
+    if (aText.length () > 0)
+      aContent.append (_getCssString (aText.toString ()));
+    final String sContent = aContent.toString ().strip ();
+    if (!sContent.isEmpty ())
+    {
+      if (bHeader)
+        m_sPageHeaderContent = sContent;
+      else
+        m_sPageFooterContent = sContent;
+    }
+  }
+
+  @Override
+  protected void visitPageNumber (@NonNull final PhloxTemplateAst aAst,
+                                  @NonNull final PhloxPageNumberNode aPageNumber,
+                                  @NonNull final IHCNodeWithChildren <?> aTarget)
+  {
+    // Only part of the page header or footer, which is handled as a whole
+  }
+
   /**
    * Convert the template AST to an HTML document.
    *
@@ -517,6 +653,12 @@ public final class HtmlTemplateEmitter extends
     final HCHtml aHtml = new HCHtml ();
     final HCDiv aPage = HtmlDocumentSupport.createPage (aHtml, aAst.getInvoice (), m_aCtx);
     visitBlockChildren (aAst, aAst.getRoot (), aPage);
+    if (m_sPageHeaderContent != null || m_sPageFooterContent != null)
+    {
+      final HCStyle aStyle = new HCStyle ();
+      aStyle.setStyleContent (_getPageMarginCss ());
+      aHtml.head ().addCSS (aStyle);
+    }
     return aHtml;
   }
 }

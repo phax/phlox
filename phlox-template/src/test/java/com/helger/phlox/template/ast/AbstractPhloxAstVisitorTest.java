@@ -89,7 +89,9 @@ public final class AbstractPhloxAstVisitorTest
                                                                            "visitBlockImage",
                                                                            "visitHtmlBlock",
                                                                            "visitGroup",
-                                                                           "visitPageBreak"));
+                                                                           "visitPageBreak",
+                                                                           "visitPageMargin",
+                                                                           "visitPageNumber"));
 
   private static final String MARKDOWN = """
                                          # Title
@@ -332,6 +334,23 @@ public final class AbstractPhloxAstVisitorTest
     }
 
     @Override
+    protected void visitPageMargin (final PhloxTemplateAst aAst,
+                                    final PhloxPageMarginNode aPageMargin,
+                                    final ICommonsList <String> aCtx)
+    {
+      aCtx.add ("visitPageMargin");
+      visitBlockChildren (aAst, aPageMargin, aCtx);
+    }
+
+    @Override
+    protected void visitPageNumber (final PhloxTemplateAst aAst,
+                                    final PhloxPageNumberNode aPageNumber,
+                                    final ICommonsList <String> aCtx)
+    {
+      aCtx.add ("visitPageNumber");
+    }
+
+    @Override
     protected void visitUnknownInline (final PhloxTemplateAst aAst,
                                        final Node aNode,
                                        final ICommonsList <String> aCtx)
@@ -383,6 +402,11 @@ public final class AbstractPhloxAstVisitorTest
     aGroup.appendChild (new Paragraph ());
     aDoc.appendChild (aGroup);
     aDoc.appendChild (new PhloxPageBreakNode ());
+    final PhloxPageMarginNode aPageFooter = new PhloxPageMarginNode (false);
+    final Paragraph aFooterParagraph = new Paragraph ();
+    aFooterParagraph.appendChild (new PhloxPageNumberNode (false));
+    aPageFooter.appendChild (aFooterParagraph);
+    aDoc.appendChild (aPageFooter);
     // An image only is a block level image when it is not part of a paragraph
     aDoc.appendChild (new Image ("x.png", null));
 
