@@ -36,8 +36,9 @@ Reads invoices in **UBL** or **CII** syntax, lifts them into a syntax-neutral in
 - **Template driven output:** HTML, PDF and plain text are rendered from a `.ptpl` template (JMustache plus CommonMark). The default template ships with phlox; your own replaces it without writing Java.
 - **Themes:** colours, fonts, page layout, block styles, language, logo and watermark come from one JSON file. See [Styling](https://github.com/phax/phlox/wiki/Styling).
 - **Any script in PDF:** embed TTF or OTF fonts (for example Roboto for Cyrillic and Greek) in HTML and PDF with `--font`, the theme or the API. The standard PDF fonts only contain Western European characters.
+- **Page header and footer:** the default template repeats the seller and the invoice number at the top (from the second page on) and the invoice number with "Page 1 of 3" at the bottom of every page, in PDF and in printed HTML. Both can be switched off, also for the first page.
 - **Watermarks:** a user watermark such as `DRAFT`, plus the program watermark.
-- **PDF/A, PDF/UA and ZUGFeRD:** archivable PDF/A-2b, -2u, -3a (tagged), -3b and -3u, accessible PDF/UA-1, optionally with the source XML and the attached documents embedded, and ZUGFeRD / Factur-X hybrid invoices from CII invoices of EN 16931:2017. The output is checked with veraPDF in the tests. See [PDF/A and ZUGFeRD](https://github.com/phax/phlox/wiki/PDF-A).
+- **PDF/A, PDF/UA and ZUGFeRD:** archivable PDF/A-2b, -2u, -3a (tagged), -3b and -3u, accessible PDF/UA-1, optionally with the source XML and the attached documents embedded, and ZUGFeRD / Factur-X hybrid invoices from CII invoices of EN 16931:2017. The output is checked with veraPDF and kaltblut in the tests. See [PDF/A and ZUGFeRD](https://github.com/phax/phlox/wiki/PDF-A).
 - **Command line:** `phlox-cli` renders an invoice file to HTML, PDF (also PDF/A, PDF/UA and ZUGFeRD) or plain text.
 - **No validation:** phlox only visualizes. Use `phive-rules-en16931` to check business rules.
 
@@ -97,6 +98,8 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `--date-style` | Style of formatted dates: `SHORT`, `MEDIUM`, `LONG` or `FULL` |
 | `--amount-min-fraction-digits`, `--percent-min-fraction-digits` | Minimum number of fraction digits of amounts and percentages; a value with more digits shows them |
 | `--negative-style` | Negative amounts: `MINUS_SIGN` or `PARENTHESES` |
+| `--no-page-header`, `--no-page-footer` | `PDF` and `HTML`: leave out the page header or footer of the template |
+| `--page-header-on-first-page`, `--page-footer-on-first-page` | `true` or `false`: show the page header (default `false`) or footer (default `true`) on the first page too |
 | `--creation-date-time` | `PDF` only: fixed creation date and time in the metadata, for reproducible output |
 | `--pdfa` | PDF/A level of the PDF: `2b`, `2u`, `3a` (tagged), `3b` or `3u`; needs `--font` (or fonts in the theme) |
 | `--pdfua` | Create a PDF/UA-1 (accessible, tagged PDF); can be combined with `--pdfa`; needs `--font` (or fonts in the theme) |
