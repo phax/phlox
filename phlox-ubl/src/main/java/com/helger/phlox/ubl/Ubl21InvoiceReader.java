@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 package com.helger.phlox.ubl;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.OffsetTime;
@@ -31,86 +32,11 @@ import com.helger.datetime.xml.XMLOffsetTime;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931Edition;
 import com.helger.en16931.basics.codelist.EN16931CodeLists;
-import com.helger.phlox.api.model.EPhloxDocumentKind;
-import com.helger.phlox.api.model.PhloxAdditionalTerm;
-import com.helger.phlox.api.model.PhloxAttachment;
-import com.helger.phlox.api.model.PhloxBuyer;
-import com.helger.phlox.api.model.PhloxContact;
-import com.helger.phlox.api.model.PhloxCreditTransfer;
-import com.helger.phlox.api.model.PhloxDeliveryInformation;
-import com.helger.phlox.api.model.PhloxDirectDebit;
-import com.helger.phlox.api.model.PhloxDocumentAllowance;
-import com.helger.phlox.api.model.PhloxDocumentCharge;
-import com.helger.phlox.api.model.PhloxDocumentTotals;
-import com.helger.phlox.api.model.PhloxEarlyPaymentDiscount;
-import com.helger.phlox.api.model.PhloxIdentifier;
-import com.helger.phlox.api.model.PhloxInvoice;
-import com.helger.phlox.api.model.PhloxInvoiceLine;
-import com.helger.phlox.api.model.PhloxInvoiceNote;
-import com.helger.phlox.api.model.PhloxInvoicingPeriod;
-import com.helger.phlox.api.model.PhloxItem;
-import com.helger.phlox.api.model.PhloxItemAttribute;
-import com.helger.phlox.api.model.PhloxItemClassification;
-import com.helger.phlox.api.model.PhloxLatePaymentPenalty;
-import com.helger.phlox.api.model.PhloxLineAllowance;
-import com.helger.phlox.api.model.PhloxLineCharge;
-import com.helger.phlox.api.model.PhloxLineDelivery;
-import com.helger.phlox.api.model.PhloxLinePrecedingInvoiceRef;
-import com.helger.phlox.api.model.PhloxLineVat;
-import com.helger.phlox.api.model.PhloxPayee;
-import com.helger.phlox.api.model.PhloxPaymentCard;
-import com.helger.phlox.api.model.PhloxPaymentInstructions;
-import com.helger.phlox.api.model.PhloxPaymentTerms;
-import com.helger.phlox.api.model.PhloxPostalAddress;
-import com.helger.phlox.api.model.PhloxPrecedingInvoiceRef;
-import com.helger.phlox.api.model.PhloxPriceDetails;
-import com.helger.phlox.api.model.PhloxSeller;
-import com.helger.phlox.api.model.PhloxSellerTaxRepresentative;
-import com.helger.phlox.api.model.PhloxSupportingDocument;
-import com.helger.phlox.api.model.PhloxVatBreakdown;
+import com.helger.phlox.api.model.*;
 import com.helger.phlox.api.read.PhloxReaderHelper;
 import com.helger.ubl21.UBL21Marshaller;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.AddressLineType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.AddressType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.AttachmentType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.BillingReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.BranchType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CardAccountType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CommodityClassificationType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ContactType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CountryType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CreditNoteLineType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.CustomerPartyType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DeliveryType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.DocumentReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ExchangeRateType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ExternalReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.FinancialAccountType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.InvoiceLineType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemIdentificationType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemPropertyType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ItemType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.LineReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.MonetaryTotalType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderLineReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.OrderReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyIdentificationType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyLegalEntityType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyNameType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyTaxSchemeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PartyType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PaymentMandateType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PaymentMeansType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PaymentTermsType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PeriodType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.PriceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.ProjectReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.SupplierPartyType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxCategoryType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxSubtotalType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.TaxTotalType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_21.*;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.DescriptionCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.InstructionNoteType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_21.NoteType;
@@ -133,7 +59,8 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
 
   private static void _readIssueTime (@Nullable final XMLOffsetTime aTime, @NonNull final PhloxInvoice aModel)
   {
-    // BT-166 — without a time offset the time cannot be represented as OffsetTime, so it stays a text
+    // BT-166 — without a time offset the time cannot be represented as OffsetTime, so it stays a
+    // text
     if (aTime != null)
       if (aTime.hasOffset ())
         aModel.setIssueTime (OffsetTime.of (aTime.toLocalTime (), aTime.getOffset ()));
@@ -638,7 +565,8 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
     if (aSub.getTaxAmount () != null)
     {
       aOut.setTaxAmount (aSub.getTaxAmount ().getValue ());
-      // BT-184 — EN 16931:2017 does not have it, but a subtotal in the accounting currency is possible
+      // BT-184 — EN 16931:2017 does not have it, but a subtotal in the accounting currency is
+      // possible
       final String sCurrencyID = str (aSub.getTaxAmount ().getCurrencyID ());
       if (sCurrencyID != null && !sCurrencyID.equals (sInvoiceCurrency))
         aOut.setCurrency (sCurrencyID);
@@ -771,7 +699,8 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
   }
 
   @NonNull
-  private static PhloxPriceDetails _readPriceDetails (@NonNull final PriceType aPrice, @NonNull final PhloxInvoiceLine aLine)
+  private static PhloxPriceDetails _readPriceDetails (@NonNull final PriceType aPrice,
+                                                      @NonNull final PhloxInvoiceLine aLine)
   {
     final PhloxPriceDetails aOut = new PhloxPriceDetails ();
     if (aPrice.getPriceAmount () != null)
@@ -1010,8 +939,7 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
           aObjectIDs.add (identifier (aDR.getID ()));
         else
           aOut.additionalTerms ()
-              .add (new PhloxAdditionalTerm (TERM_LINE_DOCUMENT,
-                                             getLineDocumentText (aDR.getID (), sTypeCode)));
+              .add (new PhloxAdditionalTerm (TERM_LINE_DOCUMENT, getLineDocumentText (aDR.getID (), sTypeCode)));
       }
     PhloxReaderHelper.setAndAddRepeated (aObjectIDs, "BT-128", aOut::setObjectIdentifier, aOut.additionalTerms ());
   }
@@ -1069,7 +997,9 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
         {
           // BT-151 and the following are 0..1
           PhloxReaderHelper.addIfPresent ("BT-151", aVat.getCategoryCode (), aTerms);
-          PhloxReaderHelper.addIfPresent ("BT-152", aVat.getRate () == null ? null : aVat.getRate ().toPlainString (), aTerms);
+          PhloxReaderHelper.addIfPresent ("BT-152",
+                                          aVat.getRate () == null ? null : aVat.getRate ().toPlainString (),
+                                          aTerms);
           PhloxReaderHelper.addIfPresent ("BT-194", aVat.getExemptionReasonText (), aTerms);
           PhloxReaderHelper.addIfPresent ("BT-195", aVat.getExemptionReasonCode (), aTerms);
         }
@@ -1487,7 +1417,8 @@ final class Ubl21InvoiceReader extends AbstractUblInvoiceReader
     if (aCreditNote.getPayeeParty () != null)
       aModel.setPayee (_readPayee (aCreditNote.getPayeeParty (), aModel));
     if (aCreditNote.getTaxRepresentativeParty () != null)
-      aModel.setSellerTaxRepresentative (_readSellerTaxRepresentative (aCreditNote.getTaxRepresentativeParty (), aModel));
+      aModel.setSellerTaxRepresentative (_readSellerTaxRepresentative (aCreditNote.getTaxRepresentativeParty (),
+                                                                       aModel));
     _readHeaderDelivery (aCreditNote.getDelivery (), aModel);
     _readInvoicePeriod (aCreditNote.getInvoicePeriod (), aModel);
 

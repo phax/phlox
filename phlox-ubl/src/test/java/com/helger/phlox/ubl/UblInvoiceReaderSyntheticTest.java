@@ -66,9 +66,8 @@ public final class UblInvoiceReaderSyntheticTest
   @NonNull
   private static String _load (@NonNull final String sFile)
   {
-    try (final InputStream aIS = new ClassPathResource (MockPhloxTestFiles.BASE_PATH +
-                                                        "synthetic/" +
-                                                        sFile).getInputStream ())
+    try (final InputStream aIS = new ClassPathResource (MockPhloxTestFiles.BASE_PATH + "synthetic/" + sFile)
+                                                                                                            .getInputStream ())
     {
       return new String (aIS.readAllBytes (), StandardCharsets.UTF_8);
     }
@@ -79,7 +78,9 @@ public final class UblInvoiceReaderSyntheticTest
   }
 
   @NonNull
-  private static String _load (@NonNull final String sFile, @NonNull final String sSearch, @NonNull final String sReplace)
+  private static String _load (@NonNull final String sFile,
+                               @NonNull final String sSearch,
+                               @NonNull final String sReplace)
   {
     return StringReplace.replaceAll (_load (sFile), sSearch, sReplace);
   }
@@ -160,7 +161,7 @@ public final class UblInvoiceReaderSyntheticTest
       final ErrorList aErrors = new ErrorList ();
       final PhloxInvoice aUnknown = _readXml (_readerOf (sFile), _typeCodeReplaced (sFile, "999"), aErrors);
       assertNotNull (sFile, aUnknown);
-      assertEquals (sFile, bCreditNote, aUnknown.isCreditNote ());
+      assertTrue (sFile, bCreditNote == aUnknown.isCreditNote ());
       assertEquals (sFile, 1, aErrors.getCount (x -> x.getErrorText (Locale.ROOT).startsWith ("Unknown BT-3")));
       assertFalse (sFile, aErrors.containsAtLeastOneError ());
 
@@ -172,7 +173,7 @@ public final class UblInvoiceReaderSyntheticTest
       final PhloxInvoice aMissing = _readXml (_readerOf (sFile), sXml, aErrors2);
       assertNotNull (sFile, aMissing);
       assertNull (sFile, aMissing.getTypeCode ());
-      assertEquals (sFile, bCreditNote, aMissing.isCreditNote ());
+      assertTrue (sFile, bCreditNote == aMissing.isCreditNote ());
       assertEquals (sFile, 0, aErrors2.getCount (x -> x.getErrorText (Locale.ROOT).startsWith ("Unknown BT-3")));
     }
   }
@@ -197,7 +198,8 @@ public final class UblInvoiceReaderSyntheticTest
     assertEquals ("5153", aCharge.getNonVatTaxTypeCodeListID ());
     assertNull (aCharge.getReasonCode ());
 
-    // The identifier may be omitted: only part of UNTDID 5153, and the identifier has only one value
+    // The identifier may be omitted: only part of UNTDID 5153, and the identifier has only one
+    // value
     aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>ENV</cbc:AllowanceChargeReasonCode>");
     assertEquals ("ENV", aCharge.getNonVatTaxTypeCode ());
     assertEquals ("5153", aCharge.getNonVatTaxTypeCodeListID ());
@@ -221,7 +223,9 @@ public final class UblInvoiceReaderSyntheticTest
     // Excluded by the binding, and an unknown code
     for (final String sCode : new String [] { "VAT", "XYZ" })
     {
-      aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>" + sCode + "</cbc:AllowanceChargeReasonCode>");
+      aCharge = _readLineChargeWithCode ("<cbc:AllowanceChargeReasonCode>" +
+                                         sCode +
+                                         "</cbc:AllowanceChargeReasonCode>");
       assertEquals (sCode, aCharge.getReasonCode ());
       assertNull (aCharge.getNonVatTaxTypeCode ());
     }
@@ -260,8 +264,9 @@ public final class UblInvoiceReaderSyntheticTest
 
     // The invoice code is accepted as well
     final PhloxInvoice aModel2 = _read (UBL21_CREDIT_NOTE,
-                                        _load (UBL21_CREDIT_NOTE, "<cbc:DocumentType>ATS</cbc:DocumentType>",
-                                                                           "<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>"));
+                                        _load (UBL21_CREDIT_NOTE,
+                                               "<cbc:DocumentType>ATS</cbc:DocumentType>",
+                                               "<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>"));
     assertEquals ("OBJECT-1", aModel2.getInvoicedObjectIdentifier ().getValue ());
   }
 
@@ -274,8 +279,9 @@ public final class UblInvoiceReaderSyntheticTest
       assertEquals (sFile, "OBJECT-1", _read (sFile).getInvoicedObjectIdentifier ().getValue ());
 
       final PhloxInvoice aModel = _read (sFile,
-                                         _load (sFile, "<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>",
-                                                                "<cbc:DocumentType>ATS</cbc:DocumentType>"));
+                                         _load (sFile,
+                                                "<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>",
+                                                "<cbc:DocumentType>ATS</cbc:DocumentType>"));
       assertNull (sFile, aModel.getInvoicedObjectIdentifier ());
     }
   }
@@ -379,8 +385,9 @@ public final class UblInvoiceReaderSyntheticTest
       assertEquals (sFile, "AVE", _read (sFile).lines ().get (0).getObjectIdentifier ().getSchemeID ());
 
       final PhloxInvoice aModel = _read (sFile,
-                                         _load (sFile, "<cbc:ID schemeID=\"AVE\">LINE-OBJECT</cbc:ID>\n      <cbc:DocumentTypeCode>130<",
-                                                                "<cbc:ID schemeID=\"AVE\">LINE-OBJECT</cbc:ID>\n      <cbc:DocumentTypeCode>916<"));
+                                         _load (sFile,
+                                                "<cbc:ID schemeID=\"AVE\">LINE-OBJECT</cbc:ID>\n      <cbc:DocumentTypeCode>130<",
+                                                "<cbc:ID schemeID=\"AVE\">LINE-OBJECT</cbc:ID>\n      <cbc:DocumentTypeCode>916<"));
       assertNull (sFile, aModel.lines ().get (0).getObjectIdentifier ());
     }
   }
@@ -411,8 +418,7 @@ public final class UblInvoiceReaderSyntheticTest
   public void testLegacyElementsFollowTheBinding ()
   {
     final String sLegacy = "<cbc:Note>Legacy note</cbc:Note>\n  <cbc:DocumentCurrencyCode>";
-    final PhloxInvoice aModel = _read (UBL25_INVOICE,
-                                       _load (UBL25_INVOICE, "<cbc:DocumentCurrencyCode>", sLegacy));
+    final PhloxInvoice aModel = _read (UBL25_INVOICE, _load (UBL25_INVOICE, "<cbc:DocumentCurrencyCode>", sLegacy));
     // Nothing gets lost: the subject code without a content, the note, the legacy note
     assertEquals (3, aModel.invoiceNotes ().size ());
     assertEquals ("AAI", aModel.invoiceNotes ().get (0).getSubjectCode ());
@@ -426,11 +432,14 @@ public final class UblInvoiceReaderSyntheticTest
     for (final String sFile : ALL_FILES)
     {
       final ErrorList aErrors = new ErrorList ();
-      final String sXml = _load (sFile, "<cbc:DocumentCurrencyCode>", "<cbc:Nonsense>x</cbc:Nonsense><cbc:DocumentCurrencyCode>");
+      final String sXml = _load (sFile,
+                                 "<cbc:DocumentCurrencyCode>",
+                                 "<cbc:Nonsense>x</cbc:Nonsense><cbc:DocumentCurrencyCode>");
       assertNull (sFile, _readXml (_readerOf (sFile), sXml, aErrors));
       assertEquals (sFile + ": " + aErrors, 2, aErrors.size ());
       assertTrue (aErrors.toString (), aErrors.get (0).getErrorText (Locale.ROOT).contains ("cvc-complex-type"));
-      assertTrue (aErrors.toString (), aErrors.get (1).getErrorText (Locale.ROOT).startsWith ("Source could not be parsed"));
+      assertTrue (aErrors.toString (),
+                  aErrors.get (1).getErrorText (Locale.ROOT).startsWith ("Source could not be parsed"));
     }
   }
 

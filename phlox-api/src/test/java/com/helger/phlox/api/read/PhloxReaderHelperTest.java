@@ -73,9 +73,9 @@ public final class PhloxReaderHelperTest
 
       // The default must have no influence for a known code
       for (final EPhloxDocumentKind eDefault : EPhloxDocumentKind.values ())
-        assertEquals (eCode.getID (),
-                      bCreditNote,
-                      PhloxReaderHelper.getDocumentKind (eCode.getID (), eDefault, aErrors).isCreditNote ());
+        assertTrue (eCode.getID (),
+                    bCreditNote == PhloxReaderHelper.getDocumentKind (eCode.getID (), eDefault, aErrors)
+                                                    .isCreditNote ());
     }
     assertEquals (CREDIT_NOTE_CODES.length, nCreditNotes);
     for (final String sCode : CREDIT_NOTE_CODES)
@@ -91,7 +91,8 @@ public final class PhloxReaderHelperTest
     final ErrorList aErrors = new ErrorList ();
     assertSame (EPhloxDocumentKind.CREDIT_NOTE,
                 PhloxReaderHelper.getDocumentKind (null, EPhloxDocumentKind.CREDIT_NOTE, aErrors));
-    assertSame (EPhloxDocumentKind.INVOICE, PhloxReaderHelper.getDocumentKind ("", EPhloxDocumentKind.INVOICE, aErrors));
+    assertSame (EPhloxDocumentKind.INVOICE,
+                PhloxReaderHelper.getDocumentKind ("", EPhloxDocumentKind.INVOICE, aErrors));
     assertTrue (aErrors.isEmpty ());
   }
 
