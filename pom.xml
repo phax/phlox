@@ -63,12 +63,12 @@
     <ph-commons.version>12.5.3</ph-commons.version>
     <ph-ubl.version>10.2.1</ph-ubl.version>
     <ph-cii.version>4.1.3</ph-cii.version>
-    <en16931-basics.version>1.0.4-SNAPSHOT</en16931-basics.version>
+    <en16931-basics.version>1.0.4</en16931-basics.version>
     <ph-codelists.version>1.0.0</ph-codelists.version>
-    <ph-css.version>8.3.0</ph-css.version>
+    <ph-css.version>8.4.0</ph-css.version>
     <ph-oton.version>10.7.0</ph-oton.version>
     <pdfcompare.version>1.2.11</pdfcompare.version>
-    <ph-pdf-layout.version>8.4.2-SNAPSHOT</ph-pdf-layout.version>
+    <ph-pdf-layout.version>8.4.2</ph-pdf-layout.version>
     <kaltblut.version>0.9.5</kaltblut.version>
     <picocli.version>4.7.7</picocli.version>
     <jmustache.version>1.16</jmustache.version>

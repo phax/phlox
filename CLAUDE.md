@@ -49,7 +49,7 @@ Standard Maven (Java 17+, Maven 3.x). The compiler release is 17 through `java.v
 - CLI deliverable is `phlox-cli/target/phlox-cli-full.jar` (shaded), **not** `phlox-cli.jar`.
 - CI is `.github/workflows/maven.yml` with Java 17, 21 and 25. No checkstyle, no formatter config — style comes from `~/.claude/rules/` (Hungarian notation, spaces before parens, Apache licence header, ph-commons collections, etc.).
 - `ph-css` is imported in `pom.xml` before `ph-oton`, which brings an older one.
-- `en16931-basics` and `ph-pdf-layout` are `-SNAPSHOT` versions at the moment: install them from the sibling folders first, built with JDK 21 or older. Classes built by javac 25 cannot be read by javac 21 (`RuntimeInvisibleParameterAnnotations`, invalid class file), and a stale `target` keeps them, so use `clean install`.
+- `ph-pdf-layout` is a `-SNAPSHOT` version at the moment: install it from the sibling folder first, built with JDK 21 or older. Classes built by javac 25 cannot be read by javac 21 (`RuntimeInvisibleParameterAnnotations`, invalid class file), and a stale `target` keeps them, so use `clean install`.
 
 ## Tests
 
