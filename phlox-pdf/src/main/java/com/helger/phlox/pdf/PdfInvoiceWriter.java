@@ -21,10 +21,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.jspecify.annotations.NonNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.annotation.WillClose;
 import com.helger.base.string.StringHelper;
@@ -45,10 +49,12 @@ import com.helger.pdflayout.pdfa.PdfAXmpExtensionSchema;
 import com.helger.pdflayout.pdfa.PdfAssociatedFile;
 import com.helger.pdflayout.richtext.element.PLRichText;
 import com.helger.pdflayout.spec.EHorzAlignment;
+import com.helger.pdflayout.spec.IPLMissingCodePointCallback;
 import com.helger.pdflayout.spec.PreloadFont;
 import com.helger.pdflayout.watermark.EPLWatermarkPosition;
 import com.helger.pdflayout.watermark.PLTextWatermark;
 import com.helger.phlox.api.PhloxDocumentProperties;
+import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.api.PhloxRuntimeException;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxInvoice;
@@ -80,6 +86,8 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
   public static final String FACTUR_X_VERSION = "1.0";
   /** The value of <code>fx:DocumentType</code> */
   public static final String FACTUR_X_DOCUMENT_TYPE = "INVOICE";
+
+  private static final Logger LOGGER = LoggerFactory.getLogger (PdfInvoiceWriter.class);
 
   /** Create a new PDF invoice writer. */
   public PdfInvoiceWriter ()
@@ -312,10 +320,31 @@ public class PdfInvoiceWriter implements IInvoiceWriter <PdfRenderContext>
       aDoc.addPage (aPage);
   }
 
+  /**
+   * Create the default action for a character that a font cannot show. A text in another script
+   * misses many characters in several fonts, so only the first one of a document is logged.
+   */
+  @NonNull
+  private static IPLMissingCodePointCallback _createMissingCodePointLogger ()
+  {
+    final AtomicBoolean aLogged = new AtomicBoolean (false);
+    return (aFont, nCodePoint, nFallbackCodePoint) -> {
+      if (aLogged.compareAndSet (false, true))
+        LOGGER.warn ("The font '" +
+                     PhloxLogHelper.sanitise (aFont.getName ()) +
+                     "' does not have the character U+" +
+                     Integer.toHexString (nCodePoint).toUpperCase (Locale.ROOT) +
+                     ", which is lost in the PDF, and maybe more. Set a font family (PdfRenderContext.setFontFamily, 'pdf.fonts' in a theme or --font in the CLI).");
+    };
+  }
+
   @NonNull
   private PageLayoutPDF _build (@NonNull final PhloxInvoice aInvoice, @NonNull final PdfRenderContext aCtx)
   {
     final PageLayoutPDF aPdf = new PageLayoutPDF ();
+    final IPLMissingCodePointCallback aMissingCodePointCallback = aCtx.getMissingCodePointCallback ();
+    aPdf.setMissingCodePointCallback (aMissingCodePointCallback != null ? aMissingCodePointCallback
+                                                                        : _createMissingCodePointLogger ());
     _setDocumentProperties (aPdf, aInvoice, aCtx);
     _applyArchiveOptions (aPdf, aInvoice, aCtx);
 

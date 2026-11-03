@@ -38,6 +38,7 @@ References
 ----------
 
 - Project reference: Entwicklung System
+- Project name: Project reference
 - Contract reference: 0000000752
 - Purchase order reference: 10520
 
@@ -98,7 +99,7 @@ Supporting documents
 --------------------
 
 - 01_15_Anhang_01.pdf — Aufschlüsselung der einzelnen Leistungspositionen
-  (01_15_Anhang_01.pdf)
+  (01_15_Anhang_01.pdf, application/pdf)
 
 Specification identifier:
 urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0

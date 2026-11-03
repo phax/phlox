@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Artificial test file: every element that occurs once in EN 16931 occurs twice, see the README.md of this folder. Not a valid EN 16931 document. -->
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:CustomizationID>urn:cen.eu:en16931:2017</cbc:CustomizationID>
+  <cbc:ProfileID>urn:phlox:profile</cbc:ProfileID>
+  <cbc:ID>RPT21I-NUMBER</cbc:ID>
+  <cbc:IssueDate>2026-01-15</cbc:IssueDate>
+  <cbc:IssueTime>12:30:45</cbc:IssueTime>
+  <cbc:DueDate>2026-02-15</cbc:DueDate>
+  <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+  <cbc:Note>#AAI#RPT21I header note one</cbc:Note>
+  <cbc:Note>RPT21I header note two</cbc:Note>
+  <cbc:TaxPointDate>2026-01-10</cbc:TaxPointDate>
+  <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+  <cbc:TaxCurrencyCode>USD</cbc:TaxCurrencyCode>
+  <cbc:AccountingCost>RPT21I-ACCOUNT</cbc:AccountingCost>
+  <cbc:BuyerReference>RPT21I-BUYERREF</cbc:BuyerReference>
+  <cac:InvoicePeriod>
+    <cbc:StartDate>2026-01-01</cbc:StartDate>
+    <cbc:EndDate>2026-01-31</cbc:EndDate>
+    <cbc:DescriptionCode>35</cbc:DescriptionCode>
+  </cac:InvoicePeriod>
+  <cac:InvoicePeriod>
+    <cbc:StartDate>2025-03-03</cbc:StartDate>
+    <cbc:EndDate>2025-04-04</cbc:EndDate>
+    <cbc:DescriptionCode>3</cbc:DescriptionCode>
+  </cac:InvoicePeriod>
+  <cac:OrderReference>
+    <cbc:ID>RPT21I-ORDER</cbc:ID>
+    <cbc:SalesOrderID>RPT21I-SALESORDER</cbc:SalesOrderID>
+  </cac:OrderReference>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID>RPT21I-PRECEDING-1</cbc:ID>
+      <cbc:IssueDate>2025-05-05</cbc:IssueDate>
+      <cbc:DocumentTypeCode>380</cbc:DocumentTypeCode>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:BillingReference>
+    <cac:InvoiceDocumentReference>
+      <cbc:ID>RPT21I-PRECEDING-2</cbc:ID>
+    </cac:InvoiceDocumentReference>
+  </cac:BillingReference>
+  <cac:DespatchDocumentReference>
+    <cbc:ID>RPT21I-DESPATCH-1</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:DespatchDocumentReference>
+    <cbc:ID>RPT21I-DESPATCH-2</cbc:ID>
+  </cac:DespatchDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>RPT21I-RECEIPT-1</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:ReceiptDocumentReference>
+    <cbc:ID>RPT21I-RECEIPT-2</cbc:ID>
+  </cac:ReceiptDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>RPT21I-TENDER-1</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:OriginatorDocumentReference>
+    <cbc:ID>RPT21I-TENDER-2</cbc:ID>
+  </cac:OriginatorDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>RPT21I-CONTRACT-1</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:ContractDocumentReference>
+    <cbc:ID>RPT21I-CONTRACT-2</cbc:ID>
+  </cac:ContractDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID schemeID="AVE">RPT21I-OBJECT-1</cbc:ID>
+    <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID schemeID="AUN">RPT21I-OBJECT-2</cbc:ID>
+    <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>RPT21I-SUPPORT-1</cbc:ID>
+    <cbc:DocumentTypeCode>916</cbc:DocumentTypeCode>
+    <cbc:DocumentDescription>RPT21I description one</cbc:DocumentDescription>
+    <cbc:DocumentDescription>RPT21I description two</cbc:DocumentDescription>
+    <cac:Attachment>
+      <cbc:EmbeddedDocumentBinaryObject mimeCode="text/plain" filename="RPT21I-file.txt">cGhsb3g=</cbc:EmbeddedDocumentBinaryObject>
+      <cac:ExternalReference>
+        <cbc:URI>https://example.org/RPT21I/support</cbc:URI>
+      </cac:ExternalReference>
+    </cac:Attachment>
+  </cac:AdditionalDocumentReference>
+  <cac:AdditionalDocumentReference>
+    <cbc:ID>RPT21I-SUPPORT-2</cbc:ID>
+    <cbc:DocumentTypeCode>751</cbc:DocumentTypeCode>
+    <cac:Attachment>
+      <cbc:EmbeddedDocumentBinaryObject mimeCode="image/png">cGhsb3g=</cbc:EmbeddedDocumentBinaryObject>
+    </cac:Attachment>
+  </cac:AdditionalDocumentReference>
+  <cac:ProjectReference>
+    <cbc:ID>RPT21I-PROJECT-1</cbc:ID>
+  </cac:ProjectReference>
+  <cac:ProjectReference>
+    <cbc:ID>RPT21I-PROJECT-2</cbc:ID>
+  </cac:ProjectReference>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="9915">RPT21I-SELLER-ENDPOINT</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0088">RPT21I-SELLER-ID-1</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0060">RPT21I-SELLER-ID-2</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="SEPA">RPT21I-SELLER-SEPA</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>RPT21I SELLER trading one</cbc:Name>
+      </cac:PartyName>
+      <cac:PartyName>
+        <cbc:Name>RPT21I SELLER trading two</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>RPT21I SELLER street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I SELLER street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I SELLER city</cbc:CityName>
+        <cbc:PostalZone>RPT21I SELLER-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I SELLER region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I SELLER line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I SELLER line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-SELLER-VAT-1</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-SELLER-VAT-2</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID schemeID="FC">RPT21I-SELLER-TAX-1</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-SELLER-TAX-2</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-SELLER-TAX-3</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>NATIONAL</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>RPT21I SELLER legal one</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="0002">RPT21I-SELLER-LEGAL-1</cbc:CompanyID>
+        <cbc:CompanyLegalForm>RPT21I SELLER form one</cbc:CompanyLegalForm>
+      </cac:PartyLegalEntity>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>RPT21I SELLER legal two</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="0007">RPT21I-SELLER-LEGAL-2</cbc:CompanyID>
+        <cbc:CompanyLegalForm>RPT21I SELLER form two</cbc:CompanyLegalForm>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>RPT21I SELLER contact</cbc:Name>
+        <cbc:Telephone>+43 SELLER 1</cbc:Telephone>
+        <cbc:ElectronicMail>seller@example.org</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="9915">RPT21I-BUYER-ENDPOINT</cbc:EndpointID>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0088">RPT21I-BUYER-ID-1</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyIdentification>
+        <cbc:ID schemeID="0060">RPT21I-BUYER-ID-2</cbc:ID>
+      </cac:PartyIdentification>
+      <cac:PartyName>
+        <cbc:Name>RPT21I BUYER trading one</cbc:Name>
+      </cac:PartyName>
+      <cac:PartyName>
+        <cbc:Name>RPT21I BUYER trading two</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>RPT21I BUYER street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I BUYER street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I BUYER city</cbc:CityName>
+        <cbc:PostalZone>RPT21I BUYER-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I BUYER region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I BUYER line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I BUYER line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-BUYER-VAT-1</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-BUYER-VAT-2</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID schemeID="FC">RPT21I-BUYER-TAX-1</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-BUYER-TAX-2</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-BUYER-TAX-3</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>NATIONAL</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>RPT21I BUYER legal one</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="0002">RPT21I-BUYER-LEGAL-1</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>RPT21I BUYER legal two</cbc:RegistrationName>
+        <cbc:CompanyID schemeID="0007">RPT21I-BUYER-LEGAL-2</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:Name>RPT21I BUYER contact</cbc:Name>
+        <cbc:Telephone>+43 BUYER 1</cbc:Telephone>
+        <cbc:ElectronicMail>buyer@example.org</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:PayeeParty>
+    <cac:PartyIdentification>
+      <cbc:ID schemeID="0088">RPT21I-PAYEE-ID-1</cbc:ID>
+    </cac:PartyIdentification>
+    <cac:PartyIdentification>
+      <cbc:ID schemeID="0060">RPT21I-PAYEE-ID-2</cbc:ID>
+    </cac:PartyIdentification>
+    <cac:PartyIdentification>
+      <cbc:ID schemeID="SEPA">RPT21I-PAYEE-SEPA</cbc:ID>
+    </cac:PartyIdentification>
+    <cac:PartyName>
+      <cbc:Name>RPT21I payee one</cbc:Name>
+    </cac:PartyName>
+    <cac:PartyName>
+      <cbc:Name>RPT21I payee two</cbc:Name>
+    </cac:PartyName>
+    <cac:PartyLegalEntity>
+      <cbc:CompanyID schemeID="0002">RPT21I-PAYEE-LEGAL-1</cbc:CompanyID>
+    </cac:PartyLegalEntity>
+    <cac:PartyLegalEntity>
+      <cbc:CompanyID schemeID="0007">RPT21I-PAYEE-LEGAL-2</cbc:CompanyID>
+    </cac:PartyLegalEntity>
+  </cac:PayeeParty>
+  <cac:TaxRepresentativeParty>
+    <cac:PartyName>
+      <cbc:Name>RPT21I representative one</cbc:Name>
+    </cac:PartyName>
+    <cac:PartyName>
+      <cbc:Name>RPT21I representative two</cbc:Name>
+    </cac:PartyName>
+    <cac:PostalAddress>
+      <cbc:StreetName>RPT21I REP street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I REP street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I REP city</cbc:CityName>
+        <cbc:PostalZone>RPT21I REP-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I REP region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I REP line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I REP line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+    </cac:PostalAddress>
+    <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-REP-VAT-1</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+    <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-REP-VAT-2</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+    <cac:PartyTaxScheme>
+        <cbc:CompanyID>RPT21I-REP-TAX-1</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>LOC</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+  </cac:TaxRepresentativeParty>
+  <cac:Delivery>
+    <cbc:ActualDeliveryDate>2026-01-11</cbc:ActualDeliveryDate>
+    <cac:DeliveryLocation>
+      <cbc:ID schemeID="0088">RPT21I-LOCATION-1</cbc:ID>
+      <cac:Address>
+        <cbc:StreetName>RPT21I DELIVERY 1 street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I DELIVERY 1 street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I DELIVERY 1 city</cbc:CityName>
+        <cbc:PostalZone>RPT21I DELIVERY 1-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I DELIVERY 1 region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I DELIVERY 1 line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I DELIVERY 1 line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:Address>
+    </cac:DeliveryLocation>
+    <cac:DeliveryParty>
+      <cac:PartyName>
+        <cbc:Name>RPT21I delivery party 1</cbc:Name>
+      </cac:PartyName>
+      <cac:PartyName>
+        <cbc:Name>RPT21I delivery party 1 more</cbc:Name>
+      </cac:PartyName>
+    </cac:DeliveryParty>
+  </cac:Delivery>
+  <cac:Delivery>
+    <cbc:ActualDeliveryDate>2026-02-12</cbc:ActualDeliveryDate>
+    <cac:DeliveryLocation>
+      <cbc:ID schemeID="0088">RPT21I-LOCATION-2</cbc:ID>
+      <cac:Address>
+        <cbc:StreetName>RPT21I DELIVERY 2 street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I DELIVERY 2 street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I DELIVERY 2 city</cbc:CityName>
+        <cbc:PostalZone>RPT21I DELIVERY 2-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I DELIVERY 2 region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I DELIVERY 2 line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I DELIVERY 2 line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:Address>
+    </cac:DeliveryLocation>
+    <cac:DeliveryParty>
+      <cac:PartyName>
+        <cbc:Name>RPT21I delivery party 2</cbc:Name>
+      </cac:PartyName>
+      <cac:PartyName>
+        <cbc:Name>RPT21I delivery party 2 more</cbc:Name>
+      </cac:PartyName>
+    </cac:DeliveryParty>
+  </cac:Delivery>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode name="RPT21I means text one">58</cbc:PaymentMeansCode>
+    <cbc:PaymentDueDate>2026-03-31</cbc:PaymentDueDate>
+    <cbc:PaymentID>RPT21I-REMIT-1</cbc:PaymentID>
+    <cbc:PaymentID>RPT21I-REMIT-2</cbc:PaymentID>
+    <cac:CardAccount>
+      <cbc:PrimaryAccountNumberID>RPT21I-PAN-1</cbc:PrimaryAccountNumberID>
+      <cbc:NetworkID>VISA</cbc:NetworkID>
+      <cbc:HolderName>RPT21I holder one</cbc:HolderName>
+    </cac:CardAccount>
+    <cac:PayeeFinancialAccount>
+      <cbc:ID>RPT21I-IBAN-1</cbc:ID>
+      <cbc:Name>RPT21I account one</cbc:Name>
+      <cac:FinancialInstitutionBranch>
+        <cbc:ID>RPT21I-BIC-1</cbc:ID>
+      </cac:FinancialInstitutionBranch>
+    </cac:PayeeFinancialAccount>
+    <cac:PaymentMandate>
+      <cbc:ID>RPT21I-MANDATE-1</cbc:ID>
+      <cac:PayerFinancialAccount>
+        <cbc:ID>RPT21I-DEBIT-1</cbc:ID>
+        <cbc:Name>RPT21I debit name one</cbc:Name>
+        <cac:FinancialInstitutionBranch>
+          <cbc:ID>RPT21I-DEBITBIC-1</cbc:ID>
+        </cac:FinancialInstitutionBranch>
+      </cac:PayerFinancialAccount>
+    </cac:PaymentMandate>
+  </cac:PaymentMeans>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode name="RPT21I means text two">54</cbc:PaymentMeansCode>
+    <cbc:PaymentDueDate>2026-04-30</cbc:PaymentDueDate>
+    <cbc:PaymentID>RPT21I-REMIT-3</cbc:PaymentID>
+    <cac:CardAccount>
+      <cbc:PrimaryAccountNumberID>RPT21I-PAN-2</cbc:PrimaryAccountNumberID>
+      <cbc:NetworkID>VISA</cbc:NetworkID>
+      <cbc:HolderName>RPT21I holder two</cbc:HolderName>
+    </cac:CardAccount>
+    <cac:PayeeFinancialAccount>
+      <cbc:ID>RPT21I-IBAN-2</cbc:ID>
+    </cac:PayeeFinancialAccount>
+    <cac:PaymentMandate>
+      <cbc:ID>RPT21I-MANDATE-2</cbc:ID>
+      <cac:PayerFinancialAccount>
+        <cbc:ID>RPT21I-DEBIT-2</cbc:ID>
+        <cbc:Name>RPT21I debit name two</cbc:Name>
+        <cac:FinancialInstitutionBranch>
+          <cbc:ID>RPT21I-DEBITBIC-2</cbc:ID>
+        </cac:FinancialInstitutionBranch>
+      </cac:PayerFinancialAccount>
+    </cac:PaymentMandate>
+  </cac:PaymentMeans>
+  <cac:PaymentTerms>
+    <cbc:Note>RPT21I terms one</cbc:Note>
+    <cbc:Note>RPT21I terms two</cbc:Note>
+    <cbc:SettlementDiscountPercent>2.125</cbc:SettlementDiscountPercent>
+    <cbc:SettlementDiscountAmount currencyID="EUR">3.1415</cbc:SettlementDiscountAmount>
+    <cac:SettlementPeriod>
+      <cbc:EndDate>2026-05-15</cbc:EndDate>
+    </cac:SettlementPeriod>
+  </cac:PaymentTerms>
+  <cac:PaymentTerms>
+    <cbc:Note>RPT21I terms three</cbc:Note>
+    <cbc:PenaltyAmount currencyID="EUR">7.7777</cbc:PenaltyAmount>
+    <cac:PenaltyPeriod>
+      <cbc:StartDate>2026-06-16</cbc:StartDate>
+    </cac:PenaltyPeriod>
+  </cac:PaymentTerms>
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+    <cbc:AllowanceChargeReasonCode>95</cbc:AllowanceChargeReasonCode>
+    <cbc:AllowanceChargeReason>RPT21I ALLOWANCE reason one</cbc:AllowanceChargeReason>
+    <cbc:AllowanceChargeReason>RPT21I ALLOWANCE reason two</cbc:AllowanceChargeReason>
+    <cbc:MultiplierFactorNumeric>1.2345</cbc:MultiplierFactorNumeric>
+    <cbc:Amount currencyID="EUR">42.5</cbc:Amount>
+    <cbc:BaseAmount currencyID="EUR">44.5</cbc:BaseAmount>
+    <cac:TaxCategory>
+      <cbc:ID>E</cbc:ID>
+      <cbc:Percent>4</cbc:Percent>
+      <cbc:TaxExemptionReasonCode>VATEX-EU-132</cbc:TaxExemptionReasonCode>
+      <cbc:TaxExemptionReason>RPT21I ALLOWANCE exempt one</cbc:TaxExemptionReason>
+      <cbc:TaxExemptionReason>RPT21I ALLOWANCE exempt two</cbc:TaxExemptionReason>
+      <cac:TaxScheme>
+        <cbc:ID>VAT</cbc:ID>
+      </cac:TaxScheme>
+    </cac:TaxCategory>
+    <cac:TaxCategory>
+      <cbc:ID>Z</cbc:ID>
+      <cbc:Percent>6</cbc:Percent>
+      <cac:TaxScheme>
+        <cbc:ID>VAT</cbc:ID>
+      </cac:TaxScheme>
+    </cac:TaxCategory>
+  </cac:AllowanceCharge>
+  <cac:AllowanceCharge>
+    <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+    <cbc:AllowanceChargeReasonCode>AA</cbc:AllowanceChargeReasonCode>
+    <cbc:AllowanceChargeReason>RPT21I CHARGE reason one</cbc:AllowanceChargeReason>
+    <cbc:AllowanceChargeReason>RPT21I CHARGE reason two</cbc:AllowanceChargeReason>
+    <cbc:MultiplierFactorNumeric>1.2345</cbc:MultiplierFactorNumeric>
+    <cbc:Amount currencyID="EUR">41.5</cbc:Amount>
+    <cbc:BaseAmount currencyID="EUR">43.5</cbc:BaseAmount>
+    <cac:TaxCategory>
+      <cbc:ID>E</cbc:ID>
+      <cbc:Percent>3</cbc:Percent>
+      <cbc:TaxExemptionReasonCode>VATEX-EU-132</cbc:TaxExemptionReasonCode>
+      <cbc:TaxExemptionReason>RPT21I CHARGE exempt one</cbc:TaxExemptionReason>
+      <cbc:TaxExemptionReason>RPT21I CHARGE exempt two</cbc:TaxExemptionReason>
+      <cac:TaxScheme>
+        <cbc:ID>VAT</cbc:ID>
+      </cac:TaxScheme>
+    </cac:TaxCategory>
+    <cac:TaxCategory>
+      <cbc:ID>Z</cbc:ID>
+      <cbc:Percent>5</cbc:Percent>
+      <cac:TaxScheme>
+        <cbc:ID>VAT</cbc:ID>
+      </cac:TaxScheme>
+    </cac:TaxCategory>
+  </cac:AllowanceCharge>
+  <cac:TaxExchangeRate>
+    <cbc:SourceCurrencyCode>EUR</cbc:SourceCurrencyCode>
+    <cbc:TargetCurrencyCode>USD</cbc:TargetCurrencyCode>
+    <cbc:CalculationRate>1.2071</cbc:CalculationRate>
+  </cac:TaxExchangeRate>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="EUR">20.11</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="EUR">100.11</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="EUR">20.12</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>E</cbc:ID>
+        <cbc:Percent>0</cbc:Percent>
+        <cbc:TaxExemptionReasonCode>VATEX-EU-132</cbc:TaxExemptionReasonCode>
+        <cbc:TaxExemptionReason>RPT21I breakdown one</cbc:TaxExemptionReason>
+        <cbc:TaxExemptionReason>RPT21I breakdown two</cbc:TaxExemptionReason>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="USD">24.21</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="USD">120.21</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="USD">24.22</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>19.125</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="EUR">20.31</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="USD">24.41</cbc:TaxAmount>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="EUR">100.51</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="EUR">100.52</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="EUR">120.53</cbc:TaxInclusiveAmount>
+    <cbc:AllowanceTotalAmount currencyID="EUR">42.54</cbc:AllowanceTotalAmount>
+    <cbc:ChargeTotalAmount currencyID="EUR">41.55</cbc:ChargeTotalAmount>
+    <cbc:PrepaidAmount currencyID="EUR">10.56</cbc:PrepaidAmount>
+    <cbc:PayableRoundingAmount currencyID="EUR">0.57</cbc:PayableRoundingAmount>
+    <cbc:PayableAmount currencyID="EUR">110.58</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>RPT21I-L1</cbc:ID>
+    <cbc:Note>RPT21I line note one</cbc:Note>
+    <cbc:Note>RPT21I line note two</cbc:Note>
+    <cbc:InvoicedQuantity unitCode="C62">4.125</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="EUR">100.6123</cbc:LineExtensionAmount>
+    <cbc:AccountingCost>RPT21I-LINE-ACCOUNT</cbc:AccountingCost>
+    <cac:InvoicePeriod>
+      <cbc:StartDate>2024-01-01</cbc:StartDate>
+      <cbc:EndDate>2024-01-28</cbc:EndDate>
+    </cac:InvoicePeriod>
+    <cac:InvoicePeriod>
+      <cbc:StartDate>2024-02-01</cbc:StartDate>
+      <cbc:EndDate>2024-02-28</cbc:EndDate>
+    </cac:InvoicePeriod>
+    <cac:OrderLineReference>
+      <cbc:LineID>RPT21I-LINE-PO-1</cbc:LineID>
+      <cbc:SalesOrderLineID>RPT21I-LINE-SOL-1</cbc:SalesOrderLineID>
+      <cac:OrderReference>
+        <cbc:ID>RPT21I-LINE-ORDER-1</cbc:ID>
+        <cbc:SalesOrderID>RPT21I-LINE-SALES-1</cbc:SalesOrderID>
+      </cac:OrderReference>
+    </cac:OrderLineReference>
+    <cac:OrderLineReference>
+      <cbc:LineID>RPT21I-LINE-PO-2</cbc:LineID>
+      <cbc:SalesOrderLineID>RPT21I-LINE-SOL-2</cbc:SalesOrderLineID>
+      <cac:OrderReference>
+        <cbc:ID>RPT21I-LINE-ORDER-2</cbc:ID>
+        <cbc:SalesOrderID>RPT21I-LINE-SALES-2</cbc:SalesOrderID>
+      </cac:OrderReference>
+    </cac:OrderLineReference>
+    <cac:DespatchLineReference>
+      <cbc:LineID>RPT21I-LINE-DESPL-1</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>RPT21I-LINE-DESP-1</cbc:ID>
+      </cac:DocumentReference>
+    </cac:DespatchLineReference>
+    <cac:DespatchLineReference>
+      <cbc:LineID>RPT21I-LINE-DESPL-2</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>RPT21I-LINE-DESP-2</cbc:ID>
+      </cac:DocumentReference>
+    </cac:DespatchLineReference>
+    <cac:ReceiptLineReference>
+      <cbc:LineID>RPT21I-LINE-RECL-1</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>RPT21I-LINE-REC-1</cbc:ID>
+      </cac:DocumentReference>
+    </cac:ReceiptLineReference>
+    <cac:ReceiptLineReference>
+      <cbc:LineID>RPT21I-LINE-RECL-2</cbc:LineID>
+      <cac:DocumentReference>
+        <cbc:ID>RPT21I-LINE-REC-2</cbc:ID>
+      </cac:DocumentReference>
+    </cac:ReceiptLineReference>
+    <cac:BillingReference>
+      <cac:InvoiceDocumentReference>
+        <cbc:ID>RPT21I-LINE-PREV-1</cbc:ID>
+        <cbc:IssueDate>2023-03-03</cbc:IssueDate>
+        <cbc:DocumentTypeCode>380</cbc:DocumentTypeCode>
+      </cac:InvoiceDocumentReference>
+      <cac:BillingReferenceLine>
+        <cbc:ID>RPT21I-LINE-PREVL-1</cbc:ID>
+      </cac:BillingReferenceLine>
+      <cac:BillingReferenceLine>
+        <cbc:ID>RPT21I-LINE-PREVL-2</cbc:ID>
+      </cac:BillingReferenceLine>
+    </cac:BillingReference>
+    <cac:DocumentReference>
+      <cbc:ID schemeID="AVE">RPT21I-LINE-OBJECT-1</cbc:ID>
+      <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+    </cac:DocumentReference>
+    <cac:DocumentReference>
+      <cbc:ID schemeID="AUN">RPT21I-LINE-OBJECT-2</cbc:ID>
+      <cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+    </cac:DocumentReference>
+    <cac:DocumentReference>
+      <cbc:ID schemeID="ABC">RPT21I-LINE-OTHERDOC</cbc:ID>
+      <cbc:DocumentTypeCode>270</cbc:DocumentTypeCode>
+    </cac:DocumentReference>
+    <cac:Delivery>
+      <cbc:ActualDeliveryDate>2024-11-01</cbc:ActualDeliveryDate>
+      <cac:DeliveryLocation>
+        <cbc:ID schemeID="0088">RPT21I-LINE-LOCATION-1</cbc:ID>
+        <cac:Address>
+          <cbc:StreetName>RPT21I LINE DELIVERY 1 street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I LINE DELIVERY 1 street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I LINE DELIVERY 1 city</cbc:CityName>
+        <cbc:PostalZone>RPT21I LINE DELIVERY 1-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I LINE DELIVERY 1 region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I LINE DELIVERY 1 line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I LINE DELIVERY 1 line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+        </cac:Address>
+      </cac:DeliveryLocation>
+      <cac:DeliveryParty>
+        <cac:PartyName>
+          <cbc:Name>RPT21I line party 1</cbc:Name>
+        </cac:PartyName>
+      </cac:DeliveryParty>
+    </cac:Delivery>
+    <cac:Delivery>
+      <cbc:ActualDeliveryDate>2024-12-02</cbc:ActualDeliveryDate>
+      <cac:DeliveryLocation>
+        <cbc:ID schemeID="0088">RPT21I-LINE-LOCATION-2</cbc:ID>
+        <cac:Address>
+          <cbc:StreetName>RPT21I LINE DELIVERY 2 street</cbc:StreetName>
+        <cbc:AdditionalStreetName>RPT21I LINE DELIVERY 2 street 2</cbc:AdditionalStreetName>
+        <cbc:CityName>RPT21I LINE DELIVERY 2 city</cbc:CityName>
+        <cbc:PostalZone>RPT21I LINE DELIVERY 2-1010</cbc:PostalZone>
+        <cbc:CountrySubentity>RPT21I LINE DELIVERY 2 region</cbc:CountrySubentity>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I LINE DELIVERY 2 line one</cbc:Line>
+        </cac:AddressLine>
+        <cac:AddressLine>
+          <cbc:Line>RPT21I LINE DELIVERY 2 line two</cbc:Line>
+        </cac:AddressLine>
+        <cac:Country>
+          <cbc:IdentificationCode>AT</cbc:IdentificationCode>
+        </cac:Country>
+        </cac:Address>
+      </cac:DeliveryLocation>
+      <cac:DeliveryParty>
+        <cac:PartyName>
+          <cbc:Name>RPT21I line party 2</cbc:Name>
+        </cac:PartyName>
+      </cac:DeliveryParty>
+    </cac:Delivery>
+    <cac:AllowanceCharge>
+      <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+      <cbc:AllowanceChargeReasonCode>95</cbc:AllowanceChargeReasonCode>
+      <cbc:AllowanceChargeReason>RPT21I LINEALLOWANCE one</cbc:AllowanceChargeReason>
+      <cbc:AllowanceChargeReason>RPT21I LINEALLOWANCE two</cbc:AllowanceChargeReason>
+      <cbc:MultiplierFactorNumeric>3.456</cbc:MultiplierFactorNumeric>
+      <cbc:Amount currencyID="EUR">52.5</cbc:Amount>
+      <cbc:BaseAmount currencyID="EUR">54.5</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    <cac:AllowanceCharge>
+      <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+      <cbc:AllowanceChargeReasonCode>AA</cbc:AllowanceChargeReasonCode>
+      <cbc:AllowanceChargeReason>RPT21I LINECHARGE one</cbc:AllowanceChargeReason>
+      <cbc:AllowanceChargeReason>RPT21I LINECHARGE two</cbc:AllowanceChargeReason>
+      <cbc:MultiplierFactorNumeric>3.456</cbc:MultiplierFactorNumeric>
+      <cbc:Amount currencyID="EUR">51.5</cbc:Amount>
+      <cbc:BaseAmount currencyID="EUR">53.5</cbc:BaseAmount>
+    </cac:AllowanceCharge>
+    <cac:Item>
+      <cbc:Description>RPT21I item description one VERY-LONG-TOKEN-WITHOUT-ANY-SPACE-0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF-END</cbc:Description>
+      <cbc:Description>RPT21I item description two</cbc:Description>
+      <cbc:Name>RPT21I item name</cbc:Name>
+      <cac:BuyersItemIdentification>
+        <cbc:ID>RPT21I-BUYERITEM</cbc:ID>
+      </cac:BuyersItemIdentification>
+      <cac:SellersItemIdentification>
+        <cbc:ID>RPT21I-SELLERITEM</cbc:ID>
+      </cac:SellersItemIdentification>
+      <cac:StandardItemIdentification>
+        <cbc:ID schemeID="0160">RPT21I-STANDARDITEM</cbc:ID>
+      </cac:StandardItemIdentification>
+      <cac:OriginCountry>
+        <cbc:IdentificationCode>JP</cbc:IdentificationCode>
+      </cac:OriginCountry>
+      <cac:CommodityClassification>
+        <cbc:ItemClassificationCode listID="STI" listVersionID="LV1">RPT21I-CLASS-1</cbc:ItemClassificationCode>
+      </cac:CommodityClassification>
+      <cac:CommodityClassification>
+        <cbc:ItemClassificationCode listID="SRV" listVersionID="LV2">RPT21I-CLASS-2</cbc:ItemClassificationCode>
+      </cac:CommodityClassification>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>7.375</cbc:Percent>
+        <cbc:TaxExemptionReasonCode>VATEX-EU-79-C</cbc:TaxExemptionReasonCode>
+        <cbc:TaxExemptionReason>RPT21I line exempt one</cbc:TaxExemptionReason>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>K</cbc:ID>
+        <cbc:Percent>8.625</cbc:Percent>
+        <cbc:TaxExemptionReasonCode>VATEX-EU-IC</cbc:TaxExemptionReasonCode>
+        <cbc:TaxExemptionReason>RPT21I line exempt two</cbc:TaxExemptionReason>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+      <cac:AdditionalItemProperty>
+        <cbc:Name>RPT21I attribute</cbc:Name>
+        <cbc:NameCode>RPT21I-ATTRCODE</cbc:NameCode>
+        <cbc:Value>RPT21I attribute value</cbc:Value>
+        <cbc:ValueQuantity unitCode="KGM">6.5</cbc:ValueQuantity>
+      </cac:AdditionalItemProperty>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="EUR">24.3875</cbc:PriceAmount>
+      <cbc:BaseQuantity unitCode="C62">1</cbc:BaseQuantity>
+      <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:Amount currencyID="EUR">61.1234</cbc:Amount>
+        <cbc:BaseAmount currencyID="EUR">62.1234</cbc:BaseAmount>
+      </cac:AllowanceCharge>
+      <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+        <cbc:Amount currencyID="EUR">63.1234</cbc:Amount>
+        <cbc:BaseAmount currencyID="EUR">64.1234</cbc:BaseAmount>
+      </cac:AllowanceCharge>
+      <cac:AllowanceCharge>
+        <cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+        <cbc:Amount currencyID="EUR">65.1234</cbc:Amount>
+        <cbc:BaseAmount currencyID="EUR">66.1234</cbc:BaseAmount>
+      </cac:AllowanceCharge>
+    </cac:Price>
+  </cac:InvoiceLine>
+</Invoice>

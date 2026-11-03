@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Artificial test file: every element that occurs once in EN 16931 occurs twice, see the README.md of this folder. Not a valid EN 16931 document. -->
+<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100">
+  <rsm:ExchangedDocumentContext>
+    <ram:BusinessProcessSpecifiedDocumentContextParameter>
+      <ram:ID>RPTD25A-PROCESS-1</ram:ID>
+    </ram:BusinessProcessSpecifiedDocumentContextParameter>
+    <ram:BusinessProcessSpecifiedDocumentContextParameter>
+      <ram:ID>RPTD25A-PROCESS-2</ram:ID>
+    </ram:BusinessProcessSpecifiedDocumentContextParameter>
+    <ram:GuidelineSpecifiedDocumentContextParameter>
+      <ram:ID>urn:cen.eu:en16931:2026</ram:ID>
+    </ram:GuidelineSpecifiedDocumentContextParameter>
+    <ram:GuidelineSpecifiedDocumentContextParameter>
+      <ram:ID>RPTD25A-GUIDELINE-2</ram:ID>
+    </ram:GuidelineSpecifiedDocumentContextParameter>
+  </rsm:ExchangedDocumentContext>
+  <rsm:ExchangedDocument>
+    <ram:ID>RPTD25A-NUMBER</ram:ID>
+    <ram:TypeCode>380</ram:TypeCode>
+    <ram:IssueDateTime>
+      <udt:DateTimeString format="208">20260115123045+0100</udt:DateTimeString>
+    </ram:IssueDateTime>
+    <ram:IncludedNote>
+      <ram:Content>RPTD25A header note one</ram:Content>
+      <ram:Content>RPTD25A header note two</ram:Content>
+      <ram:SubjectCode>AAI</ram:SubjectCode>
+      <ram:SubjectCode>ACC</ram:SubjectCode>
+    </ram:IncludedNote>
+  </rsm:ExchangedDocument>
+  <rsm:SupplyChainTradeTransaction>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>RPTD25A-L1</ram:LineID>
+        <ram:IncludedNote>
+          <ram:Content>RPTD25A line note one</ram:Content>
+          <ram:Content>RPTD25A line note two</ram:Content>
+        </ram:IncludedNote>
+        <ram:IncludedNote>
+          <ram:Content>RPTD25A line note three</ram:Content>
+        </ram:IncludedNote>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:GlobalID schemeID="0160">RPTD25A-STANDARDITEM</ram:GlobalID>
+        <ram:SellerAssignedID>RPTD25A-SELLERITEM</ram:SellerAssignedID>
+        <ram:BuyerAssignedID>RPTD25A-BUYERITEM</ram:BuyerAssignedID>
+        <ram:Name>RPTD25A item name one</ram:Name>
+        <ram:Name>RPTD25A item name two</ram:Name>
+        <ram:Description>RPTD25A item description VERY-LONG-TOKEN-WITHOUT-ANY-SPACE-0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF-END</ram:Description>
+        <ram:ApplicableProductCharacteristic>
+          <ram:TypeCode>RPTD25A-ATTRCODE</ram:TypeCode>
+          <ram:Description>RPTD25A attribute one</ram:Description>
+          <ram:Description>RPTD25A attribute two</ram:Description>
+          <ram:ValueMeasure unitCode="KGM">6.5</ram:ValueMeasure>
+          <ram:Value>RPTD25A attribute value one</ram:Value>
+          <ram:Value>RPTD25A attribute value two</ram:Value>
+        </ram:ApplicableProductCharacteristic>
+        <ram:DesignatedProductClassification>
+          <ram:ClassCode listID="STI" listVersionID="LV1">RPTD25A-CLASS-1</ram:ClassCode>
+        </ram:DesignatedProductClassification>
+        <ram:DesignatedProductClassification>
+          <ram:ClassCode listID="SRV" listVersionID="LV2">RPTD25A-CLASS-2</ram:ClassCode>
+        </ram:DesignatedProductClassification>
+        <ram:OriginTradeCountry>
+          <ram:ID>JP</ram:ID>
+        </ram:OriginTradeCountry>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:SellerOrderReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-SALES</ram:IssuerAssignedID>
+          <ram:LineID>RPTD25A-LINE-SOL</ram:LineID>
+        </ram:SellerOrderReferencedDocument>
+        <ram:BuyerOrderReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-ORDER</ram:IssuerAssignedID>
+          <ram:LineID>RPTD25A-LINE-PO</ram:LineID>
+        </ram:BuyerOrderReferencedDocument>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>62.1234</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="KGM">3.5</ram:BasisQuantity>
+          <ram:AppliedTradeAllowanceCharge>
+            <ram:ChargeIndicator>
+              <udt:Indicator>false</udt:Indicator>
+            </ram:ChargeIndicator>
+            <ram:ActualAmount>61.1234</ram:ActualAmount>
+          </ram:AppliedTradeAllowanceCharge>
+          <ram:AppliedTradeAllowanceCharge>
+            <ram:ChargeIndicator>
+              <udt:Indicator>false</udt:Indicator>
+            </ram:ChargeIndicator>
+            <ram:ActualAmount>63.1234</ram:ActualAmount>
+          </ram:AppliedTradeAllowanceCharge>
+          <ram:AppliedTradeAllowanceCharge>
+            <ram:ChargeIndicator>
+              <udt:Indicator>true</udt:Indicator>
+            </ram:ChargeIndicator>
+            <ram:ActualAmount>65.1234</ram:ActualAmount>
+          </ram:AppliedTradeAllowanceCharge>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>24.3875</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">4.125</ram:BilledQuantity>
+        <ram:ShipToTradeParty>
+          <ram:ID>RPTD25A-LINE-LOCATION-1</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD25A-LINE-LOCATION-2</ram:GlobalID>
+          <ram:Name>RPTD25A line party</ram:Name>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD25A LINE DELIVERY-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD25A LINE DELIVERY street</ram:LineOne>
+            <ram:LineTwo>RPTD25A LINE DELIVERY street 2</ram:LineTwo>
+            <ram:LineThree>RPTD25A LINE DELIVERY street 3</ram:LineThree>
+            <ram:CityName>RPTD25A LINE DELIVERY city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD25A LINE DELIVERY region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+        </ram:ShipToTradeParty>
+        <ram:ActualDeliverySupplyChainEvent>
+          <ram:OccurrenceDateTime>
+            <udt:DateTimeString format="102">20241101</udt:DateTimeString>
+          </ram:OccurrenceDateTime>
+        </ram:ActualDeliverySupplyChainEvent>
+        <ram:DespatchAdviceReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-DESP</ram:IssuerAssignedID>
+          <ram:LineID>RPTD25A-LINE-DESPL</ram:LineID>
+        </ram:DespatchAdviceReferencedDocument>
+        <ram:ReceivingAdviceReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-REC</ram:IssuerAssignedID>
+          <ram:LineID>RPTD25A-LINE-RECL</ram:LineID>
+        </ram:ReceivingAdviceReferencedDocument>
+        <ram:DeliveryNoteReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-DELIVERYNOTE</ram:IssuerAssignedID>
+          <ram:LineID>RPTD25A-LINE-DELIVERYNOTELINE</ram:LineID>
+        </ram:DeliveryNoteReferencedDocument>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD25A line exempt 1</ram:ExemptionReason>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-79-C</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>7.175</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD25A line exempt 2</ram:ExemptionReason>
+          <ram:CategoryCode>K</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-79-C</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>7.275</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:BillingSpecifiedPeriod>
+          <ram:StartDateTime>
+            <udt:DateTimeString format="102">RPTD25A-NOT-A-DATE</udt:DateTimeString>
+          </ram:StartDateTime>
+          <ram:EndDateTime>
+            <udt:DateTimeString format="610">202401</udt:DateTimeString>
+          </ram:EndDateTime>
+        </ram:BillingSpecifiedPeriod>
+        <ram:SpecifiedTradeAllowanceCharge>
+          <ram:ChargeIndicator>
+            <udt:Indicator>false</udt:Indicator>
+          </ram:ChargeIndicator>
+          <ram:CalculationPercent>3.456</ram:CalculationPercent>
+          <ram:BasisAmount>54.5</ram:BasisAmount>
+          <ram:ActualAmount>52.5</ram:ActualAmount>
+          <ram:ReasonCode>95</ram:ReasonCode>
+          <ram:Reason>RPTD25A LINEALLOWANCE</ram:Reason>
+        </ram:SpecifiedTradeAllowanceCharge>
+        <ram:SpecifiedTradeAllowanceCharge>
+          <ram:ChargeIndicator>
+            <udt:Indicator>true</udt:Indicator>
+          </ram:ChargeIndicator>
+          <ram:CalculationPercent>3.456</ram:CalculationPercent>
+          <ram:BasisAmount>53.5</ram:BasisAmount>
+          <ram:ActualAmount>51.5</ram:ActualAmount>
+          <ram:ReasonCode>AA</ram:ReasonCode>
+          <ram:Reason>RPTD25A LINECHARGE</ram:Reason>
+        </ram:SpecifiedTradeAllowanceCharge>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>100.6123</ram:LineTotalAmount>
+          <ram:LineTotalAmount>100.7123</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+        <ram:InvoiceReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-PREV</ram:IssuerAssignedID>
+          <ram:LineID>RPTD25A-LINE-PREVL</ram:LineID>
+          <ram:TypeCode>380</ram:TypeCode>
+          <ram:FormattedIssueDateTime>
+            <qdt:DateTimeString format="102">20230303</qdt:DateTimeString>
+          </ram:FormattedIssueDateTime>
+        </ram:InvoiceReferencedDocument>
+        <ram:AdditionalReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-OBJECT-1</ram:IssuerAssignedID>
+          <ram:TypeCode>130</ram:TypeCode>
+          <ram:ReferenceTypeCode>AVE</ram:ReferenceTypeCode>
+        </ram:AdditionalReferencedDocument>
+        <ram:AdditionalReferencedDocument>
+          <ram:IssuerAssignedID>RPTD25A-LINE-OBJECT-2</ram:IssuerAssignedID>
+          <ram:TypeCode>130</ram:TypeCode>
+          <ram:ReferenceTypeCode>AUN</ram:ReferenceTypeCode>
+        </ram:AdditionalReferencedDocument>
+        <ram:AdditionalReferencedDocument>
+          <ram:IssuerAssignedID schemeID="ABC">RPTD25A-LINE-OTHERDOC</ram:IssuerAssignedID>
+          <ram:TypeCode>270</ram:TypeCode>
+        </ram:AdditionalReferencedDocument>
+        <ram:ReceivableSpecifiedTradeAccountingAccount>
+          <ram:ID>RPTD25A-LINE-ACCOUNT-1</ram:ID>
+        </ram:ReceivableSpecifiedTradeAccountingAccount>
+        <ram:ReceivableSpecifiedTradeAccountingAccount>
+          <ram:ID>RPTD25A-LINE-ACCOUNT-2</ram:ID>
+        </ram:ReceivableSpecifiedTradeAccountingAccount>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:ApplicableHeaderTradeAgreement>
+      <ram:BuyerReference>RPTD25A-BUYERREF</ram:BuyerReference>
+      <ram:BuyerReferenceID schemeID="AAA">RPTD25A-BUYERID</ram:BuyerReferenceID>
+      <ram:SellerTradeParty>
+          <ram:ID>RPTD25A-SELLER-ID</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD25A-SELLER-GLOBAL-1</ram:GlobalID>
+          <ram:GlobalID schemeID="0060">RPTD25A-SELLER-GLOBAL-2</ram:GlobalID>
+          <ram:Name>RPTD25A SELLER name</ram:Name>
+          <ram:Description>RPTD25A seller legal one</ram:Description>
+          <ram:Description>RPTD25A seller legal two</ram:Description>
+          <ram:SpecifiedLegalOrganization>
+            <ram:ID schemeID="0002">RPTD25A-SELLER-LEGAL</ram:ID>
+            <ram:TradingBusinessName>RPTD25A SELLER trading</ram:TradingBusinessName>
+          </ram:SpecifiedLegalOrganization>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD25A SELLER person 1</ram:PersonName>
+            <ram:DepartmentName>RPTD25A SELLER department 1</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 SELLER 1</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>seller1@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD25A SELLER person 2</ram:PersonName>
+            <ram:DepartmentName>RPTD25A SELLER department 2</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 SELLER 2</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>seller2@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD25A SELLER-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD25A SELLER street</ram:LineOne>
+            <ram:LineTwo>RPTD25A SELLER street 2</ram:LineTwo>
+            <ram:LineThree>RPTD25A SELLER street 3</ram:LineThree>
+            <ram:CityName>RPTD25A SELLER city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD25A SELLER region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="9915">RPTD25A-SELLER-URI-1</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="EM">RPTD25A-SELLER-URI-2</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD25A-SELLER-VAT-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD25A-SELLER-VAT-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="FC">RPTD25A-SELLER-TAX-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="0201">RPTD25A-SELLER-TAX-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+      </ram:SellerTradeParty>
+      <ram:BuyerTradeParty>
+          <ram:ID>RPTD25A-BUYER-ID</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD25A-BUYER-GLOBAL-1</ram:GlobalID>
+          <ram:GlobalID schemeID="0060">RPTD25A-BUYER-GLOBAL-2</ram:GlobalID>
+          <ram:Name>RPTD25A BUYER name</ram:Name>
+          <ram:SpecifiedLegalOrganization>
+            <ram:ID schemeID="0002">RPTD25A-BUYER-LEGAL</ram:ID>
+            <ram:TradingBusinessName>RPTD25A BUYER trading</ram:TradingBusinessName>
+          </ram:SpecifiedLegalOrganization>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD25A BUYER person 1</ram:PersonName>
+            <ram:DepartmentName>RPTD25A BUYER department 1</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 BUYER 1</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>buyer1@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD25A BUYER person 2</ram:PersonName>
+            <ram:DepartmentName>RPTD25A BUYER department 2</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 BUYER 2</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>buyer2@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD25A BUYER-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD25A BUYER street</ram:LineOne>
+            <ram:LineTwo>RPTD25A BUYER street 2</ram:LineTwo>
+            <ram:LineThree>RPTD25A BUYER street 3</ram:LineThree>
+            <ram:CityName>RPTD25A BUYER city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD25A BUYER region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="9915">RPTD25A-BUYER-URI-1</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="EM">RPTD25A-BUYER-URI-2</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD25A-BUYER-VAT-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD25A-BUYER-VAT-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="FC">RPTD25A-BUYER-TAX-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="0201">RPTD25A-BUYER-TAX-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+      </ram:BuyerTradeParty>
+      <ram:SellerTaxRepresentativeTradeParty>
+          <ram:Name>RPTD25A representative</ram:Name>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD25A REP-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD25A REP street</ram:LineOne>
+            <ram:LineTwo>RPTD25A REP street 2</ram:LineTwo>
+            <ram:LineThree>RPTD25A REP street 3</ram:LineThree>
+            <ram:CityName>RPTD25A REP city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD25A REP region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD25A-REP-VAT-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD25A-REP-VAT-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="FC">RPTD25A-REP-TAX-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="0201">RPTD25A-REP-TAX-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+      </ram:SellerTaxRepresentativeTradeParty>
+      <ram:SellerOrderReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-SALESORDER</ram:IssuerAssignedID>
+      </ram:SellerOrderReferencedDocument>
+      <ram:BuyerOrderReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-ORDER</ram:IssuerAssignedID>
+      </ram:BuyerOrderReferencedDocument>
+      <ram:ContractReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-CONTRACT</ram:IssuerAssignedID>
+      </ram:ContractReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-TENDER-1</ram:IssuerAssignedID>
+        <ram:TypeCode>50</ram:TypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-TENDER-2</ram:IssuerAssignedID>
+        <ram:TypeCode>50</ram:TypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-OBJECT-1</ram:IssuerAssignedID>
+        <ram:TypeCode>130</ram:TypeCode>
+        <ram:ReferenceTypeCode>AVE</ram:ReferenceTypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-OBJECT-2</ram:IssuerAssignedID>
+        <ram:TypeCode>130</ram:TypeCode>
+        <ram:ReferenceTypeCode>AUN</ram:ReferenceTypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-SUPPORT-1</ram:IssuerAssignedID>
+        <ram:URIID>https://example.org/RPTD25A/support</ram:URIID>
+        <ram:TypeCode>916</ram:TypeCode>
+        <ram:Name>RPTD25A description one</ram:Name>
+        <ram:Name>RPTD25A description two</ram:Name>
+        <ram:AttachmentBinaryObject mimeCode="text/plain" filename="RPTD25A-file-1.txt">cGhsb3g=</ram:AttachmentBinaryObject>
+        <ram:AttachmentBinaryObject mimeCode="text/csv" filename="RPTD25A-file-2.csv">cGhsb3g=</ram:AttachmentBinaryObject>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-SUPPORT-2</ram:IssuerAssignedID>
+        <ram:TypeCode>751</ram:TypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:SpecifiedProcuringProject>
+        <ram:ID>RPTD25A-PROJECT</ram:ID>
+        <ram:Name>RPTD25A project name</ram:Name>
+      </ram:SpecifiedProcuringProject>
+    </ram:ApplicableHeaderTradeAgreement>
+    <ram:ApplicableHeaderTradeDelivery>
+      <ram:ShipToTradeParty>
+          <ram:ID>RPTD25A-LOCATION-1</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD25A-LOCATION-2</ram:GlobalID>
+          <ram:Name>RPTD25A delivery party</ram:Name>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD25A DELIVERY-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD25A DELIVERY street</ram:LineOne>
+            <ram:LineTwo>RPTD25A DELIVERY street 2</ram:LineTwo>
+            <ram:LineThree>RPTD25A DELIVERY street 3</ram:LineThree>
+            <ram:CityName>RPTD25A DELIVERY city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD25A DELIVERY region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+      </ram:ShipToTradeParty>
+      <ram:ActualDeliverySupplyChainEvent>
+        <ram:OccurrenceDateTime>
+          <udt:DateTimeString format="102">20260111</udt:DateTimeString>
+        </ram:OccurrenceDateTime>
+      </ram:ActualDeliverySupplyChainEvent>
+      <ram:DespatchAdviceReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-DESPATCH</ram:IssuerAssignedID>
+      </ram:DespatchAdviceReferencedDocument>
+      <ram:ReceivingAdviceReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-RECEIPT</ram:IssuerAssignedID>
+      </ram:ReceivingAdviceReferencedDocument>
+      <ram:DeliveryNoteReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-DELIVERYNOTE</ram:IssuerAssignedID>
+      </ram:DeliveryNoteReferencedDocument>
+    </ram:ApplicableHeaderTradeDelivery>
+    <ram:ApplicableHeaderTradeSettlement>
+      <ram:CreditorReferenceID>RPTD25A-CREDITOR</ram:CreditorReferenceID>
+      <ram:PaymentReference>RPTD25A-REMIT-1</ram:PaymentReference>
+      <ram:PaymentReference>RPTD25A-REMIT-2</ram:PaymentReference>
+      <ram:TaxCurrencyCode>USD</ram:TaxCurrencyCode>
+      <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+      <ram:PayeeTradeParty>
+          <ram:ID>RPTD25A-PAYEE-ID</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD25A-PAYEE-GLOBAL-1</ram:GlobalID>
+          <ram:GlobalID schemeID="0060">RPTD25A-PAYEE-GLOBAL-2</ram:GlobalID>
+          <ram:Name>RPTD25A PAYEE name</ram:Name>
+          <ram:SpecifiedLegalOrganization>
+            <ram:ID schemeID="0002">RPTD25A-PAYEE-LEGAL</ram:ID>
+            <ram:TradingBusinessName>RPTD25A PAYEE trading</ram:TradingBusinessName>
+          </ram:SpecifiedLegalOrganization>
+      </ram:PayeeTradeParty>
+      <ram:InvoiceApplicableTradeCurrencyExchange>
+        <ram:SourceCurrencyCode>EUR</ram:SourceCurrencyCode>
+        <ram:TargetCurrencyCode>USD</ram:TargetCurrencyCode>
+        <ram:ConversionRate>1.2071</ram:ConversionRate>
+      </ram:InvoiceApplicableTradeCurrencyExchange>
+      <ram:SpecifiedTradeSettlementPaymentMeans>
+        <ram:TypeCode>58</ram:TypeCode>
+        <ram:Information>RPTD25A means text one</ram:Information>
+        <ram:Information>RPTD25A means text two</ram:Information>
+        <ram:ApplicableTradeSettlementFinancialCard>
+          <ram:ID>RPTD25A-PAN-1</ram:ID>
+          <ram:CardholderName>RPTD25A holder one</ram:CardholderName>
+        </ram:ApplicableTradeSettlementFinancialCard>
+        <ram:PayerPartyDebtorFinancialAccount>
+          <ram:IBANID>RPTD25A-DEBIT-1</ram:IBANID>
+          <ram:AccountName>RPTD25A debit name one</ram:AccountName>
+          <ram:ProprietaryID>RPTD25A-DEBIT-1B</ram:ProprietaryID>
+        </ram:PayerPartyDebtorFinancialAccount>
+        <ram:PayeePartyCreditorFinancialAccount>
+          <ram:IBANID>RPTD25A-IBAN-1</ram:IBANID>
+          <ram:AccountName>RPTD25A account one</ram:AccountName>
+          <ram:ProprietaryID>RPTD25A-IBAN-1B</ram:ProprietaryID>
+        </ram:PayeePartyCreditorFinancialAccount>
+        <ram:PayerSpecifiedDebtorFinancialInstitution>
+          <ram:BICID>RPTD25A-DEBITBIC-1</ram:BICID>
+        </ram:PayerSpecifiedDebtorFinancialInstitution>
+        <ram:PayeeSpecifiedCreditorFinancialInstitution>
+          <ram:BICID>RPTD25A-BIC-1</ram:BICID>
+        </ram:PayeeSpecifiedCreditorFinancialInstitution>
+      </ram:SpecifiedTradeSettlementPaymentMeans>
+      <ram:SpecifiedTradeSettlementPaymentMeans>
+        <ram:TypeCode>54</ram:TypeCode>
+        <ram:Information>RPTD25A means text three</ram:Information>
+        <ram:ApplicableTradeSettlementFinancialCard>
+          <ram:ID>RPTD25A-PAN-2</ram:ID>
+          <ram:CardholderName>RPTD25A holder two</ram:CardholderName>
+        </ram:ApplicableTradeSettlementFinancialCard>
+        <ram:PayerPartyDebtorFinancialAccount>
+          <ram:IBANID>RPTD25A-DEBIT-2</ram:IBANID>
+          <ram:AccountName>RPTD25A debit name two</ram:AccountName>
+        </ram:PayerPartyDebtorFinancialAccount>
+        <ram:PayeePartyCreditorFinancialAccount>
+          <ram:IBANID>RPTD25A-IBAN-2</ram:IBANID>
+        </ram:PayeePartyCreditorFinancialAccount>
+        <ram:PayerSpecifiedDebtorFinancialInstitution>
+          <ram:BICID>RPTD25A-DEBITBIC-2</ram:BICID>
+        </ram:PayerSpecifiedDebtorFinancialInstitution>
+      </ram:SpecifiedTradeSettlementPaymentMeans>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount>20.12</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:ExemptionReason>RPTD25A breakdown one</ram:ExemptionReason>
+        <ram:BasisAmount>100.11</ram:BasisAmount>
+        <ram:CategoryCode>E</ram:CategoryCode>
+        <ram:ExemptionReasonCode>VATEX-EU-132</ram:ExemptionReasonCode>
+        <ram:TaxPointDate>
+          <udt:DateString format="102">20260110</udt:DateString>
+        </ram:TaxPointDate>
+        <ram:DueDateTypeCode>5</ram:DueDateTypeCode>
+        <ram:RateApplicablePercent>0</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount currencyID="EUR">24.22</ram:CalculatedAmount>
+        <ram:CalculatedAmount currencyID="USD">24.23</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:BasisAmount>120.21</ram:BasisAmount>
+        <ram:BasisAmount>120.22</ram:BasisAmount>
+        <ram:CategoryCode>S</ram:CategoryCode>
+        <ram:CurrencyCode>USD</ram:CurrencyCode>
+        <ram:TaxPointDate>
+          <udt:DateString format="102">20260120</udt:DateString>
+        </ram:TaxPointDate>
+        <ram:DueDateTypeCode>29</ram:DueDateTypeCode>
+        <ram:RateApplicablePercent>19.125</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount>1.01</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:BasisAmount>1.02</ram:BasisAmount>
+        <ram:CategoryCode>Z</ram:CategoryCode>
+        <ram:TaxPointDate>
+          <udt:DateString format="102">RPTD25A-NOT-A-POINT-DATE</udt:DateString>
+        </ram:TaxPointDate>
+        <ram:DueDateTypeCode>RPTD25A-CODE</ram:DueDateTypeCode>
+        <ram:RateApplicablePercent>0</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:BillingSpecifiedPeriod>
+        <ram:StartDateTime>
+          <udt:DateTimeString format="102">20260101</udt:DateTimeString>
+        </ram:StartDateTime>
+        <ram:EndDateTime>
+          <udt:DateTimeString format="102">20260131</udt:DateTimeString>
+        </ram:EndDateTime>
+      </ram:BillingSpecifiedPeriod>
+      <ram:SpecifiedTradeAllowanceCharge>
+        <ram:ChargeIndicator>
+          <udt:Indicator>false</udt:Indicator>
+        </ram:ChargeIndicator>
+        <ram:CalculationPercent>1.2345</ram:CalculationPercent>
+        <ram:BasisAmount>44.5</ram:BasisAmount>
+        <ram:ActualAmount>42.5</ram:ActualAmount>
+        <ram:ReasonCode>95</ram:ReasonCode>
+        <ram:Reason>RPTD25A ALLOWANCE reason</ram:Reason>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD25A ALLOWANCE exempt</ram:ExemptionReason>
+          <ram:CategoryCode>E</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-132</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>4</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>Z</ram:CategoryCode>
+          <ram:RateApplicablePercent>6</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+      </ram:SpecifiedTradeAllowanceCharge>
+      <ram:SpecifiedTradeAllowanceCharge>
+        <ram:ChargeIndicator>
+          <udt:Indicator>true</udt:Indicator>
+        </ram:ChargeIndicator>
+        <ram:CalculationPercent>1.2345</ram:CalculationPercent>
+        <ram:BasisAmount>43.5</ram:BasisAmount>
+        <ram:ActualAmount>41.5</ram:ActualAmount>
+        <ram:ReasonCode>AA</ram:ReasonCode>
+        <ram:Reason>RPTD25A CHARGE reason</ram:Reason>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD25A CHARGE exempt</ram:ExemptionReason>
+          <ram:CategoryCode>E</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-132</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>3</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>Z</ram:CategoryCode>
+          <ram:RateApplicablePercent>5</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+      </ram:SpecifiedTradeAllowanceCharge>
+      <ram:SpecifiedTradePaymentTerms>
+        <ram:Description>RPTD25A terms one</ram:Description>
+        <ram:Description>RPTD25A terms two</ram:Description>
+        <ram:DueDateDateTime>
+          <udt:DateTimeString format="208">20260215123000+0100</udt:DateTimeString>
+        </ram:DueDateDateTime>
+        <ram:DirectDebitMandateID>RPTD25A-MANDATE-1</ram:DirectDebitMandateID>
+        <ram:DirectDebitMandateID>RPTD25A-MANDATE-2</ram:DirectDebitMandateID>
+        <ram:ApplicableTradePaymentPenaltyTerms>
+          <ram:BasisDateTime>
+            <udt:DateTimeString format="102">20260616</udt:DateTimeString>
+          </ram:BasisDateTime>
+          <ram:CalculationPercent>4.375</ram:CalculationPercent>
+          <ram:ActualPenaltyAmount>7.7777</ram:ActualPenaltyAmount>
+        </ram:ApplicableTradePaymentPenaltyTerms>
+        <ram:ApplicableTradePaymentDiscountTerms>
+          <ram:BasisDateTime>
+            <udt:DateTimeString format="102">20260515</udt:DateTimeString>
+          </ram:BasisDateTime>
+          <ram:CalculationPercent>2.125</ram:CalculationPercent>
+          <ram:ActualDiscountAmount>3.1415</ram:ActualDiscountAmount>
+        </ram:ApplicableTradePaymentDiscountTerms>
+      </ram:SpecifiedTradePaymentTerms>
+      <ram:SpecifiedTradePaymentTerms>
+        <ram:DueDateDateTime>
+          <udt:DateTimeString format="102">20260315</udt:DateTimeString>
+        </ram:DueDateDateTime>
+        <ram:DirectDebitMandateID>RPTD25A-MANDATE-3</ram:DirectDebitMandateID>
+      </ram:SpecifiedTradePaymentTerms>
+      <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+        <ram:LineTotalAmount>100.51</ram:LineTotalAmount>
+        <ram:LineTotalAmount>100.61</ram:LineTotalAmount>
+        <ram:ChargeTotalAmount>41.55</ram:ChargeTotalAmount>
+        <ram:AllowanceTotalAmount>42.54</ram:AllowanceTotalAmount>
+        <ram:TaxBasisTotalAmount>100.52</ram:TaxBasisTotalAmount>
+        <ram:TaxTotalAmount currencyID="EUR">20.11</ram:TaxTotalAmount>
+        <ram:TaxTotalAmount currencyID="USD">24.21</ram:TaxTotalAmount>
+        <ram:TaxTotalAmount currencyID="EUR">20.31</ram:TaxTotalAmount>
+        <ram:TaxTotalAmount currencyID="USD">24.41</ram:TaxTotalAmount>
+        <ram:RoundingAmount>0.57</ram:RoundingAmount>
+        <ram:GrandTotalAmount>120.53</ram:GrandTotalAmount>
+        <ram:TotalPrepaidAmount>10.56</ram:TotalPrepaidAmount>
+        <ram:DuePayableAmount>110.58</ram:DuePayableAmount>
+      </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+      <ram:SpecifiedFinancialAdjustment>
+        <ram:Reason>RPTD25A third party one</ram:Reason>
+        <ram:ActualAmount>5.61</ram:ActualAmount>
+      </ram:SpecifiedFinancialAdjustment>
+      <ram:InvoiceReferencedDocument>
+        <ram:IssuerAssignedID>RPTD25A-PRECEDING-1</ram:IssuerAssignedID>
+        <ram:TypeCode>380</ram:TypeCode>
+        <ram:FormattedIssueDateTime>
+          <qdt:DateTimeString format="102">20250505</qdt:DateTimeString>
+        </ram:FormattedIssueDateTime>
+      </ram:InvoiceReferencedDocument>
+      <ram:ReceivableSpecifiedTradeAccountingAccount>
+        <ram:ID>RPTD25A-ACCOUNT-1</ram:ID>
+      </ram:ReceivableSpecifiedTradeAccountingAccount>
+      <ram:ReceivableSpecifiedTradeAccountingAccount>
+        <ram:ID>RPTD25A-ACCOUNT-2</ram:ID>
+      </ram:ReceivableSpecifiedTradeAccountingAccount>
+    </ram:ApplicableHeaderTradeSettlement>
+  </rsm:SupplyChainTradeTransaction>
+</rsm:CrossIndustryInvoice>

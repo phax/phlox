@@ -94,15 +94,15 @@ public final class PhloxFormatTest
     final String sOverride = PhloxFormat.amount (new BigDecimal ("1250000"),
                                                  "JPY",
                                                  Locale.US,
-                                                 PhloxFormatOptions.defaults ().setAmountFractionDigits (Integer.valueOf (2)));
+                                                 PhloxFormatOptions.defaults ().setAmountMinFractionDigits (Integer.valueOf (2)));
     assertTrue (sOverride, sOverride.contains ("1,250,000.00"));
   }
 
   @Test
-  public void testAmountFractionDigitsOverride ()
+  public void testAmountMinFractionDigitsOverride ()
   {
     final BigDecimal aValue = new BigDecimal ("1.234");
-    final PhloxFormatOptions aOpts = PhloxFormatOptions.defaults ().setAmountFractionDigits (Integer.valueOf (3));
+    final PhloxFormatOptions aOpts = PhloxFormatOptions.defaults ().setAmountMinFractionDigits (Integer.valueOf (3));
     final String sOut = PhloxFormat.amount (aValue, "EUR", Locale.US, aOpts);
     assertTrue ("expected fraction-digit override to keep 3 decimals, got: " + sOut, sOut.contains ("1.234"));
   }
@@ -157,5 +157,21 @@ public final class PhloxFormatTest
     // The currency behind the number
     assertTrue (PhloxFormat.amount (aValue, "EUR", Locale.GERMANY, aOpts).endsWith ("\u00A0\u20AC"));
     assertTrue (PhloxFormat.percent (new BigDecimal ("19"), Locale.GERMANY, aOpts).endsWith ("\u00A0%"));
+  }
+
+  @Test
+  public void testNeverRounded ()
+  {
+    final PhloxFormatOptions aOptions = new PhloxFormatOptions ();
+    assertEquals ("€\u00A00.1212", PhloxFormat.amount (new BigDecimal ("0.1212"), "EUR", Locale.ENGLISH, null));
+    assertEquals ("€\u00A01.50", PhloxFormat.amount (new BigDecimal ("1.5000"), "EUR", Locale.ENGLISH, null));
+    assertEquals ("¥\u00A01,000.5", PhloxFormat.amount (new BigDecimal ("1000.5"), "JPY", Locale.ENGLISH, null));
+    assertEquals ("19.125%", PhloxFormat.percent (new BigDecimal ("19.125"), Locale.ENGLISH, aOptions));
+    assertEquals ("19.00%", PhloxFormat.percent (new BigDecimal ("19"), Locale.ENGLISH, aOptions));
+    assertEquals ("€\u00A01.2345",
+                  PhloxFormat.amount (new BigDecimal ("1.2345"),
+                                      "EUR",
+                                      Locale.ENGLISH,
+                                      new PhloxFormatOptions ().setAmountMinFractionDigits (Integer.valueOf (2))));
   }
 }

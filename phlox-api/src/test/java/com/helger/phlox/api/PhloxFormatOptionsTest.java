@@ -39,8 +39,8 @@ public final class PhloxFormatOptionsTest
     final PhloxFormatOptions aOpts = PhloxFormatOptions.defaults ();
     assertNotNull (aOpts);
     assertEquals (PhloxFormatOptions.DEFAULT_DATE_STYLE, aOpts.getDateStyle ());
-    assertNull (aOpts.getAmountFractionDigits ());
-    assertEquals (PhloxFormatOptions.DEFAULT_PERCENT_FRACTION_DIGITS, aOpts.getPercentFractionDigits ());
+    assertNull (aOpts.getAmountMinFractionDigits ());
+    assertEquals (PhloxFormatOptions.DEFAULT_PERCENT_MIN_FRACTION_DIGITS, aOpts.getPercentMinFractionDigits ());
     assertEquals (PhloxFormatOptions.DEFAULT_NEGATIVE_STYLE, aOpts.getNegativeStyle ());
   }
 
@@ -48,18 +48,18 @@ public final class PhloxFormatOptionsTest
   public void testClone ()
   {
     final PhloxFormatOptions aOpts = new PhloxFormatOptions ().setDateStyle (FormatStyle.LONG)
-                                                              .setAmountFractionDigits (Integer.valueOf (3))
-                                                              .setPercentFractionDigits (4)
+                                                              .setAmountMinFractionDigits (Integer.valueOf (3))
+                                                              .setPercentMinFractionDigits (4)
                                                               .setNegativeStyle (ENegativeStyle.PARENTHESES);
     final PhloxFormatOptions aClone = aOpts.getClone ();
     assertNotSame (aOpts, aClone);
     assertEquals (FormatStyle.LONG, aClone.getDateStyle ());
-    assertEquals (Integer.valueOf (3), aClone.getAmountFractionDigits ());
-    assertEquals (4, aClone.getPercentFractionDigits ());
+    assertEquals (Integer.valueOf (3), aClone.getAmountMinFractionDigits ());
+    assertEquals (4, aClone.getPercentMinFractionDigits ());
     assertEquals (ENegativeStyle.PARENTHESES, aClone.getNegativeStyle ());
 
-    aClone.setPercentFractionDigits (1);
-    assertEquals (4, aOpts.getPercentFractionDigits ());
+    aClone.setPercentMinFractionDigits (1);
+    assertEquals (4, aOpts.getPercentMinFractionDigits ());
   }
 
   @Test
@@ -67,8 +67,8 @@ public final class PhloxFormatOptionsTest
   {
     final PhloxFormatOptions aOpts = new PhloxFormatOptions ();
     assertSame (aOpts, aOpts.setDateStyle (FormatStyle.LONG));
-    assertSame (aOpts, aOpts.setAmountFractionDigits (Integer.valueOf (3)));
-    assertSame (aOpts, aOpts.setPercentFractionDigits (4));
+    assertSame (aOpts, aOpts.setAmountMinFractionDigits (Integer.valueOf (3)));
+    assertSame (aOpts, aOpts.setPercentMinFractionDigits (4));
     assertSame (aOpts, aOpts.setNegativeStyle (ENegativeStyle.PARENTHESES));
   }
 
@@ -76,12 +76,12 @@ public final class PhloxFormatOptionsTest
   public void testSettersStickValues ()
   {
     final PhloxFormatOptions aOpts = new PhloxFormatOptions ().setDateStyle (FormatStyle.LONG)
-                                                              .setAmountFractionDigits (Integer.valueOf (3))
-                                                              .setPercentFractionDigits (4)
+                                                              .setAmountMinFractionDigits (Integer.valueOf (3))
+                                                              .setPercentMinFractionDigits (4)
                                                               .setNegativeStyle (ENegativeStyle.PARENTHESES);
     assertEquals (FormatStyle.LONG, aOpts.getDateStyle ());
-    assertEquals (Integer.valueOf (3), aOpts.getAmountFractionDigits ());
-    assertEquals (4, aOpts.getPercentFractionDigits ());
+    assertEquals (Integer.valueOf (3), aOpts.getAmountMinFractionDigits ());
+    assertEquals (4, aOpts.getPercentMinFractionDigits ());
     assertEquals (ENegativeStyle.PARENTHESES, aOpts.getNegativeStyle ());
   }
 }

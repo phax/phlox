@@ -95,12 +95,12 @@ Notes
 Invoice lines
 -------------
 
-#  Description                                                                                                        Qty                   Unit price                   VAT  Line total
--  ---------------------------------------------------------------------------------------------------------------  -----  ---------------------------  --------------------  ----------
-1  Widget                                                                                                           4 one                      € 25.00  Standard rate 20.00%    € 100.00
-   A round widget                                                                                                            Item gross price: € 30.00
-   Item seller's identifier: SELLER-ART-1                                                                                  Item price discount: € 5.00
-   Item buyer's identifier: BUYER-ART-1
+#  Description                                                                                                        Qty                       Unit price                   VAT  Line total
+-  ---------------------------------------------------------------------------------------------------------------  -----  -------------------------------  --------------------  ----------
+1  Widget                                                                                                           4 one                          € 25.00  Standard rate 20.00%    € 100.00
+   A round widget                                                                                                                Item gross price: € 30.00
+   Item seller's identifier: SELLER-ART-1                                                                                      Item price discount: € 5.00
+   Item buyer's identifier: BUYER-ART-1                                                                                    Item price base quantity: 1 one
    Item standard identifier: 0160:1234567890128
    Item classification identifier: TST:CLASS-1 (Item classification identifier scheme version identifier: TST:1.0)
    Item country of origin: Austria
@@ -149,16 +149,16 @@ VAT Reverse charge (Reverse charge)         € 50.00     0.00%      € 0.00
 
   VAT category code AE: Reverse charge
 
-Sum of invoice line net amounts                      € 100.00
-Sum of allowances on document level                   -€ 5.00
-Sum of charges and taxes on document level           +€ 15.00
-Charges on behalf of a third party: Copyright levy    +€ 3.20
-Charges on behalf of a third party: Recycling fee     +€ 1.75
-Invoice total amount without VAT                     € 110.00
-Invoice total VAT amount                              € 22.00
-Invoice total VAT amount in VAT accounting currency   $ 24.20
-Invoice total amount with VAT                        € 132.00
-Paid amount                                          -€ 32.00
+Sum of invoice line net amounts                       € 100.00
+Sum of allowances on document level                    -€ 5.00
+Sum of charges and taxes on document level            +€ 15.00
+Charges on behalf of a third party 1: Copyright levy   +€ 3.20
+Charges on behalf of a third party 2: Recycling fee    +€ 1.75
+Invoice total amount without VAT                      € 110.00
+Invoice total VAT amount                               € 22.00
+Invoice total VAT amount in VAT accounting currency    $ 24.20
+Invoice total amount with VAT                         € 132.00
+Paid amount                                           -€ 32.00
 
 Amount due  € 100.00
 

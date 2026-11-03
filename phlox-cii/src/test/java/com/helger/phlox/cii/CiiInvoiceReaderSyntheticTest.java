@@ -294,12 +294,13 @@ public final class CiiInvoiceReaderSyntheticTest
     assertEquals (1, aModel.buyerReferences ().size ());
     assertEquals ("LEGACY-BUYER-REF", aModel.buyerReferences ().get (0).getValue ());
 
-    // The element of the binding has priority
+    // The element of the binding comes first, and the other one is shown as well
     final PhloxInvoice aModel2 = _read (D25A,
                                         _load (D25A, "</ram:BuyerReference>",
                                                               "</ram:BuyerReference>\n      <ram:BuyerReferenceID>NEW-REF</ram:BuyerReferenceID>"));
-    assertEquals (1, aModel2.buyerReferences ().size ());
+    assertEquals (2, aModel2.buyerReferences ().size ());
     assertEquals ("NEW-REF", aModel2.buyerReferences ().get (0).getValue ());
+    assertEquals ("LEGACY-BUYER-REF", aModel2.buyerReferences ().get (1).getValue ());
   }
 
   @Test

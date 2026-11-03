@@ -24,6 +24,7 @@ import org.jspecify.annotations.Nullable;
 import org.w3c.dom.Document;
 
 import com.helger.annotation.Nonempty;
+import com.helger.base.string.StringHelper;
 import com.helger.datetime.xml.XMLOffsetDate;
 import com.helger.diagnostics.error.SingleError;
 import com.helger.diagnostics.error.list.ErrorList;
@@ -46,6 +47,27 @@ import com.helger.xsds.ccts.cct.schemamodule.TextType;
  */
 abstract class AbstractUblInvoiceReader
 {
+  /** The tax scheme of a VAT identifier (BT-31, BT-48, BT-63). */
+  protected static final String TAX_SCHEME_VAT = "VAT";
+
+  /** The tax scheme of a national tax registration (BT-32) in the 2026 binding. */
+  protected static final String TAX_SCHEME_LOCAL = "LOC";
+
+  /** The label of a tax registration that EN 16931 has no term for. */
+  protected static final String TERM_TAX_REGISTRATION = "additional.taxregistration";
+
+  /** The label of a charge on the item price, which EN 16931 does not have. */
+  protected static final String TERM_PRICE_CHARGE = "additional.pricecharge";
+
+  /** The label of a document reference of a line that is no object identifier (BT-128). */
+  protected static final String TERM_LINE_DOCUMENT = "additional.linedocument";
+
+  /** The label of {@code cbc:InstructionNote} of a payment means, which is no term of EN 16931. */
+  protected static final String TERM_PAYMENT_INSTRUCTION_NOTE = "additional.paymentinstructionnote";
+
+  /** The label of {@code cbc:NetworkID} of a card account, which is no term of EN 16931. */
+  protected static final String TERM_CARD_NETWORK = "additional.cardnetwork";
+
   /** The scheme identifier of the SEPA creditor identifier (BT-90) in a party identification. */
   protected static final String SEPA_SCHEME_ID = EN16931CodeLists.CREDITOR_REFERENCE_SCHEME_ID;
 
@@ -154,12 +176,6 @@ abstract class AbstractUblInvoiceReader
     return aDate == null ? null : aDate.toLocalDate ();
   }
 
-  @Nullable
-  protected static String firstText (@NonNull final List <? extends TextType> aTexts)
-  {
-    return aTexts.isEmpty () ? null : str (aTexts.get (0).getValue ());
-  }
-
   @NonNull
   protected static String joinNotes (@NonNull final List <? extends TextType> aNotes)
   {
@@ -177,6 +193,19 @@ abstract class AbstractUblInvoiceReader
   }
 
   /**
+   * Join all texts of a repeated element, each on a line of its own.
+   *
+   * @param aTexts
+   *        The elements. Never {@code null}.
+   * @return The joined text or {@code null} if nothing remains.
+   */
+  @Nullable
+  protected static String joinTexts (@NonNull final List <? extends TextType> aTexts)
+  {
+    return str (joinNotes (aTexts));
+  }
+
+  /**
    * Convert any UBL identifier element (ID, CompanyID, EndpointID, ...) into a model identifier
    * without touching the value.
    *
@@ -189,6 +218,24 @@ abstract class AbstractUblInvoiceReader
   protected static PhloxIdentifier identifier (@Nullable final IdentifierType aID)
   {
     return aID == null ? null : new PhloxIdentifier (str (aID.getValue ()), str (aID.getSchemeID ()));
+  }
+
+  /**
+   * Get the text of a document reference of a line that is no object identifier (BT-128).
+   *
+   * @param aID
+   *        The identifier element. Never {@code null}.
+   * @param sTypeCode
+   *        The type code of the document. May be {@code null}.
+   * @return The identifier with its scheme, followed by the type code.
+   */
+  @NonNull
+  protected static String getLineDocumentText (@NonNull final IdentifierType aID, @Nullable final String sTypeCode)
+  {
+    final String sScheme = str (aID.getSchemeID ());
+    return (sScheme == null ? "" : sScheme + ":") +
+           StringHelper.getNotNull (str (aID.getValue ())) +
+           (sTypeCode == null ? "" : " (" + sTypeCode + ")");
   }
 
   /**

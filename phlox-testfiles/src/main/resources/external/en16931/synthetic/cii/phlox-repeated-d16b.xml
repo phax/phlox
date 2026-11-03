@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Artificial test file: every element that occurs once in EN 16931 occurs twice, see the README.md of this folder. Not a valid EN 16931 document. -->
+<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100">
+  <rsm:ExchangedDocumentContext>
+    <ram:BusinessProcessSpecifiedDocumentContextParameter>
+      <ram:ID>RPTD16B-PROCESS-1</ram:ID>
+    </ram:BusinessProcessSpecifiedDocumentContextParameter>
+    <ram:BusinessProcessSpecifiedDocumentContextParameter>
+      <ram:ID>RPTD16B-PROCESS-2</ram:ID>
+    </ram:BusinessProcessSpecifiedDocumentContextParameter>
+    <ram:GuidelineSpecifiedDocumentContextParameter>
+      <ram:ID>urn:cen.eu:en16931:2017</ram:ID>
+    </ram:GuidelineSpecifiedDocumentContextParameter>
+    <ram:GuidelineSpecifiedDocumentContextParameter>
+      <ram:ID>RPTD16B-GUIDELINE-2</ram:ID>
+    </ram:GuidelineSpecifiedDocumentContextParameter>
+  </rsm:ExchangedDocumentContext>
+  <rsm:ExchangedDocument>
+    <ram:ID>RPTD16B-NUMBER</ram:ID>
+    <ram:TypeCode>380</ram:TypeCode>
+    <ram:IssueDateTime>
+      <udt:DateTimeString format="208">20260115123045+0100</udt:DateTimeString>
+    </ram:IssueDateTime>
+    <ram:IncludedNote>
+      <ram:Content>RPTD16B header note one</ram:Content>
+      <ram:Content>RPTD16B header note two</ram:Content>
+      <ram:SubjectCode>AAI</ram:SubjectCode>
+    </ram:IncludedNote>
+  </rsm:ExchangedDocument>
+  <rsm:SupplyChainTradeTransaction>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>RPTD16B-L1</ram:LineID>
+        <ram:IncludedNote>
+          <ram:Content>RPTD16B line note one</ram:Content>
+          <ram:Content>RPTD16B line note two</ram:Content>
+        </ram:IncludedNote>
+        <ram:IncludedNote>
+          <ram:Content>RPTD16B line note three</ram:Content>
+        </ram:IncludedNote>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:GlobalID schemeID="0160">RPTD16B-STANDARDITEM</ram:GlobalID>
+        <ram:SellerAssignedID>RPTD16B-SELLERITEM</ram:SellerAssignedID>
+        <ram:BuyerAssignedID>RPTD16B-BUYERITEM</ram:BuyerAssignedID>
+        <ram:Name>RPTD16B item name one</ram:Name>
+        <ram:Name>RPTD16B item name two</ram:Name>
+        <ram:Description>RPTD16B item description VERY-LONG-TOKEN-WITHOUT-ANY-SPACE-0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF-END</ram:Description>
+        <ram:ApplicableProductCharacteristic>
+          <ram:TypeCode>RPTD16B-ATTRCODE</ram:TypeCode>
+          <ram:Description>RPTD16B attribute one</ram:Description>
+          <ram:Description>RPTD16B attribute two</ram:Description>
+          <ram:ValueMeasure unitCode="KGM">6.5</ram:ValueMeasure>
+          <ram:Value>RPTD16B attribute value one</ram:Value>
+          <ram:Value>RPTD16B attribute value two</ram:Value>
+        </ram:ApplicableProductCharacteristic>
+        <ram:DesignatedProductClassification>
+          <ram:ClassCode listID="STI" listVersionID="LV1">RPTD16B-CLASS-1</ram:ClassCode>
+        </ram:DesignatedProductClassification>
+        <ram:DesignatedProductClassification>
+          <ram:ClassCode listID="SRV" listVersionID="LV2">RPTD16B-CLASS-2</ram:ClassCode>
+        </ram:DesignatedProductClassification>
+        <ram:OriginTradeCountry>
+          <ram:ID>JP</ram:ID>
+        </ram:OriginTradeCountry>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:SellerOrderReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-SALES</ram:IssuerAssignedID>
+          <ram:LineID>RPTD16B-LINE-SOL</ram:LineID>
+        </ram:SellerOrderReferencedDocument>
+        <ram:BuyerOrderReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-ORDER</ram:IssuerAssignedID>
+          <ram:LineID>RPTD16B-LINE-PO</ram:LineID>
+        </ram:BuyerOrderReferencedDocument>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>62.1234</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="KGM">3.5</ram:BasisQuantity>
+          <ram:AppliedTradeAllowanceCharge>
+            <ram:ChargeIndicator>
+              <udt:Indicator>false</udt:Indicator>
+            </ram:ChargeIndicator>
+            <ram:ActualAmount>61.1234</ram:ActualAmount>
+          </ram:AppliedTradeAllowanceCharge>
+          <ram:AppliedTradeAllowanceCharge>
+            <ram:ChargeIndicator>
+              <udt:Indicator>false</udt:Indicator>
+            </ram:ChargeIndicator>
+            <ram:ActualAmount>63.1234</ram:ActualAmount>
+          </ram:AppliedTradeAllowanceCharge>
+          <ram:AppliedTradeAllowanceCharge>
+            <ram:ChargeIndicator>
+              <udt:Indicator>true</udt:Indicator>
+            </ram:ChargeIndicator>
+            <ram:ActualAmount>65.1234</ram:ActualAmount>
+          </ram:AppliedTradeAllowanceCharge>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>24.3875</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">4.125</ram:BilledQuantity>
+        <ram:ShipToTradeParty>
+          <ram:ID>RPTD16B-LINE-LOCATION-1</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD16B-LINE-LOCATION-2</ram:GlobalID>
+          <ram:Name>RPTD16B line party</ram:Name>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD16B LINE DELIVERY-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD16B LINE DELIVERY street</ram:LineOne>
+            <ram:LineTwo>RPTD16B LINE DELIVERY street 2</ram:LineTwo>
+            <ram:LineThree>RPTD16B LINE DELIVERY street 3</ram:LineThree>
+            <ram:CityName>RPTD16B LINE DELIVERY city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD16B LINE DELIVERY region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+        </ram:ShipToTradeParty>
+        <ram:ActualDeliverySupplyChainEvent>
+          <ram:OccurrenceDateTime>
+            <udt:DateTimeString format="102">20241101</udt:DateTimeString>
+          </ram:OccurrenceDateTime>
+        </ram:ActualDeliverySupplyChainEvent>
+        <ram:DespatchAdviceReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-DESP</ram:IssuerAssignedID>
+          <ram:LineID>RPTD16B-LINE-DESPL</ram:LineID>
+        </ram:DespatchAdviceReferencedDocument>
+        <ram:ReceivingAdviceReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-REC</ram:IssuerAssignedID>
+          <ram:LineID>RPTD16B-LINE-RECL</ram:LineID>
+        </ram:ReceivingAdviceReferencedDocument>
+        <ram:DeliveryNoteReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-DELIVERYNOTE</ram:IssuerAssignedID>
+          <ram:LineID>RPTD16B-LINE-DELIVERYNOTELINE</ram:LineID>
+        </ram:DeliveryNoteReferencedDocument>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD16B line exempt 1</ram:ExemptionReason>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-79-C</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>7.175</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD16B line exempt 2</ram:ExemptionReason>
+          <ram:CategoryCode>K</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-79-C</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>7.275</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:BillingSpecifiedPeriod>
+          <ram:StartDateTime>
+            <udt:DateTimeString format="102">RPTD16B-NOT-A-DATE</udt:DateTimeString>
+          </ram:StartDateTime>
+          <ram:EndDateTime>
+            <udt:DateTimeString format="610">202401</udt:DateTimeString>
+          </ram:EndDateTime>
+        </ram:BillingSpecifiedPeriod>
+        <ram:SpecifiedTradeAllowanceCharge>
+          <ram:ChargeIndicator>
+            <udt:Indicator>false</udt:Indicator>
+          </ram:ChargeIndicator>
+          <ram:CalculationPercent>3.456</ram:CalculationPercent>
+          <ram:BasisAmount>54.5</ram:BasisAmount>
+          <ram:ActualAmount>52.5</ram:ActualAmount>
+          <ram:ReasonCode>95</ram:ReasonCode>
+          <ram:Reason>RPTD16B LINEALLOWANCE</ram:Reason>
+        </ram:SpecifiedTradeAllowanceCharge>
+        <ram:SpecifiedTradeAllowanceCharge>
+          <ram:ChargeIndicator>
+            <udt:Indicator>true</udt:Indicator>
+          </ram:ChargeIndicator>
+          <ram:CalculationPercent>3.456</ram:CalculationPercent>
+          <ram:BasisAmount>53.5</ram:BasisAmount>
+          <ram:ActualAmount>51.5</ram:ActualAmount>
+          <ram:ReasonCode>AA</ram:ReasonCode>
+          <ram:Reason>RPTD16B LINECHARGE</ram:Reason>
+        </ram:SpecifiedTradeAllowanceCharge>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>100.6123</ram:LineTotalAmount>
+          <ram:LineTotalAmount>100.7123</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+        <ram:InvoiceReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-PREV</ram:IssuerAssignedID>
+          <ram:LineID>RPTD16B-LINE-PREVL</ram:LineID>
+          <ram:TypeCode>380</ram:TypeCode>
+          <ram:FormattedIssueDateTime>
+            <qdt:DateTimeString format="102">20230303</qdt:DateTimeString>
+          </ram:FormattedIssueDateTime>
+        </ram:InvoiceReferencedDocument>
+        <ram:AdditionalReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-OBJECT-1</ram:IssuerAssignedID>
+          <ram:TypeCode>130</ram:TypeCode>
+          <ram:ReferenceTypeCode>AVE</ram:ReferenceTypeCode>
+        </ram:AdditionalReferencedDocument>
+        <ram:AdditionalReferencedDocument>
+          <ram:IssuerAssignedID>RPTD16B-LINE-OBJECT-2</ram:IssuerAssignedID>
+          <ram:TypeCode>130</ram:TypeCode>
+          <ram:ReferenceTypeCode>AUN</ram:ReferenceTypeCode>
+        </ram:AdditionalReferencedDocument>
+        <ram:AdditionalReferencedDocument>
+          <ram:IssuerAssignedID schemeID="ABC">RPTD16B-LINE-OTHERDOC</ram:IssuerAssignedID>
+          <ram:TypeCode>270</ram:TypeCode>
+        </ram:AdditionalReferencedDocument>
+        <ram:ReceivableSpecifiedTradeAccountingAccount>
+          <ram:ID>RPTD16B-LINE-ACCOUNT-1</ram:ID>
+        </ram:ReceivableSpecifiedTradeAccountingAccount>
+        <ram:ReceivableSpecifiedTradeAccountingAccount>
+          <ram:ID>RPTD16B-LINE-ACCOUNT-2</ram:ID>
+        </ram:ReceivableSpecifiedTradeAccountingAccount>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:ApplicableHeaderTradeAgreement>
+      <ram:BuyerReference>RPTD16B-BUYERREF</ram:BuyerReference>
+      <ram:SellerTradeParty>
+          <ram:ID>RPTD16B-SELLER-ID</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD16B-SELLER-GLOBAL-1</ram:GlobalID>
+          <ram:GlobalID schemeID="0060">RPTD16B-SELLER-GLOBAL-2</ram:GlobalID>
+          <ram:Name>RPTD16B SELLER name</ram:Name>
+          <ram:Description>RPTD16B seller legal one</ram:Description>
+          <ram:Description>RPTD16B seller legal two</ram:Description>
+          <ram:SpecifiedLegalOrganization>
+            <ram:ID schemeID="0002">RPTD16B-SELLER-LEGAL</ram:ID>
+            <ram:TradingBusinessName>RPTD16B SELLER trading</ram:TradingBusinessName>
+          </ram:SpecifiedLegalOrganization>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD16B SELLER person 1</ram:PersonName>
+            <ram:DepartmentName>RPTD16B SELLER department 1</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 SELLER 1</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>seller1@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD16B SELLER person 2</ram:PersonName>
+            <ram:DepartmentName>RPTD16B SELLER department 2</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 SELLER 2</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>seller2@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD16B SELLER-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD16B SELLER street</ram:LineOne>
+            <ram:LineTwo>RPTD16B SELLER street 2</ram:LineTwo>
+            <ram:LineThree>RPTD16B SELLER street 3</ram:LineThree>
+            <ram:CityName>RPTD16B SELLER city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD16B SELLER region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="9915">RPTD16B-SELLER-URI-1</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="EM">RPTD16B-SELLER-URI-2</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD16B-SELLER-VAT-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD16B-SELLER-VAT-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="FC">RPTD16B-SELLER-TAX-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="0201">RPTD16B-SELLER-TAX-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+      </ram:SellerTradeParty>
+      <ram:BuyerTradeParty>
+          <ram:ID>RPTD16B-BUYER-ID</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD16B-BUYER-GLOBAL-1</ram:GlobalID>
+          <ram:GlobalID schemeID="0060">RPTD16B-BUYER-GLOBAL-2</ram:GlobalID>
+          <ram:Name>RPTD16B BUYER name</ram:Name>
+          <ram:SpecifiedLegalOrganization>
+            <ram:ID schemeID="0002">RPTD16B-BUYER-LEGAL</ram:ID>
+            <ram:TradingBusinessName>RPTD16B BUYER trading</ram:TradingBusinessName>
+          </ram:SpecifiedLegalOrganization>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD16B BUYER person 1</ram:PersonName>
+            <ram:DepartmentName>RPTD16B BUYER department 1</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 BUYER 1</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>buyer1@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:DefinedTradeContact>
+            <ram:PersonName>RPTD16B BUYER person 2</ram:PersonName>
+            <ram:DepartmentName>RPTD16B BUYER department 2</ram:DepartmentName>
+            <ram:TelephoneUniversalCommunication>
+              <ram:CompleteNumber>+43 BUYER 2</ram:CompleteNumber>
+            </ram:TelephoneUniversalCommunication>
+            <ram:EmailURIUniversalCommunication>
+              <ram:URIID>buyer2@example.org</ram:URIID>
+            </ram:EmailURIUniversalCommunication>
+          </ram:DefinedTradeContact>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD16B BUYER-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD16B BUYER street</ram:LineOne>
+            <ram:LineTwo>RPTD16B BUYER street 2</ram:LineTwo>
+            <ram:LineThree>RPTD16B BUYER street 3</ram:LineThree>
+            <ram:CityName>RPTD16B BUYER city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD16B BUYER region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="9915">RPTD16B-BUYER-URI-1</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:URIUniversalCommunication>
+            <ram:URIID schemeID="EM">RPTD16B-BUYER-URI-2</ram:URIID>
+          </ram:URIUniversalCommunication>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD16B-BUYER-VAT-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD16B-BUYER-VAT-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="FC">RPTD16B-BUYER-TAX-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="0201">RPTD16B-BUYER-TAX-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+      </ram:BuyerTradeParty>
+      <ram:SellerTaxRepresentativeTradeParty>
+          <ram:Name>RPTD16B representative</ram:Name>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD16B REP-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD16B REP street</ram:LineOne>
+            <ram:LineTwo>RPTD16B REP street 2</ram:LineTwo>
+            <ram:LineThree>RPTD16B REP street 3</ram:LineThree>
+            <ram:CityName>RPTD16B REP city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD16B REP region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD16B-REP-VAT-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="VA">RPTD16B-REP-VAT-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="FC">RPTD16B-REP-TAX-1</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+          <ram:SpecifiedTaxRegistration>
+            <ram:ID schemeID="0201">RPTD16B-REP-TAX-2</ram:ID>
+          </ram:SpecifiedTaxRegistration>
+      </ram:SellerTaxRepresentativeTradeParty>
+      <ram:SellerOrderReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-SALESORDER</ram:IssuerAssignedID>
+      </ram:SellerOrderReferencedDocument>
+      <ram:BuyerOrderReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-ORDER</ram:IssuerAssignedID>
+      </ram:BuyerOrderReferencedDocument>
+      <ram:ContractReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-CONTRACT</ram:IssuerAssignedID>
+      </ram:ContractReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-TENDER-1</ram:IssuerAssignedID>
+        <ram:TypeCode>50</ram:TypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-TENDER-2</ram:IssuerAssignedID>
+        <ram:TypeCode>50</ram:TypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-OBJECT-1</ram:IssuerAssignedID>
+        <ram:TypeCode>130</ram:TypeCode>
+        <ram:ReferenceTypeCode>AVE</ram:ReferenceTypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-OBJECT-2</ram:IssuerAssignedID>
+        <ram:TypeCode>130</ram:TypeCode>
+        <ram:ReferenceTypeCode>AUN</ram:ReferenceTypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-SUPPORT-1</ram:IssuerAssignedID>
+        <ram:URIID>https://example.org/RPTD16B/support</ram:URIID>
+        <ram:TypeCode>916</ram:TypeCode>
+        <ram:Name>RPTD16B description one</ram:Name>
+        <ram:Name>RPTD16B description two</ram:Name>
+        <ram:AttachmentBinaryObject mimeCode="text/plain" filename="RPTD16B-file-1.txt">cGhsb3g=</ram:AttachmentBinaryObject>
+        <ram:AttachmentBinaryObject mimeCode="text/csv" filename="RPTD16B-file-2.csv">cGhsb3g=</ram:AttachmentBinaryObject>
+      </ram:AdditionalReferencedDocument>
+      <ram:AdditionalReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-SUPPORT-2</ram:IssuerAssignedID>
+        <ram:TypeCode>751</ram:TypeCode>
+      </ram:AdditionalReferencedDocument>
+      <ram:SpecifiedProcuringProject>
+        <ram:ID>RPTD16B-PROJECT</ram:ID>
+        <ram:Name>RPTD16B project name</ram:Name>
+      </ram:SpecifiedProcuringProject>
+    </ram:ApplicableHeaderTradeAgreement>
+    <ram:ApplicableHeaderTradeDelivery>
+      <ram:ShipToTradeParty>
+          <ram:ID>RPTD16B-LOCATION-1</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD16B-LOCATION-2</ram:GlobalID>
+          <ram:Name>RPTD16B delivery party</ram:Name>
+          <ram:PostalTradeAddress>
+            <ram:PostcodeCode>RPTD16B DELIVERY-1010</ram:PostcodeCode>
+            <ram:LineOne>RPTD16B DELIVERY street</ram:LineOne>
+            <ram:LineTwo>RPTD16B DELIVERY street 2</ram:LineTwo>
+            <ram:LineThree>RPTD16B DELIVERY street 3</ram:LineThree>
+            <ram:CityName>RPTD16B DELIVERY city</ram:CityName>
+            <ram:CountryID>AT</ram:CountryID>
+            <ram:CountrySubDivisionName>RPTD16B DELIVERY region</ram:CountrySubDivisionName>
+          </ram:PostalTradeAddress>
+      </ram:ShipToTradeParty>
+      <ram:ActualDeliverySupplyChainEvent>
+        <ram:OccurrenceDateTime>
+          <udt:DateTimeString format="102">20260111</udt:DateTimeString>
+        </ram:OccurrenceDateTime>
+      </ram:ActualDeliverySupplyChainEvent>
+      <ram:DespatchAdviceReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-DESPATCH</ram:IssuerAssignedID>
+      </ram:DespatchAdviceReferencedDocument>
+      <ram:ReceivingAdviceReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-RECEIPT</ram:IssuerAssignedID>
+      </ram:ReceivingAdviceReferencedDocument>
+      <ram:DeliveryNoteReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-DELIVERYNOTE</ram:IssuerAssignedID>
+      </ram:DeliveryNoteReferencedDocument>
+    </ram:ApplicableHeaderTradeDelivery>
+    <ram:ApplicableHeaderTradeSettlement>
+      <ram:CreditorReferenceID>RPTD16B-CREDITOR</ram:CreditorReferenceID>
+      <ram:PaymentReference>RPTD16B-REMIT-1</ram:PaymentReference>
+      <ram:PaymentReference>RPTD16B-REMIT-2</ram:PaymentReference>
+      <ram:TaxCurrencyCode>USD</ram:TaxCurrencyCode>
+      <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+      <ram:PayeeTradeParty>
+          <ram:ID>RPTD16B-PAYEE-ID</ram:ID>
+          <ram:GlobalID schemeID="0088">RPTD16B-PAYEE-GLOBAL-1</ram:GlobalID>
+          <ram:GlobalID schemeID="0060">RPTD16B-PAYEE-GLOBAL-2</ram:GlobalID>
+          <ram:Name>RPTD16B PAYEE name</ram:Name>
+          <ram:SpecifiedLegalOrganization>
+            <ram:ID schemeID="0002">RPTD16B-PAYEE-LEGAL</ram:ID>
+            <ram:TradingBusinessName>RPTD16B PAYEE trading</ram:TradingBusinessName>
+          </ram:SpecifiedLegalOrganization>
+      </ram:PayeeTradeParty>
+      <ram:InvoiceApplicableTradeCurrencyExchange>
+        <ram:SourceCurrencyCode>EUR</ram:SourceCurrencyCode>
+        <ram:TargetCurrencyCode>USD</ram:TargetCurrencyCode>
+        <ram:ConversionRate>1.2071</ram:ConversionRate>
+      </ram:InvoiceApplicableTradeCurrencyExchange>
+      <ram:SpecifiedTradeSettlementPaymentMeans>
+        <ram:TypeCode>58</ram:TypeCode>
+        <ram:Information>RPTD16B means text one</ram:Information>
+        <ram:Information>RPTD16B means text two</ram:Information>
+        <ram:ApplicableTradeSettlementFinancialCard>
+          <ram:ID>RPTD16B-PAN-1</ram:ID>
+          <ram:CardholderName>RPTD16B holder one</ram:CardholderName>
+        </ram:ApplicableTradeSettlementFinancialCard>
+        <ram:PayerPartyDebtorFinancialAccount>
+          <ram:IBANID>RPTD16B-DEBIT-1</ram:IBANID>
+          <ram:ProprietaryID>RPTD16B-DEBIT-1B</ram:ProprietaryID>
+        </ram:PayerPartyDebtorFinancialAccount>
+        <ram:PayeePartyCreditorFinancialAccount>
+          <ram:IBANID>RPTD16B-IBAN-1</ram:IBANID>
+          <ram:AccountName>RPTD16B account one</ram:AccountName>
+          <ram:ProprietaryID>RPTD16B-IBAN-1B</ram:ProprietaryID>
+        </ram:PayeePartyCreditorFinancialAccount>
+        <ram:PayerSpecifiedDebtorFinancialInstitution>
+          <ram:BICID>RPTD16B-DEBITBIC-1</ram:BICID>
+        </ram:PayerSpecifiedDebtorFinancialInstitution>
+        <ram:PayeeSpecifiedCreditorFinancialInstitution>
+          <ram:BICID>RPTD16B-BIC-1</ram:BICID>
+        </ram:PayeeSpecifiedCreditorFinancialInstitution>
+      </ram:SpecifiedTradeSettlementPaymentMeans>
+      <ram:SpecifiedTradeSettlementPaymentMeans>
+        <ram:TypeCode>54</ram:TypeCode>
+        <ram:Information>RPTD16B means text three</ram:Information>
+        <ram:ApplicableTradeSettlementFinancialCard>
+          <ram:ID>RPTD16B-PAN-2</ram:ID>
+          <ram:CardholderName>RPTD16B holder two</ram:CardholderName>
+        </ram:ApplicableTradeSettlementFinancialCard>
+        <ram:PayerPartyDebtorFinancialAccount>
+          <ram:IBANID>RPTD16B-DEBIT-2</ram:IBANID>
+        </ram:PayerPartyDebtorFinancialAccount>
+        <ram:PayeePartyCreditorFinancialAccount>
+          <ram:IBANID>RPTD16B-IBAN-2</ram:IBANID>
+        </ram:PayeePartyCreditorFinancialAccount>
+        <ram:PayerSpecifiedDebtorFinancialInstitution>
+          <ram:BICID>RPTD16B-DEBITBIC-2</ram:BICID>
+        </ram:PayerSpecifiedDebtorFinancialInstitution>
+      </ram:SpecifiedTradeSettlementPaymentMeans>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount>20.12</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:ExemptionReason>RPTD16B breakdown one</ram:ExemptionReason>
+        <ram:BasisAmount>100.11</ram:BasisAmount>
+        <ram:CategoryCode>E</ram:CategoryCode>
+        <ram:ExemptionReasonCode>VATEX-EU-132</ram:ExemptionReasonCode>
+        <ram:TaxPointDate>
+          <udt:DateString format="102">20260110</udt:DateString>
+        </ram:TaxPointDate>
+        <ram:DueDateTypeCode>5</ram:DueDateTypeCode>
+        <ram:RateApplicablePercent>0</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount currencyID="EUR">24.22</ram:CalculatedAmount>
+        <ram:CalculatedAmount currencyID="USD">24.23</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:BasisAmount>120.21</ram:BasisAmount>
+        <ram:BasisAmount>120.22</ram:BasisAmount>
+        <ram:CategoryCode>S</ram:CategoryCode>
+        <ram:CurrencyCode>USD</ram:CurrencyCode>
+        <ram:TaxPointDate>
+          <udt:DateString format="102">20260120</udt:DateString>
+        </ram:TaxPointDate>
+        <ram:DueDateTypeCode>29</ram:DueDateTypeCode>
+        <ram:RateApplicablePercent>19.125</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount>1.01</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:BasisAmount>1.02</ram:BasisAmount>
+        <ram:CategoryCode>Z</ram:CategoryCode>
+        <ram:TaxPointDate>
+          <udt:DateString format="102">RPTD16B-NOT-A-POINT-DATE</udt:DateString>
+        </ram:TaxPointDate>
+        <ram:DueDateTypeCode>RPTD16B-CODE</ram:DueDateTypeCode>
+        <ram:RateApplicablePercent>0</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:BillingSpecifiedPeriod>
+        <ram:StartDateTime>
+          <udt:DateTimeString format="102">20260101</udt:DateTimeString>
+        </ram:StartDateTime>
+        <ram:EndDateTime>
+          <udt:DateTimeString format="102">20260131</udt:DateTimeString>
+        </ram:EndDateTime>
+      </ram:BillingSpecifiedPeriod>
+      <ram:SpecifiedTradeAllowanceCharge>
+        <ram:ChargeIndicator>
+          <udt:Indicator>false</udt:Indicator>
+        </ram:ChargeIndicator>
+        <ram:CalculationPercent>1.2345</ram:CalculationPercent>
+        <ram:BasisAmount>44.5</ram:BasisAmount>
+        <ram:ActualAmount>42.5</ram:ActualAmount>
+        <ram:ReasonCode>95</ram:ReasonCode>
+        <ram:Reason>RPTD16B ALLOWANCE reason</ram:Reason>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD16B ALLOWANCE exempt</ram:ExemptionReason>
+          <ram:CategoryCode>E</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-132</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>4</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>Z</ram:CategoryCode>
+          <ram:RateApplicablePercent>6</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+      </ram:SpecifiedTradeAllowanceCharge>
+      <ram:SpecifiedTradeAllowanceCharge>
+        <ram:ChargeIndicator>
+          <udt:Indicator>true</udt:Indicator>
+        </ram:ChargeIndicator>
+        <ram:CalculationPercent>1.2345</ram:CalculationPercent>
+        <ram:BasisAmount>43.5</ram:BasisAmount>
+        <ram:ActualAmount>41.5</ram:ActualAmount>
+        <ram:ReasonCode>AA</ram:ReasonCode>
+        <ram:Reason>RPTD16B CHARGE reason</ram:Reason>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:ExemptionReason>RPTD16B CHARGE exempt</ram:ExemptionReason>
+          <ram:CategoryCode>E</ram:CategoryCode>
+          <ram:ExemptionReasonCode>VATEX-EU-132</ram:ExemptionReasonCode>
+          <ram:RateApplicablePercent>3</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+        <ram:CategoryTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>Z</ram:CategoryCode>
+          <ram:RateApplicablePercent>5</ram:RateApplicablePercent>
+        </ram:CategoryTradeTax>
+      </ram:SpecifiedTradeAllowanceCharge>
+      <ram:SpecifiedTradePaymentTerms>
+        <ram:Description>RPTD16B terms one</ram:Description>
+        <ram:Description>RPTD16B terms two</ram:Description>
+        <ram:DueDateDateTime>
+          <udt:DateTimeString format="208">20260215123000+0100</udt:DateTimeString>
+        </ram:DueDateDateTime>
+        <ram:DirectDebitMandateID>RPTD16B-MANDATE-1</ram:DirectDebitMandateID>
+        <ram:DirectDebitMandateID>RPTD16B-MANDATE-2</ram:DirectDebitMandateID>
+        <ram:ApplicableTradePaymentPenaltyTerms>
+          <ram:BasisDateTime>
+            <udt:DateTimeString format="102">20260616</udt:DateTimeString>
+          </ram:BasisDateTime>
+          <ram:CalculationPercent>4.375</ram:CalculationPercent>
+          <ram:ActualPenaltyAmount>7.7777</ram:ActualPenaltyAmount>
+        </ram:ApplicableTradePaymentPenaltyTerms>
+        <ram:ApplicableTradePaymentDiscountTerms>
+          <ram:BasisDateTime>
+            <udt:DateTimeString format="102">20260515</udt:DateTimeString>
+          </ram:BasisDateTime>
+          <ram:CalculationPercent>2.125</ram:CalculationPercent>
+          <ram:ActualDiscountAmount>3.1415</ram:ActualDiscountAmount>
+        </ram:ApplicableTradePaymentDiscountTerms>
+      </ram:SpecifiedTradePaymentTerms>
+      <ram:SpecifiedTradePaymentTerms>
+        <ram:DueDateDateTime>
+          <udt:DateTimeString format="102">20260315</udt:DateTimeString>
+        </ram:DueDateDateTime>
+        <ram:DirectDebitMandateID>RPTD16B-MANDATE-3</ram:DirectDebitMandateID>
+      </ram:SpecifiedTradePaymentTerms>
+      <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+        <ram:LineTotalAmount>100.51</ram:LineTotalAmount>
+        <ram:LineTotalAmount>100.61</ram:LineTotalAmount>
+        <ram:ChargeTotalAmount>41.55</ram:ChargeTotalAmount>
+        <ram:AllowanceTotalAmount>42.54</ram:AllowanceTotalAmount>
+        <ram:TaxBasisTotalAmount>100.52</ram:TaxBasisTotalAmount>
+        <ram:TaxTotalAmount currencyID="EUR">20.11</ram:TaxTotalAmount>
+        <ram:TaxTotalAmount currencyID="USD">24.21</ram:TaxTotalAmount>
+        <ram:TaxTotalAmount currencyID="EUR">20.31</ram:TaxTotalAmount>
+        <ram:TaxTotalAmount currencyID="USD">24.41</ram:TaxTotalAmount>
+        <ram:RoundingAmount>0.57</ram:RoundingAmount>
+        <ram:GrandTotalAmount>120.53</ram:GrandTotalAmount>
+        <ram:TotalPrepaidAmount>10.56</ram:TotalPrepaidAmount>
+        <ram:DuePayableAmount>110.58</ram:DuePayableAmount>
+      </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+      <ram:SpecifiedFinancialAdjustment>
+        <ram:Reason>RPTD16B third party one</ram:Reason>
+        <ram:ActualAmount>5.61</ram:ActualAmount>
+      </ram:SpecifiedFinancialAdjustment>
+      <ram:InvoiceReferencedDocument>
+        <ram:IssuerAssignedID>RPTD16B-PRECEDING-1</ram:IssuerAssignedID>
+        <ram:TypeCode>380</ram:TypeCode>
+        <ram:FormattedIssueDateTime>
+          <qdt:DateTimeString format="102">20250505</qdt:DateTimeString>
+        </ram:FormattedIssueDateTime>
+      </ram:InvoiceReferencedDocument>
+      <ram:ReceivableSpecifiedTradeAccountingAccount>
+        <ram:ID>RPTD16B-ACCOUNT-1</ram:ID>
+      </ram:ReceivableSpecifiedTradeAccountingAccount>
+      <ram:ReceivableSpecifiedTradeAccountingAccount>
+        <ram:ID>RPTD16B-ACCOUNT-2</ram:ID>
+      </ram:ReceivableSpecifiedTradeAccountingAccount>
+    </ram:ApplicableHeaderTradeSettlement>
+  </rsm:SupplyChainTradeTransaction>
+</rsm:CrossIndustryInvoice>

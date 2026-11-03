@@ -234,7 +234,7 @@ T p1 66.7 594.6 10.0 Helvetica •
 T p1 76.7 594.6 10.0 Helvetica Belastetes Konto: DE75512108001245126199
 T p1 56.7 634.1 8.0 Helvetica-Bold UNTERSTÜTZENDE DOKUMENTE
 T p1 56.7 648.7 10.0 Helvetica •
-T p1 66.7 649.0 10.0 Helvetica-Bold ATTACH-1 — Timesheet of January 2026 (timesheet.pdf)
+T p1 66.7 649.0 10.0 Helvetica-Bold ATTACH-1 — Timesheet of January 2026 (timesheet.pdf, application/pdf)
 T p1 56.7 664.6 10.0 Helvetica •
 T p1 66.7 664.9 10.0 Helvetica-Bold ATTACH-2 — Terms and conditions (https://www.example.org/terms.pdf)
 T p1 56.7 681.6 7.0 Helvetica Spezifikationskennung: urn:cen.eu:en16931:2026 · Geschäftsprozesstyp: urn:fdc:peppol.eu:2017:poacc:billing:01:1.0

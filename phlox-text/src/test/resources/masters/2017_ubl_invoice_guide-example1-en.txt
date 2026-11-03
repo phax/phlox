@@ -108,6 +108,8 @@ Payment
 
 Payment means type code: Debit transfer
 Remittance information: Deb. 10202 / Fact. 12115118
+Payment means type code: Debit transfer
+Remittance information: Deb. 10202 / Fact. 12115118
 
 Credit transfer
 

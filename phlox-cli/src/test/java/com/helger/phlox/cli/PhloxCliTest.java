@@ -924,9 +924,9 @@ public final class PhloxCliTest
                         "--annotate-bt-ids",
                         "--date-style",
                         "FULL",
-                        "--amount-fraction-digits",
+                        "--amount-min-fraction-digits",
                         "3",
-                        "--percent-fraction-digits",
+                        "--percent-min-fraction-digits",
                         "1",
                         "--negative-style",
                         "PARENTHESES",
@@ -938,8 +938,8 @@ public final class PhloxCliTest
     assertTrue (sChanged, sChanged.contains ("9.950"));
     assertTrue (sChanged, sChanged.contains ("6.0%"));
 
-    assertEquals (2, _run ("-i", sUbl, "--amount-fraction-digits", "-1", "-o", aOut.toString ()));
-    assertEquals (2, _run ("-i", sUbl, "--percent-fraction-digits", "-1", "-o", aOut.toString ()));
+    assertEquals (2, _run ("-i", sUbl, "--amount-min-fraction-digits", "-1", "-o", aOut.toString ()));
+    assertEquals (2, _run ("-i", sUbl, "--percent-min-fraction-digits", "-1", "-o", aOut.toString ()));
     assertEquals (2, _run ("-i", sUbl, "--date-style", "HUGE", "-o", aOut.toString ()));
     assertEquals (2, _run ("-i", sUbl, "--negative-style", "RED", "-o", aOut.toString ()));
   }

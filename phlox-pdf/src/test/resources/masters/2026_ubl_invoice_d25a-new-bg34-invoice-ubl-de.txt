@@ -529,6 +529,7 @@ T p2 226.7 107.7 10.0 Helvetica Eins
 T p2 348.2 96.1 10.0 Helvetica 25,00 €
 T p2 268.2 107.7 10.0 Helvetica-Oblique Bruttoeinzelpreis: 30,00 €
 T p2 254.9 119.2 10.0 Helvetica-Oblique Artikel-Preisnachlass: 5,00 €
+T p2 293.2 130.8 10.0 Helvetica-Oblique Basismenge: 1 Eins
 T p2 403.8 96.1 10.0 Helvetica Regelsteuersatz
 T p2 439.3 107.7 10.0 Helvetica 20,00 %
 T p2 496.7 96.1 10.0 Helvetica 100,00 €
@@ -615,10 +616,10 @@ T p3 347.2 161.6 10.0 Helvetica Dokumentenebene
 T p3 493.9 138.5 10.0 Helvetica +15,00 
 T p3 522.0 150.1 10.0 Helvetica €
 T p3 347.2 179.7 10.0 Helvetica Zuschläge im Auftrag einer
-T p3 347.2 191.2 10.0 Helvetica dritten Partei: Copyright levy
+T p3 347.2 191.2 10.0 Helvetica dritten Partei 1: Copyright levy
 T p3 493.9 179.7 10.0 Helvetica +3,20 €
 T p3 347.2 209.3 10.0 Helvetica Zuschläge im Auftrag einer
-T p3 347.2 220.9 10.0 Helvetica dritten Partei: Recycling fee
+T p3 347.2 220.9 10.0 Helvetica dritten Partei 2: Recycling fee
 T p3 493.9 209.3 10.0 Helvetica +1,75 €
 T p3 347.2 238.9 10.0 Helvetica Nettogesamtbetrag
 T p3 494.2 238.9 10.0 Helvetica 110,00 

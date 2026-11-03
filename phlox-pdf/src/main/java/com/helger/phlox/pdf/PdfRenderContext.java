@@ -31,6 +31,7 @@ import com.helger.collection.commons.ICommonsMap;
 import com.helger.pdflayout.base.PLColor;
 import com.helger.pdflayout.pdfa.EPdfALevel;
 import com.helger.pdflayout.spec.FontSpec;
+import com.helger.pdflayout.spec.IPLMissingCodePointCallback;
 import com.helger.pdflayout.spec.MarginSpec;
 import com.helger.pdflayout.spec.PreloadFont;
 import com.helger.phlox.api.AbstractRenderContext;
@@ -80,6 +81,7 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
   private PdfEmbeddedSource m_aEmbeddedSource;
   private boolean m_bEmbedAttachments = DEFAULT_EMBED_ATTACHMENTS;
   private boolean m_bPdfUA = DEFAULT_PDF_UA;
+  private IPLMissingCodePointCallback m_aMissingCodePointCallback;
 
   @NonNull
   private static EPdfALevel _getPdfALevel (@NonNull final PhloxThemeObject aPdf, @NonNull final String sLevel)
@@ -328,7 +330,8 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
    * Set the fonts of the output. The body font, the header font and the table header font switch to
    * the fonts of the new family, so call it before the sizes and colours of these fonts are
    * changed. The standard fonts of PDF contain only the characters of Western European languages;
-   * set a family with the needed characters to render a text in another script.
+   * set a family with the needed characters to render a text in another script. A character that a
+   * font does not have is shown as a question mark, see {@link #setMissingCodePointCallback}.
    *
    * @param aFontFamily
    *        The new fonts. May not be {@code null}.
@@ -342,6 +345,33 @@ public class PdfRenderContext extends AbstractRenderContext <PdfRenderContext>
     m_aHeaderFont = _switchFamily (m_aHeaderFont, m_aFontFamily, aFontFamily);
     m_aTableHeaderFont = _switchFamily (m_aTableHeaderFont, m_aFontFamily, aFontFamily);
     m_aFontFamily = aFontFamily;
+    return this;
+  }
+
+  /**
+   * @return The callback for a character that a font cannot show, or {@code null} if a warning is
+   *         logged for the first one.
+   */
+  @Nullable
+  public IPLMissingCodePointCallback getMissingCodePointCallback ()
+  {
+    return m_aMissingCodePointCallback;
+  }
+
+  /**
+   * Set the action for a character of the output that a font cannot show, which appears as a
+   * question mark in the PDF. It is called once per font and character. The PDF is created anyway,
+   * unless the callback throws an exception.
+   *
+   * @param aMissingCodePointCallback
+   *        The callback to use. {@code null} logs a warning for the first such character of a
+   *        document.
+   * @return this for chaining.
+   */
+  @NonNull
+  public PdfRenderContext setMissingCodePointCallback (@Nullable final IPLMissingCodePointCallback aMissingCodePointCallback)
+  {
+    m_aMissingCodePointCallback = aMissingCodePointCallback;
     return this;
   }
 

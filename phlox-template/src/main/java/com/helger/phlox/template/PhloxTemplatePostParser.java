@@ -21,10 +21,13 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Deque;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,6 +35,7 @@ import org.commonmark.ext.gfm.tables.TableCell;
 import org.commonmark.ext.gfm.tables.TableRow;
 import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Code;
+import org.commonmark.node.CustomNode;
 import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.node.Paragraph;
@@ -58,6 +62,7 @@ import com.helger.phlox.template.adapter.PhloxInvoiceMustacheContext;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
+import com.helger.phlox.template.ast.PhloxSpanNode;
 
 /**
  * Walks the commonmark-java AST after parsing and performs the phlox-specific transforms described
@@ -70,6 +75,9 @@ import com.helger.phlox.template.ast.PhloxResolvedImage;
  * <li>Replaces the sentinels of {@code {{pagebreak}}} with {@link PhloxPageBreakNode} and removes
  * the page breaks at the start and at the end of the document, which would only give an empty
  * page.</li>
+ * <li>Builds a {@link PhloxSpanNode} from the sentinels of {@code {{color:#rrggbb}}} up to
+ * {@code {{endcolor}}} and of {@code {{bg:#rrggbb}}} up to {@code {{endbg}}}, within the inline
+ * content of one block.</li>
  * <li>Drops all other sentinels with a warning.</li>
  * <li>Resolves {@link Image} {@code destination} URLs ({@code data:}, {@code attachment:logo},
  * {@code attachment:BG-24[i]}, {@code classpath:/…}, {@code qrcode:…}) into
@@ -108,6 +116,9 @@ public final class PhloxTemplatePostParser
                                                                  MARKER +
                                                                  "]+)" +
                                                                  MARKER);
+  private static final Pattern SPAN_SENTINEL = Pattern.compile (MARKER +
+                                                                "PHLOX:(?:(COLOR|BG)=(\\p{XDigit}{6})|END(COLOR|BG))" +
+                                                                MARKER);
   private static final Pattern ANY_SENTINEL = Pattern.compile (MARKER + "PHLOX:[^" + MARKER + "]*" + MARKER);
   private static final String END_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_END;
   private static final String PAGEBREAK_SENTINEL = PhloxInvoiceMustacheContext.SENTINEL_PAGEBREAK;
@@ -121,6 +132,78 @@ public final class PhloxTemplatePostParser
   private final AbstractRenderContext <?> m_aContext;
   private final ICommonsMap <Node, String> m_aBlockClassMap = new CommonsHashMap <> ();
   private final ICommonsMap <Image, PhloxResolvedImage> m_aImageMap = new CommonsHashMap <> ();
+
+  /** Stands for a span tag in the inline nodes, until the spans are built. */
+  private static final class SpanTagNode extends CustomNode
+  {
+    private final String m_sKind;
+    private final String m_sColor;
+
+    SpanTagNode (@NonNull final String sKind, @Nullable final String sColor)
+    {
+      m_sKind = sKind;
+      m_sColor = sColor;
+    }
+
+    boolean isOpening ()
+    {
+      return m_sColor != null;
+    }
+
+    @NonNull
+    PhloxSpanNode createSpan ()
+    {
+      final boolean bColor = "COLOR".equals (m_sKind);
+      return new PhloxSpanNode (bColor ? m_sColor : null, bColor ? null : m_sColor);
+    }
+
+    boolean isClosing (@NonNull final PhloxSpanNode aSpan)
+    {
+      return "COLOR".equals (m_sKind) ? aSpan.getTextColor () != null : aSpan.getBackgroundColor () != null;
+    }
+  }
+
+  /**
+   * Splits the text nodes at the span sentinels and remembers the parents of the new nodes. An image
+   * is skipped, because its text is the alternative text. The sentinels stay there and in code spans
+   * and are removed as stray ones.
+   */
+  private static final class SpanTagSplitter extends AbstractVisitor
+  {
+    private final Set <Node> m_aParents = Collections.newSetFromMap (new IdentityHashMap <> ());
+
+    @Override
+    public void visit (final Text aText)
+    {
+      final String sLiteral = aText.getLiteral ();
+      if (sLiteral.indexOf (PhloxInvoiceMustacheContext.SENTINEL_MARKER) < 0)
+        return;
+      final Matcher aMatcher = SPAN_SENTINEL.matcher (sLiteral);
+      int nLastEnd = 0;
+      while (aMatcher.find ())
+      {
+        if (aMatcher.start () > nLastEnd)
+          aText.insertBefore (new Text (sLiteral.substring (nLastEnd, aMatcher.start ())));
+        aText.insertBefore (aMatcher.group (1) != null ? new SpanTagNode (aMatcher.group (1), aMatcher.group (2))
+                                                       : new SpanTagNode (aMatcher.group (3), null));
+        nLastEnd = aMatcher.end ();
+      }
+      if (nLastEnd > 0)
+      {
+        m_aParents.add (aText.getParent ());
+        if (nLastEnd < sLiteral.length ())
+          aText.setLiteral (sLiteral.substring (nLastEnd));
+        else
+          aText.unlink ();
+      }
+    }
+
+    @Override
+    public void visit (final Image aImage)
+    {
+      // Skip the alternative text
+    }
+  }
 
   /**
    * Removes the sentinels that are left after the layout was built: a layout tag next to text or
@@ -436,6 +519,44 @@ public final class PhloxTemplatePostParser
       LOGGER.warn ("Template has " + aStack.size () + " '{{group:...}}' or '{{row:...}}' without '{{end}}'");
   }
 
+  /**
+   * Move the inline nodes between the span tags of a parent into span nodes. A span that is not
+   * closed ends with its parent, so that its content is kept.
+   */
+  private static void _buildSpans (@NonNull final Node aParent)
+  {
+    final Deque <PhloxSpanNode> aOpenSpans = new ArrayDeque <> ();
+    Node aChild = aParent.getFirstChild ();
+    while (aChild != null)
+    {
+      final Node aNext = aChild.getNext ();
+      if (aChild instanceof final SpanTagNode aTag)
+      {
+        if (aTag.isOpening ())
+        {
+          final PhloxSpanNode aSpan = aTag.createSpan ();
+          if (aOpenSpans.isEmpty ())
+            aTag.insertBefore (aSpan);
+          else
+            aOpenSpans.peek ().appendChild (aSpan);
+          aOpenSpans.push (aSpan);
+        }
+        else
+          if (!aOpenSpans.isEmpty () && aTag.isClosing (aOpenSpans.peek ()))
+            aOpenSpans.pop ();
+          else
+            LOGGER.warn ("A template tag has no effect here: '{{endcolor}}' and '{{endbg}}' must match the last open '{{color:...}}' or '{{bg:...}}' of the same block");
+        aTag.unlink ();
+      }
+      else
+        if (!aOpenSpans.isEmpty ())
+          aOpenSpans.peek ().appendChild (aChild);
+      aChild = aNext;
+    }
+    if (!aOpenSpans.isEmpty ())
+      LOGGER.warn ("A '{{color:...}}' or '{{bg:...}}' has no end in its block - it ends with the block");
+  }
+
   private void _processSentinels (@NonNull final Node aRoot)
   {
     // Two-pass scan: collect candidate paragraphs first to avoid mutating during iteration.
@@ -683,6 +804,9 @@ public final class PhloxTemplatePostParser
   {
     _buildGroups (aRoot);
     _processSentinels (aRoot);
+    final SpanTagSplitter aSpanTagSplitter = new SpanTagSplitter ();
+    aRoot.accept (aSpanTagSplitter);
+    aSpanTagSplitter.m_aParents.forEach (PhloxTemplatePostParser::_buildSpans);
     aRoot.accept (new StraySentinelRemover ());
     _removeEdgePageBreaksRecursive (aRoot, true);
     _removeEdgePageBreaksRecursive (aRoot, false);

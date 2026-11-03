@@ -178,6 +178,33 @@ public final class PdfTemplateEmitterTest
     }
   }
 
+  /** Get the non stroking colours of the first page in the order of their use, as hex digits. */
+  private static ICommonsList <String> _fillColors (final byte [] aPdf)
+  {
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
+    try (final PDDocument aDoc = Loader.loadPDF (aPdf))
+    {
+      final List <Object> aTokens = new PDFStreamParser (aDoc.getPage (0)).parse ();
+      for (int i = 3; i < aTokens.size (); ++i)
+        if (aTokens.get (i) instanceof final Operator aOperator &&
+            ("rg".equals (aOperator.getName ()) || "sc".equals (aOperator.getName ())) &&
+            aTokens.get (i - 3) instanceof COSNumber)
+        {
+          final StringBuilder aColor = new StringBuilder ();
+          for (int j = i - 3; j < i; ++j)
+            aColor.append (StringHelper.getLeadingZero (Integer.toHexString (Math.round (((COSNumber) aTokens.get (j)).floatValue () *
+                                                                                         255f)),
+                                                        2));
+          ret.add (aColor.toString ());
+        }
+      return ret;
+    }
+    catch (final IOException ex)
+    {
+      throw new IllegalStateException ("Failed to read the PDF", ex);
+    }
+  }
+
   private static int _fillOperators (final byte [] aPdf)
   {
     try (final PDDocument aDoc = Loader.loadPDF (aPdf))
@@ -251,8 +278,8 @@ public final class PdfTemplateEmitterTest
     final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
     aModel.setNumber ("{link[https://evil.example/pay]}CLICK{link} {bg:#ff0000}RED{bg}");
     final String sText = _text (_render (aModel, PhloxTemplate.fromString ("{{BT-1}} [x](https://example.org/my_file_name.pdf)"), Locale.ENGLISH));
-    assertTrue (sText, sText.contains ("(link[https://evil.example/pay])CLICK(link)"));
-    assertTrue (sText, sText.contains ("(bg:#ff0000)RED(bg)"));
+    assertTrue (sText, sText.contains ("{link[https://evil.example/pay]}CLICK{link}"));
+    assertTrue (sText, sText.contains ("{bg:#ff0000}RED{bg}"));
     assertTrue (sText, sText.contains ("x"));
   }
 
@@ -694,8 +721,97 @@ public final class PdfTemplateEmitterTest
     assertEquals (2, _pageCount (_render ("{{group:g}}\n\nFIRST\n\n{{pagebreak}}\n\n{{end}}\n\nnext\n")));
 
     // Where it cannot work it is ignored
-    assertEquals (1, _pageCount (_render ("{{group:g}}\n\n{{group:h}}\n\na\n\n{{pagebreak}}\n\nb\n\n{{end}}\n\n{{end}}\n")));
     assertEquals (1, _pageCount (_render ("{{row:r}}\n\n{{group:g}}\n\na\n\n{{pagebreak}}\n\nb\n\n{{end}}\n\n{{end}}\n")));
+    assertEquals (1, _pageCount (_render ("{{group:g}}\n\n{{row:r}}\n\n{{group:h}}\n\na\n\n{{pagebreak}}\n\nb\n\n{{end}}\n\n{{end}}\n\n{{end}}\n")));
+    assertEquals (1, _pageCount (_render ("> a\n>\n> {{pagebreak}}\n>\n> b\n")));
+  }
+
+  @Test
+  public void testPageBreakSplitsNestedGroups () throws Exception
+  {
+    final String sTemplate = "{{group:g}}\n\nA\n\n{{group:h}}\n\nB\n\n{{group:i}}\n\nC\n\n{{pagebreak}}\n\nD\n\n{{end}}\n\nE\n\n{{end}}\n\nF\n\n{{end}}\n\nZ\n";
+    final byte [] aPdf = _render (sTemplate);
+    assertEquals (2, _pageCount (aPdf));
+    final String sFirst = _pageText (aPdf, 1);
+    final String sSecond = _pageText (aPdf, 2);
+    for (final String sText : new String [] { "A", "B", "C" })
+      assertTrue (sText, sFirst.contains (sText));
+    for (final String sText : new String [] { "D", "E", "F", "Z" })
+      assertTrue (sText, sSecond.contains (sText));
+
+    // All parts have the style of their group, at every level, and it ends with the group
+    final PdfRenderContext aCtx = new PdfRenderContext ().putBlockStyle ("g", PdfBlockStyle.builder ().fontSize (21).build ())
+                                                         .putBlockStyle ("i", PdfBlockStyle.builder ().bold (true).build ());
+    final byte [] aStyled = _render (aCtx.setTemplate (PhloxTemplate.fromString (sTemplate)));
+    for (final String sChar : new String [] { "A", "B", "C", "D", "E", "F" })
+      assertEquals (sChar, 21f, _findChar (aStyled, sChar).getFontSizeInPt (), 0.01f);
+    assertEquals (10f, _findChar (aStyled, "Z").getFontSizeInPt (), 0.01f);
+    for (final String sChar : new String [] { "C", "D" })
+      assertTrue (sChar, _findChar (aStyled, sChar).getFont ().getName ().contains ("Bold"));
+    for (final String sChar : new String [] { "B", "E" })
+      assertFalse (sChar, _findChar (aStyled, sChar).getFont ().getName ().contains ("Bold"));
+
+    // Several page breaks on different levels, and one at the edge of a nested group
+    assertEquals (3,
+                  _pageCount (_render ("{{group:g}}\n\nA\n\n{{pagebreak}}\n\n{{group:h}}\n\nB\n\n{{pagebreak}}\n\nC\n\n{{end}}\n\n{{end}}\n")));
+    assertEquals (2, _pageCount (_render ("{{group:g}}\n\n{{group:h}}\n\nA\n\n{{pagebreak}}\n\n{{end}}\n\nB\n\n{{end}}\n")));
+  }
+
+  @Test
+  public void testInlineColors () throws Exception
+  {
+    final String sPlain = "a RED b HIGH c";
+    final byte [] aColored = _render ("a {{color:#cc0000}}RED{{endcolor}} b {{bg:#ffee00}}HIGH{{endbg}} c");
+    final byte [] aPlain = _render (sPlain);
+    assertTrue (_text (aColored), _text (aColored).contains (sPlain));
+
+    final ICommonsList <String> aColors = _fillColors (aColored);
+    assertTrue (aColors.toString (), aColors.contains ("cc0000"));
+    assertTrue (aColors.toString (), aColors.contains ("ffee00"));
+    assertFalse (_fillColors (aPlain).contains ("cc0000"));
+    assertTrue (_fillOperators (aColored) > _fillOperators (aPlain));
+
+    // After the span the colour of the block is back, and spans can be nested and hold inline markup
+    final ICommonsList <String> aBack = _fillColors (_render ("a {{color:#cc0000}}b{{endcolor}} c"));
+    assertEquals (aBack.toString (), "000000", aBack.get (aBack.indexOf ("cc0000") + 1));
+    final String sNested = _text (_render ("{{color:#cc0000}}a {{bg:#ffee00}}**b** {{bg:#00ff00}}c{{endbg}} d{{endbg}} e{{endcolor}} f"));
+    assertTrue (sNested, sNested.contains ("a b c d e f"));
+
+    // In a heading and in a table cell
+    final String sBlocks = _text (_render ("# {{color:#cc0000}}Head{{endcolor}}\n\n| A |\n|---|\n| {{bg:#ffee00}}Cell{{endbg}} |\n"));
+    assertTrue (sBlocks, sBlocks.contains ("Cell"));
+    assertFalse (sBlocks, sBlocks.contains ("PHLOX"));
+  }
+
+  @Test
+  public void testMissingCharacterCallback () throws Exception
+  {
+    final ICommonsList <Integer> aCodePoints = new CommonsArrayList <> ();
+    final PdfRenderContext aCtx = new PdfRenderContext ().setTemplate (PhloxTemplate.fromString ("a\u0416\u0416\u03A9 stra\u00DFe"))
+                                                         .setMissingCodePointCallback ( (aFont, nCodePoint, nFallback) -> aCodePoints.add (Integer.valueOf (nCodePoint)));
+    final String sText = _text (_render (aCtx));
+    assertEquals (aCodePoints.toString (), 2, aCodePoints.size ());
+    assertEquals (Integer.valueOf (0x416), aCodePoints.get (0));
+    assertEquals (Integer.valueOf (0x3A9), aCodePoints.get (1));
+    assertTrue (sText, sText.contains ("a??? stra\u00DFe"));
+
+    // Without a callback it only logs
+    assertTrue (_text (_render ("\u0416")).contains ("?"));
+
+    // The callback can end the rendering
+    final PdfRenderContext aStrict = new PdfRenderContext ().setTemplate (PhloxTemplate.fromString ("\u0416"))
+                                                            .setMissingCodePointCallback ( (aFont, nCodePoint, nFallback) -> {
+                                                              throw new IllegalStateException ("Missing " + nCodePoint);
+                                                            });
+    try
+    {
+      _render (aStrict);
+      fail ();
+    }
+    catch (final Exception ex)
+    {
+      // Expected, whatever wraps it
+    }
   }
 
   @Test

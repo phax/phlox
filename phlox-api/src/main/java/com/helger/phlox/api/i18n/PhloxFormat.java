@@ -108,7 +108,7 @@ public final class PhloxFormat
   /**
    * Format an amount with the given currency in the locale's number style. An amount is never
    * rounded: it has the fraction digits of the currency, or of
-   * {@link PhloxFormatOptions#getAmountFractionDigits()}, and more if its value needs them. A
+   * {@link PhloxFormatOptions#getAmountMinFractionDigits()}, and more if its value needs them. A
    * negative amount is shown as {@link PhloxFormatOptions#getNegativeStyle()} asks for.
    *
    * @param aAmount
@@ -152,10 +152,10 @@ public final class PhloxFormat
         // Unknown currency code — keep the locale default
       }
     }
-    if (aOptions != null && aOptions.getAmountFractionDigits () != null)
+    if (aOptions != null && aOptions.getAmountMinFractionDigits () != null)
     {
-      aFmt.setMinimumFractionDigits (aOptions.getAmountFractionDigits ().intValue ());
-      aFmt.setMaximumFractionDigits (aOptions.getAmountFractionDigits ().intValue ());
+      aFmt.setMinimumFractionDigits (aOptions.getAmountMinFractionDigits ().intValue ());
+      aFmt.setMaximumFractionDigits (aOptions.getAmountMinFractionDigits ().intValue ());
     }
     aFmt.setMaximumFractionDigits (Math.max (aFmt.getMaximumFractionDigits (), _getFractionDigits (aAmount)));
     if (aAmount.signum () < 0 && aOptions != null && aOptions.getNegativeStyle () == ENegativeStyle.PARENTHESES)
@@ -185,7 +185,7 @@ public final class PhloxFormat
       return "";
 
     final NumberFormat aFmt = NumberFormat.getPercentInstance (aLocale);
-    final int nDigits = aOptions != null ? aOptions.getPercentFractionDigits () : 2;
+    final int nDigits = aOptions != null ? aOptions.getPercentMinFractionDigits () : 2;
     aFmt.setMinimumFractionDigits (nDigits);
     aFmt.setMaximumFractionDigits (Math.max (nDigits, _getFractionDigits (aRate)));
     // From 19 to 0,19

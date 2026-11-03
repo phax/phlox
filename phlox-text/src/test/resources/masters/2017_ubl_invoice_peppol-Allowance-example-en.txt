@@ -88,7 +88,7 @@ Invoice lines
 1  item name                                     10 one                         € 410.00   Standard rate 25.00%  € 4,000.00
    Description of item                                        Item gross price: € 450.00
    Item seller's identifier: 97iugug876                     Item price discount: € 40.00
-   Item classification identifier: SRV:09348023
+   Item classification identifier: SRV:09348023          Item price base quantity: 1 one
    Item country of origin: Norway
 2  item name                                     10 one                         € 200.00  Exempt from tax 0.00%  € 1,000.00
    Description of item                                   Item price base quantity: 2 one

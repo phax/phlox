@@ -36,14 +36,17 @@ import org.junit.Test;
 
 import com.helger.base.string.StringReplace;
 import com.helger.phlox.api.AbstractRenderContext;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
 import com.helger.phlox.api.model.PhloxContact;
 import com.helger.phlox.api.model.PhloxCreditTransfer;
+import com.helger.phlox.api.model.PhloxIdentifier;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.model.PhloxInvoiceLine;
 import com.helger.phlox.api.model.PhloxInvoicingPeriod;
 import com.helger.phlox.api.model.PhloxItem;
 import com.helger.phlox.api.model.PhloxItemClassification;
 import com.helger.phlox.api.model.PhloxPaymentInstructions;
+import com.helger.phlox.api.model.PhloxPostalAddress;
 import com.helger.phlox.template.EPhloxTemplateCoverageMode;
 import com.helger.phlox.template.PhloxTemplate;
 import com.helger.phlox.template.PhloxTemplateException;
@@ -107,6 +110,27 @@ public final class PhloxInvoiceMustacheContextTest
                                                     PhloxTemplateException.class,
                                                     () -> PhloxTemplate.fromString (sTemplate));
     assertEquals (sTemplate, EStage.LOAD, ex.getStage ());
+  }
+
+  @Test
+  public void testAdditionalTerms ()
+  {
+    final PhloxInvoice aInvoice = _invoice ("1");
+    aInvoice.additionalTerms ().add (new PhloxAdditionalTerm ("BT-12", "CONTRACT-2"));
+    aInvoice.additionalTerms ().add (new PhloxAdditionalTerm ("BT-73", LocalDate.of (2026, 1, 2)));
+    aInvoice.additionalTerms ().add (new PhloxAdditionalTerm ("BT-147", new BigDecimal ("1.2345")));
+    aInvoice.additionalTerms ().add (new PhloxAdditionalTerm ("BT-81", "58", "paymentmeans"));
+    aInvoice.additionalTerms ().add (new PhloxAdditionalTerm ("BT-18", new PhloxIdentifier ("OBJ", "AVE")));
+    aInvoice.additionalTerms ()
+            .add (new PhloxAdditionalTerm ("BG-15",
+                                           new PhloxPostalAddress ().setCity ("Vienna").setCountryCode ("AT")));
+    final String sResult = _render ("{{#additional_terms}}{{term | label}}={{value}};\n{{/additional_terms}}", aInvoice);
+    assertTrue (sResult, sResult.contains ("=CONTRACT-2;"));
+    assertTrue (sResult, sResult.contains ("=January 2, 2026;"));
+    assertTrue (sResult, sResult.contains ("=€\u00A01.2345;"));
+    assertTrue (sResult, sResult.contains ("=SEPA credit transfer;"));
+    assertTrue (sResult, sResult.contains ("=AVE:OBJ;"));
+    assertTrue (sResult, sResult.contains ("=Vienna, Austria;"));
   }
 
   @Test

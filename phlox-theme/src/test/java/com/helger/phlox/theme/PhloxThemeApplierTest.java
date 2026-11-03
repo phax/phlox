@@ -52,7 +52,7 @@ public final class PhloxThemeApplierTest
   {
     final PhloxTheme aTheme = PhloxThemeReader.readFromString ("{\"variables\":{\"--c\":\"#336699\"},\"common\":{"
                                                                + "\"locale\":\"de_AT\",\"dateStyle\":\"long\","
-                                                               + "\"amountFractionDigits\":3,\"percentFractionDigits\":1,"
+                                                               + "\"amountMinFractionDigits\":3,\"percentMinFractionDigits\":1,"
                                                                + "\"negativeStyle\":\"minus-sign\",\"annotateBtIDs\":true,"
                                                                + "\"template\":\"default\","
                                                                + "\"watermark\":{\"text\":\"DRAFT\",\"opacity\":0.5,\"rotation\":-30,"
@@ -63,8 +63,8 @@ public final class PhloxThemeApplierTest
 
     assertEquals (Locale.forLanguageTag ("de-AT"), aCtx.getLocale ());
     assertEquals (FormatStyle.LONG, aCtx.getFormatOptions ().getDateStyle ());
-    assertEquals (Integer.valueOf (3), aCtx.getFormatOptions ().getAmountFractionDigits ());
-    assertEquals (1, aCtx.getFormatOptions ().getPercentFractionDigits ());
+    assertEquals (Integer.valueOf (3), aCtx.getFormatOptions ().getAmountMinFractionDigits ());
+    assertEquals (1, aCtx.getFormatOptions ().getPercentMinFractionDigits ());
     assertEquals (ENegativeStyle.MINUS_SIGN, aCtx.getFormatOptions ().getNegativeStyle ());
     assertTrue (aCtx.isAnnotateBtIDs ());
     assertSame (PhloxTemplate.getDefault (), aCtx.getTemplate ());

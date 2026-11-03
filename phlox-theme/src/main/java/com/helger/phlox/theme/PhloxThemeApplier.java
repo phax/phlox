@@ -40,7 +40,7 @@ import com.helger.phlox.template.PhloxTemplate;
  * <code>de-AT</code></li>
  * <li><code>dateStyle</code> - <code>short</code>, <code>medium</code>, <code>long</code> or
  * <code>full</code></li>
- * <li><code>amountFractionDigits</code>, <code>percentFractionDigits</code> - the number of decimals,
+ * <li><code>amountMinFractionDigits</code>, <code>percentMinFractionDigits</code> - the minimum number of decimals,
  * <code>negativeStyle</code> - how negative numbers are shown</li>
  * <li><code>annotateBtIDs</code> - append the BT/BG identifier to every label (<code>true</code> or
  * <code>false</code>)</li>
@@ -107,8 +107,8 @@ public final class PhloxThemeApplier
     final PhloxThemeObject aCommon = aTheme.getCommon ();
     aCommon.checkKeys ("locale",
                        "dateStyle",
-                       "amountFractionDigits",
-                       "percentFractionDigits",
+                       "amountMinFractionDigits",
+                       "percentMinFractionDigits",
                        "negativeStyle",
                        "annotateBtIDs",
                        "template",
@@ -123,12 +123,12 @@ public final class PhloxThemeApplier
     final FormatStyle eDateStyle = aCommon.getEnum ("dateStyle", FormatStyle.class);
     if (eDateStyle != null)
       aOptions.setDateStyle (eDateStyle);
-    final Integer aAmountDigits = aCommon.getInt ("amountFractionDigits");
+    final Integer aAmountDigits = aCommon.getInt ("amountMinFractionDigits");
     if (aAmountDigits != null)
-      aOptions.setAmountFractionDigits (aAmountDigits);
-    final Integer aPercentDigits = aCommon.getInt ("percentFractionDigits");
+      aOptions.setAmountMinFractionDigits (aAmountDigits);
+    final Integer aPercentDigits = aCommon.getInt ("percentMinFractionDigits");
     if (aPercentDigits != null)
-      aOptions.setPercentFractionDigits (aPercentDigits.intValue ());
+      aOptions.setPercentMinFractionDigits (aPercentDigits.intValue ());
     final ENegativeStyle eNegativeStyle = aCommon.getEnum ("negativeStyle", ENegativeStyle.class);
     if (eNegativeStyle != null)
       aOptions.setNegativeStyle (eNegativeStyle);

@@ -26,7 +26,7 @@
   </parent>
   <groupId>com.helger.phlox</groupId>
   <artifactId>phlox-parent-pom</artifactId>
-  <version>0.5.2-SNAPSHOT</version>
+  <version>0.6.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>phlox-parent-pom</name>
   <description>phlox - EN 16931 electronic invoice visualizer - Parent POM</description>
@@ -68,7 +68,7 @@
     <ph-css.version>8.3.0</ph-css.version>
     <ph-oton.version>10.7.0</ph-oton.version>
     <pdfcompare.version>1.2.11</pdfcompare.version>
-    <ph-pdf-layout.version>8.4.1</ph-pdf-layout.version>
+    <ph-pdf-layout.version>8.4.2-SNAPSHOT</ph-pdf-layout.version>
     <kaltblut.version>0.9.5</kaltblut.version>
     <picocli.version>4.7.7</picocli.version>
     <jmustache.version>1.16</jmustache.version>

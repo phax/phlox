@@ -125,7 +125,7 @@ final class PdfTextSupport
 
   /**
    * Escape the characters that the markup of ph-pdf-layout-richtext treats as a style or link
-   * directive. A curly brace cannot be escaped, so it is replaced by a round one.
+   * directive, so that invoice data cannot inject {@code {link}}, {@code {color}} or {@code {bg}}.
    *
    * @param sText
    *        The text to escape. Never {@code null}.
@@ -140,23 +140,15 @@ final class PdfTextSupport
     {
       final char c = aChars[i];
       // Two tildes in a row are the strike-through marker
-      // The markup parser does not honour a backslash in front of "{", so invoice data could
-      // inject {link}, {color} or {bg} directives. Curly braces are shown as round ones instead.
-      if (c == '{')
-        aSb.append ('(');
-      else
-        if (c == '}')
-          aSb.append (')');
-        else
-        {
-          if (c == '\\' ||
-              c == '*' ||
-              c == '_' ||
-              c == '`' ||
-              (c == '~' && i + 1 < aChars.length && aChars[i + 1] == '~'))
-            aSb.append ('\\');
-          aSb.append (c);
-        }
+      if (c == '\\' ||
+          c == '*' ||
+          c == '_' ||
+          c == '`' ||
+          c == '{' ||
+          c == '}' ||
+          (c == '~' && i + 1 < aChars.length && aChars[i + 1] == '~'))
+        aSb.append ('\\');
+      aSb.append (c);
     }
     return aSb.toString ();
   }

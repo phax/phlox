@@ -381,6 +381,21 @@ public abstract class AbstractPhloxAstVisitor <BLOCKCTXTYPE, INLINECTXTYPE>
                                       @NonNull BLOCKCTXTYPE aCtx);
 
   /**
+   * Handle a text colour or a background colour of the template. The implementation visits the
+   * children with {@link #visitInlineChildren}.
+   *
+   * @param aAst
+   *        The template AST. Never <code>null</code>.
+   * @param aSpan
+   *        The node to handle. Never <code>null</code>.
+   * @param aCtx
+   *        The context. Never <code>null</code>.
+   */
+  protected abstract void visitSpan (@NonNull PhloxTemplateAst aAst,
+                                     @NonNull PhloxSpanNode aSpan,
+                                     @NonNull INLINECTXTYPE aCtx);
+
+  /**
    * Handle a <code>{{pagebreak}}</code> of the template.
    *
    * @param aAst
@@ -478,7 +493,10 @@ public abstract class AbstractPhloxAstVisitor <BLOCKCTXTYPE, INLINECTXTYPE>
                       if (aNode instanceof final HtmlInline aHtml)
                         visitHtmlInline (aAst, aHtml, aCtx);
                       else
-                        visitUnknownInline (aAst, aNode, aCtx);
+                        if (aNode instanceof final PhloxSpanNode aSpan)
+                          visitSpan (aAst, aSpan, aCtx);
+                        else
+                          visitUnknownInline (aAst, aNode, aCtx);
   }
 
   /**

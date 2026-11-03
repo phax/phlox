@@ -33,6 +33,7 @@ import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.CommonsHashMap;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.collection.commons.ICommonsMap;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxBuyer;
 import com.helger.phlox.api.model.PhloxContact;
@@ -87,6 +88,8 @@ public final class PhloxModelRegistry
   private static final ICommonsMap <Class <?>, ICommonsMap <String, Function <Object, Object>>> REG = new CommonsHashMap <> ();
   // A real business term, unlike the derived names such as "BT-149-if-not-one"
   private static final Pattern BT_NAME = Pattern.compile ("BT-\\d+(?:-\\d+)?");
+  // The values that the model has no place for, see PhloxAdditionalTerm
+  private static final String ADDITIONAL_TERMS = "additional_terms";
 
   private PhloxModelRegistry ()
   {}
@@ -186,10 +189,12 @@ public final class PhloxModelRegistry
    * Format all address lines of a postal address, without the country: the three address lines,
    * then "post code city, subdivision".
    *
+   * @param aAddress
+   *        The address. Never {@code null}.
    * @return <code>null</code> if there is nothing to show
    */
   @Nullable
-  private static String _formatAddress (@NonNull final PhloxPostalAddress aAddress)
+  static String formatAddress (@NonNull final PhloxPostalAddress aAddress)
   {
     final StringBuilder aSB = new StringBuilder ();
     _appendLine (aSB, aAddress.getLine1 ());
@@ -246,6 +251,7 @@ public final class PhloxModelRegistry
     _add (PhloxInvoice.class, "BT-9", PhloxInvoice::getPaymentDueDate);
     _add (PhloxInvoice.class, "BT-10", PhloxModelRegistry::_buyerReferences);
     _add (PhloxInvoice.class, "BT-11", PhloxInvoice::getProjectReference);
+    _add (PhloxInvoice.class, "BT-11-1", PhloxInvoice::getProjectName);
     _add (PhloxInvoice.class, "BT-12", PhloxInvoice::getContractReference);
     _add (PhloxInvoice.class, "BT-13", PhloxInvoice::getPurchaseOrderReference);
     _add (PhloxInvoice.class, "BT-14", PhloxInvoice::getSalesOrderReference);
@@ -277,6 +283,7 @@ public final class PhloxModelRegistry
     _add (PhloxInvoice.class, "BG-23", PhloxInvoice::vatBreakdowns);
     _add (PhloxInvoice.class, "BG-24", PhloxInvoice::supportingDocuments);
     _add (PhloxInvoice.class, "BG-25", PhloxInvoice::lines);
+    _add (PhloxInvoice.class, ADDITIONAL_TERMS, PhloxInvoice::additionalTerms);
 
     _add (PhloxProcessControl.class, "BT-23", PhloxProcessControl::getBusinessProcessType);
     _add (PhloxProcessControl.class, "BT-24", PhloxProcessControl::getSpecificationIdentifier);
@@ -302,6 +309,7 @@ public final class PhloxModelRegistry
     _add (PhloxSeller.class, "BT-34", PhloxSeller::getElectronicAddress);
     _add (PhloxSeller.class, "BG-5", PhloxSeller::getPostalAddress);
     _add (PhloxSeller.class, "BG-6", PhloxSeller::getContact);
+    _add (PhloxSeller.class, ADDITIONAL_TERMS, PhloxSeller::additionalTerms);
 
     _add (PhloxBuyer.class, "BT-44", PhloxBuyer::getName);
     _add (PhloxBuyer.class, "BT-45", PhloxBuyer::getTradingName);
@@ -311,6 +319,7 @@ public final class PhloxModelRegistry
     _add (PhloxBuyer.class, "BT-49", PhloxBuyer::getElectronicAddress);
     _add (PhloxBuyer.class, "BG-8", PhloxBuyer::getPostalAddress);
     _add (PhloxBuyer.class, "BG-9", PhloxBuyer::getContact);
+    _add (PhloxBuyer.class, ADDITIONAL_TERMS, PhloxBuyer::additionalTerms);
 
     // BG-5 (seller): BT-35..40, BT-162
     // BG-8 (buyer): BT-50..55, BT-163
@@ -336,7 +345,7 @@ public final class PhloxModelRegistry
     _add (PhloxPostalAddress.class, "BT-77", PhloxPostalAddress::getCity);
     _add (PhloxPostalAddress.class, "BT-78", PhloxPostalAddress::getPostCode);
     _add (PhloxPostalAddress.class, "BT-80", PhloxPostalAddress::getCountryCode);
-    _add (PhloxPostalAddress.class, "address", PhloxModelRegistry::_formatAddress);
+    _add (PhloxPostalAddress.class, "address", PhloxModelRegistry::formatAddress);
     _add (PhloxPostalAddress.class, "BT-65", PhloxPostalAddress::getLine2);
     _add (PhloxPostalAddress.class, "BT-68", PhloxPostalAddress::getCountrySubdivision);
     _add (PhloxPostalAddress.class, "BT-76", PhloxPostalAddress::getLine2);
@@ -385,6 +394,7 @@ public final class PhloxModelRegistry
     _add (PhloxPaymentInstructions.class, "BG-17", PhloxPaymentInstructions::creditTransfers);
     _add (PhloxPaymentInstructions.class, "BG-18", PhloxPaymentInstructions::getPaymentCard);
     _add (PhloxPaymentInstructions.class, "BG-19", PhloxPaymentInstructions::getDirectDebit);
+    _add (PhloxPaymentInstructions.class, ADDITIONAL_TERMS, PhloxPaymentInstructions::additionalTerms);
 
     _add (PhloxCreditTransfer.class, "BT-84", PhloxCreditTransfer::getAccountIdentifier);
     _add (PhloxCreditTransfer.class, "BT-85", PhloxCreditTransfer::getAccountName);
@@ -436,6 +446,7 @@ public final class PhloxModelRegistry
     _add (PhloxDocumentTotals.class, "BG-34", PhloxDocumentTotals::thirdPartyCharges);
 
     _add (PhloxThirdPartyCharge.class, "BT-179", PhloxThirdPartyCharge::getAmount);
+    _add (PhloxThirdPartyCharge.class, "BT-179-1", PhloxThirdPartyCharge::getLineID);
     _add (PhloxThirdPartyCharge.class, "BT-180", PhloxThirdPartyCharge::getSpecification);
 
     _add (PhloxVatBreakdown.class, "BT-116", PhloxVatBreakdown::getTaxableAmount);
@@ -448,6 +459,7 @@ public final class PhloxModelRegistry
     _add (PhloxVatBreakdown.class, "BT-210", PhloxVatBreakdown::getGoodsServicesCode);
 
     _add (PhloxSupportingDocument.class, "BT-122", PhloxSupportingDocument::getReference);
+    _add (PhloxSupportingDocument.class, "BT-122-1", PhloxSupportingDocument::getDocumentTypeCode);
     _add (PhloxSupportingDocument.class, "BT-123", PhloxSupportingDocument::getDescription);
     _add (PhloxSupportingDocument.class, "BT-124", PhloxSupportingDocument::getExternalLocation);
     _add (PhloxSupportingDocument.class, "BT-125", PhloxSupportingDocument::getAttachment);
@@ -477,6 +489,7 @@ public final class PhloxModelRegistry
     _add (PhloxInvoiceLine.class, "BG-29", PhloxInvoiceLine::getPrice);
     _add (PhloxInvoiceLine.class, "BG-30", PhloxInvoiceLine::getLineVat);
     _add (PhloxInvoiceLine.class, "BG-31", PhloxInvoiceLine::getItem);
+    _add (PhloxInvoiceLine.class, ADDITIONAL_TERMS, PhloxInvoiceLine::additionalTerms);
 
     _add (PhloxInvoiceNote.class, "BT-21", PhloxInvoiceNote::getSubjectCode);
     _add (PhloxInvoiceNote.class, "BT-22", PhloxInvoiceNote::getContent);
@@ -513,7 +526,7 @@ public final class PhloxModelRegistry
     _add (PhloxPriceDetails.class, "BT-147", PhloxPriceDetails::getDiscount);
     _add (PhloxPriceDetails.class, "BT-148", PhloxPriceDetails::getGrossPrice);
     _add (PhloxPriceDetails.class, "BT-149", PhloxPriceDetails::getBaseQuantity);
-    // A base quantity of 1 is the normal case and not worth printing
+    // For a custom template: the default template shows all data, also a base quantity of 1
     _add (PhloxPriceDetails.class, "BT-149-if-not-one", PhloxModelRegistry::_baseQuantityIfNotOne);
     _add (PhloxPriceDetails.class, "BT-150", PhloxPriceDetails::getBaseQuantityUnit);
 
@@ -540,6 +553,10 @@ public final class PhloxModelRegistry
 
     _add (PhloxIdentifier.class, "value", PhloxIdentifier::getValue);
     _add (PhloxIdentifier.class, "schemeID", PhloxIdentifier::getSchemeID);
+
+    _add (PhloxAdditionalTerm.class, "term", PhloxAdditionalTerm::getTerm);
+    // The whole term, because the code list and the kind of the value decide how it is shown
+    _add (PhloxAdditionalTerm.class, "value", aTerm -> aTerm);
 
     _add (PhloxAttachment.class, "filename", PhloxAttachment::getFilename);
     _add (PhloxAttachment.class, "mimeCode", PhloxAttachment::getMimeCode);
@@ -636,6 +653,9 @@ public final class PhloxModelRegistry
       return true;
     if (aValue instanceof final String sValue)
       return sValue.isEmpty ();
+    // Always has a value, and its name "value" answers with the term itself
+    if (aValue instanceof PhloxAdditionalTerm)
+      return false;
     if (aValue instanceof final Collection <?> aCollection)
       return aCollection.isEmpty ();
     final ICommonsMap <String, Function <Object, Object>> aMap = REG.get (aValue.getClass ());

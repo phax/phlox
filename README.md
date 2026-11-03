@@ -32,6 +32,7 @@ Reads invoices in **UBL** or **CII** syntax, lifts them into a syntax-neutral in
 
 - **Both editions of the standard:** EN 16931:2017 (UBL 2.1, CII D16B) and EN 16931:2026 (UBL 2.5, CII D25A). The edition is detected from BT-24 or chosen explicitly.
 - **Complete model:** every EN 16931 business group and business term is represented; terms that only exist in 2026 stay empty for 2017 documents.
+- **Nothing gets lost:** all data of the XML appears in the output of the default template, every occurrence of a repeated element as well; a test enforces it on all example invoices.
 - **Template driven output:** HTML, PDF and plain text are rendered from a `.ptpl` template (JMustache plus CommonMark). The default template ships with phlox; your own replaces it without writing Java.
 - **Themes:** colours, fonts, page layout, block styles, language, logo and watermark come from one JSON file. See [Styling](https://github.com/phax/phlox/wiki/Styling).
 - **Any script in PDF:** embed TTF or OTF fonts (for example Roboto for Cyrillic and Greek) in HTML and PDF with `--font`, the theme or the API. The standard PDF fonts only contain Western European characters.
@@ -94,7 +95,7 @@ java -jar phlox-cli/target/phlox-cli-full.jar -i invoice-cii.xml -f PDF -o invoi
 | `--line-width` | Width at which the `TEXT` output wraps paragraphs; `0` for no wrapping |
 | `--annotate-bt-ids` | Show the Business Term number after each label |
 | `--date-style` | Style of formatted dates: `SHORT`, `MEDIUM`, `LONG` or `FULL` |
-| `--amount-fraction-digits`, `--percent-fraction-digits` | Number of fraction digits of amounts and percentages |
+| `--amount-min-fraction-digits`, `--percent-min-fraction-digits` | Minimum number of fraction digits of amounts and percentages; a value with more digits shows them |
 | `--negative-style` | Negative amounts: `MINUS_SIGN` or `PARENTHESES` |
 | `--creation-date-time` | `PDF` only: fixed creation date and time in the metadata, for reproducible output |
 | `--pdfa` | PDF/A level of the PDF: `2b`, `2u`, `3a` (tagged), `3b` or `3u`; needs `--font` (or fonts in the theme) |

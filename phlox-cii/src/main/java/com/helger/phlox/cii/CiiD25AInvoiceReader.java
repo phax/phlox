@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 package com.helger.phlox.cii;
-
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+import com.helger.base.equals.EqualsHelper;
+import com.helger.base.string.StringHelper;
 import com.helger.collection.commons.CommonsArrayList;
 import com.helger.collection.commons.ICommonsList;
 import com.helger.datetime.xml.XMLOffsetDateTime;
@@ -32,6 +35,7 @@ import com.helger.en16931.basics.EEN16931Edition;
 import com.helger.en16931.basics.codelist.EN16931CodeLists;
 import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
 import com.helger.phlox.api.model.PhloxAttachment;
 import com.helger.phlox.api.model.PhloxBuyer;
 import com.helger.phlox.api.model.PhloxContact;
@@ -40,6 +44,7 @@ import com.helger.phlox.api.model.PhloxDeliveryInformation;
 import com.helger.phlox.api.model.PhloxDirectDebit;
 import com.helger.phlox.api.model.PhloxDocumentAllowance;
 import com.helger.phlox.api.model.PhloxDocumentCharge;
+import com.helger.phlox.api.model.PhloxDocumentTotals;
 import com.helger.phlox.api.model.PhloxEarlyPaymentDiscount;
 import com.helger.phlox.api.model.PhloxIdentifier;
 import com.helger.phlox.api.model.PhloxInvoice;
@@ -117,6 +122,7 @@ import un.unece.uncefact.data.standard.cii.d25a.rabie.TradeSettlementPaymentMean
 import un.unece.uncefact.data.standard.cii.d25a.rabie.TradeTaxType;
 import un.unece.uncefact.data.standard.cii.d25a.rabie.UniversalCommunicationType;
 import un.unece.uncefact.data.standard.cii.d25a.udt.AmountType;
+import un.unece.uncefact.data.standard.cii.d25a.udt.BinaryObjectType;
 import un.unece.uncefact.data.standard.cii.d25a.udt.CodeType;
 import un.unece.uncefact.data.standard.cii.d25a.udt.DateTimeType;
 import un.unece.uncefact.data.standard.cii.d25a.udt.DateType;
@@ -153,47 +159,62 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     return aCode != null && NON_VAT_TAX_CODE_LIST_ID.equals (aCode.getListID ());
   }
 
+  @NonNull
+  private static ICommonsList <BigDecimal> _getAmounts (@NonNull final List <AmountType> aAmounts)
+  {
+    return new CommonsArrayList <> (aAmounts, AmountType::getValue);
+  }
+
   private static void _readTotals (@NonNull final TradeSettlementHeaderMonetarySummationType aS,
                                    @NonNull final PhloxInvoice aModel)
   {
-    if (!aS.getLineTotalAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setLineNetTotal (aS.getLineTotalAmount ().get (0).getValue ());
-    if (!aS.getAllowanceTotalAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setAllowanceTotal (aS.getAllowanceTotalAmount ().get (0).getValue ());
-    if (!aS.getChargeTotalAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setChargeTotal (aS.getChargeTotalAmount ().get (0).getValue ());
-    if (!aS.getTaxBasisTotalAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setTaxExclusiveTotal (aS.getTaxBasisTotalAmount ().get (0).getValue ());
-    if (!aS.getGrandTotalAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setTaxInclusiveTotal (aS.getGrandTotalAmount ().get (0).getValue ());
-    if (!aS.getTotalPrepaidAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setPrepaidAmount (aS.getTotalPrepaidAmount ().get (0).getValue ());
-    if (!aS.getRoundingAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setRoundingAmount (aS.getRoundingAmount ().get (0).getValue ());
-    if (!aS.getDuePayableAmount ().isEmpty ())
-      aModel.getDocumentTotals ().setPayableAmount (aS.getDuePayableAmount ().get (0).getValue ());
+    final PhloxDocumentTotals aTotals = aModel.getDocumentTotals ();
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aModel.additionalTerms ();
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getLineTotalAmount ()), "BT-106", aTotals::setLineNetTotal, aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getAllowanceTotalAmount ()),
+                                         "BT-107",
+                                         aTotals::setAllowanceTotal,
+                                         aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getChargeTotalAmount ()), "BT-108", aTotals::setChargeTotal, aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getTaxBasisTotalAmount ()),
+                                         "BT-109",
+                                         aTotals::setTaxExclusiveTotal,
+                                         aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getGrandTotalAmount ()),
+                                         "BT-112",
+                                         aTotals::setTaxInclusiveTotal,
+                                         aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getTotalPrepaidAmount ()), "BT-113", aTotals::setPrepaidAmount, aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getRoundingAmount ()), "BT-114", aTotals::setRoundingAmount, aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aS.getDuePayableAmount ()), "BT-115", aTotals::setPayableAmount, aTerms);
 
-    // BT-110 (main) / BT-111 (accounting currency)
+    // BT-110 (main) / BT-111 (accounting currency). A further tax total keeps its currency, because
+    // it may be any
     final String sAcct = aModel.getVatAccountingCurrency ();
     for (final AmountType aA : aS.getTaxTotalAmount ())
     {
-      if (isVatAccountingAmount (aModel.getCurrency (), sAcct, aA.getCurrencyID ()))
-        aModel.getDocumentTotals ().setTaxTotalAccountingCurrency (aA.getValue ());
+      final boolean bAccounting = isVatAccountingAmount (aModel.getCurrency (), sAcct, aA.getCurrencyID ());
+      if (bAccounting && aTotals.getTaxTotalAccountingCurrency () == null)
+        aTotals.setTaxTotalAccountingCurrency (aA.getValue ());
       else
-        if (aModel.getDocumentTotals ().getTaxTotal () == null)
-          aModel.getDocumentTotals ().setTaxTotal (aA.getValue ());
+        if (!bAccounting && aTotals.getTaxTotal () == null)
+          aTotals.setTaxTotal (aA.getValue ());
+        else
+          aTerms.add (new PhloxAdditionalTerm (bAccounting ? "BT-111" : "BT-110",
+                                               aA.getValue ().toPlainString () + " " + aA.getCurrencyID ()));
     }
   }
 
   @NonNull
-  private static PhloxPriceDetails _readPrice (@NonNull final LineTradeAgreementType aLTA)
+  private static PhloxPriceDetails _readPrice (@NonNull final LineTradeAgreementType aLTA,
+                                               @NonNull final PhloxInvoiceLine aLine)
   {
     final PhloxPriceDetails aOut = new PhloxPriceDetails ();
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aLine.additionalTerms ();
     final TradePriceType aNet = aLTA.getNetPriceProductTradePrice ();
     if (aNet != null)
     {
-      if (!aNet.getChargeAmount ().isEmpty ())
-        aOut.setNetPrice (aNet.getChargeAmount ().get (0).getValue ());
+      PhloxReaderHelper.setAndAddRepeated (_getAmounts (aNet.getChargeAmount ()), "BT-146", aOut::setNetPrice, aTerms);
       if (aNet.getBasisQuantity () != null)
       {
         aOut.setBaseQuantity (aNet.getBasisQuantity ().getValue ());
@@ -203,20 +224,42 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     final TradePriceType aGross = aLTA.getGrossPriceProductTradePrice ();
     if (aGross != null)
     {
-      if (!aGross.getChargeAmount ().isEmpty ())
-        aOut.setGrossPrice (aGross.getChargeAmount ().get (0).getValue ());
+      PhloxReaderHelper.setAndAddRepeated (_getAmounts (aGross.getChargeAmount ()), "BT-148", aOut::setGrossPrice, aTerms);
+      // BT-147 is 0..1: the first discount goes there, the others are shown as well
+      boolean bFirstDiscount = true;
       for (final TradeAllowanceChargeType aAC : aGross.getAppliedTradeAllowanceCharge ())
-        if (aAC.getChargeIndicator () == null || !Boolean.TRUE.equals (aAC.getChargeIndicator ().isIndicator ()))
-        {
-          if (!aAC.getActualAmount ().isEmpty ())
-            aOut.setDiscount (aAC.getActualAmount ().get (0).getValue ());
-          break;
-        }
-      // BT-149 / BT-150 — since EN 16931:2026 the base quantity may sit on the gross price as well
-      if (aOut.getBaseQuantity () == null && aGross.getBasisQuantity () != null)
       {
-        aOut.setBaseQuantity (aGross.getBasisQuantity ().getValue ());
-        aOut.setBaseQuantityUnit (str (aGross.getBasisQuantity ().getUnitCode ()));
+        final boolean bCharge = aAC.getChargeIndicator () != null &&
+                                Boolean.TRUE.equals (aAC.getChargeIndicator ().isIndicator ());
+        for (final BigDecimal aAmount : _getAmounts (aAC.getActualAmount ()))
+          if (bCharge)
+            PhloxReaderHelper.addIfPresent (TERM_PRICE_CHARGE, aAmount, aTerms);
+          else
+            if (bFirstDiscount)
+            {
+              aOut.setDiscount (aAmount);
+              bFirstDiscount = false;
+            }
+            else
+              PhloxReaderHelper.addIfPresent ("BT-147", aAmount, aTerms);
+      }
+      // BT-149 / BT-150 — since EN 16931:2026 the base quantity may sit on the gross price as well
+      if (aGross.getBasisQuantity () != null)
+      {
+        final QuantityType aGrossQuantity = aGross.getBasisQuantity ();
+        if (aOut.getBaseQuantity () == null)
+        {
+          aOut.setBaseQuantity (aGrossQuantity.getValue ());
+          aOut.setBaseQuantityUnit (str (aGrossQuantity.getUnitCode ()));
+        }
+        else
+          if (aGrossQuantity.getValue () != null &&
+              (aOut.getBaseQuantity ().compareTo (aGrossQuantity.getValue ()) != 0 ||
+               !EqualsHelper.equals (aOut.getBaseQuantityUnit (), str (aGrossQuantity.getUnitCode ()))))
+            aTerms.add (new PhloxAdditionalTerm ("BT-149",
+                                                 aGrossQuantity.getValue ().toPlainString () +
+                                                           " " +
+                                                           StringHelper.getNotNull (str (aGrossQuantity.getUnitCode ()))));
       }
     }
     return aOut;
@@ -290,338 +333,22 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
 
   /**
    * Read the party identifiers (BT-29, BT-46, BT-60, BT-71 and their scheme identifiers). Since EN
-   * 16931:2026 only {@code ram:GlobalID} carries them; {@code ram:ID} is only used as a fallback
-   * for documents that still follow the 2017 binding.
+   * 16931:2026 only {@code ram:GlobalID} carries them, and {@code ram:ID} comes from documents that
+   * still follow the 2017 binding.
    */
   private static void _readPartyIdentifiers (@NonNull final TradePartyType aTP,
                                              @NonNull final List <PhloxIdentifier> aTarget)
   {
     for (final IDType aID : aTP.getGlobalID ())
       _addIdentifier (aID, aTarget);
-    if (aTarget.isEmpty ())
-      for (final IDType aID : aTP.getID ())
-        _addIdentifier (aID, aTarget);
+    for (final IDType aID : aTP.getID ())
+      _addIdentifier (aID, aTarget);
   }
 
   @Nullable
   private static String _text (@Nullable final TextType aT)
   {
     return aT == null ? null : str (aT.getValue ());
-  }
-
-  @NonNull
-  private static PhloxPayee _readPayee (@NonNull final TradePartyType aTP)
-  {
-    final PhloxPayee aOut = new PhloxPayee ();
-    aOut.setName (_text (aTP.getName ()));
-    final ICommonsList <PhloxIdentifier> aIDs = new CommonsArrayList <> ();
-    _readPartyIdentifiers (aTP, aIDs);
-    if (!aIDs.isEmpty ())
-      aOut.setIdentifier (aIDs.getFirstOrNull ());
-    final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
-    if (aLO != null && aLO.getID () != null)
-      aOut.setLegalRegistration (_identifier (aLO.getID ()));
-    return aOut;
-  }
-
-  @NonNull
-  private static PhloxPostalAddress _readAddress (@NonNull final TradeAddressType aAddr)
-  {
-    final PhloxPostalAddress aOut = new PhloxPostalAddress ();
-    aOut.setLine1 (_text (aAddr.getLineOne ()));
-    aOut.setLine2 (_text (aAddr.getLineTwo ()));
-    aOut.setLine3 (_text (aAddr.getLineThree ()));
-    aOut.setCity (_text (aAddr.getCityName ()));
-    aOut.setPostCode (_codeValue (aAddr.getPostcodeCode ()));
-    if (aAddr.getCountryID () != null)
-      aOut.setCountryCode (str (aAddr.getCountryID ().getValue ()));
-    if (!aAddr.getCountrySubDivisionName ().isEmpty ())
-      aOut.setCountrySubdivision (_text (aAddr.getCountrySubDivisionName ().get (0)));
-    return aOut;
-  }
-
-  @NonNull
-  private static PhloxSellerTaxRepresentative _readTaxRep (@NonNull final TradePartyType aTP)
-  {
-    final PhloxSellerTaxRepresentative aOut = new PhloxSellerTaxRepresentative ();
-    aOut.setName (_text (aTP.getName ()));
-    for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
-      if (aTR.getID () != null && "VA".equalsIgnoreCase (str (aTR.getID ().getSchemeID ())))
-        aOut.setVatIdentifier (str (aTR.getID ().getValue ()));
-    if (aTP.getPostalTradeAddress () != null)
-      aOut.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
-    return aOut;
-  }
-
-  @NonNull
-  private static PhloxContact _readContact (@NonNull final TradeContactType aTC)
-  {
-    final PhloxContact aOut = new PhloxContact ();
-    // BT-41 / BT-56 — PersonName or DepartmentName (CII-SR-502 / CII-SR-503)
-    final String sPersonName = _text (aTC.getPersonName ());
-    aOut.setName (sPersonName != null ? sPersonName : _text (aTC.getDepartmentName ()));
-    if (aTC.getTelephoneUniversalCommunication () != null)
-      aOut.setTelephone (_text (aTC.getTelephoneUniversalCommunication ().getCompleteNumber ()));
-    if (aTC.getEmailURIUniversalCommunication () != null &&
-        aTC.getEmailURIUniversalCommunication ().getURIID () != null)
-      aOut.setEmail (str (aTC.getEmailURIUniversalCommunication ().getURIID ().getValue ()));
-    return aOut;
-  }
-
-  private static void _readSeller (@NonNull final TradePartyType aTP, @NonNull final PhloxSeller aSeller)
-  {
-    aSeller.setName (_text (aTP.getName ())); // BT-27
-    final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
-    if (aLO != null)
-    {
-      aSeller.setTradingName (_text (aLO.getTradingBusinessName ())); // BT-28
-      if (aLO.getID () != null)
-        aSeller.setLegalRegistration (_identifier (aLO.getID ()));
-    }
-    // BT-29 / BT-29-1
-    _readPartyIdentifiers (aTP, aSeller.identifiers ());
-    // BT-31 / BT-32 / BT-32-1 via SpecifiedTaxRegistration schemeID
-    for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
-      if (aTR.getID () != null)
-      {
-        final String sScheme = str (aTR.getID ().getSchemeID ());
-        if ("VA".equalsIgnoreCase (sScheme))
-          aSeller.setVatIdentifier (_idValue (aTR.getID ()));
-        else
-          if (aSeller.getTaxRegistration () == null)
-          {
-            // "FC" by default; special schemes from ISO/IEC 6523 may be used as well
-            aSeller.setTaxRegistration (_idValue (aTR.getID ()));
-            aSeller.setTaxRegistrationSchemeID (sScheme);
-          }
-      }
-    // BT-33
-    if (!aTP.getDescription ().isEmpty ())
-      aSeller.setAdditionalLegalInfo (_text (aTP.getDescription ().get (0)));
-    // BT-34 / BT-34-1
-    for (final UniversalCommunicationType aUC : aTP.getURIUniversalCommunication ())
-      if (aUC.getURIID () != null)
-      {
-        aSeller.setElectronicAddress (_identifier (aUC.getURIID ()));
-        break;
-      }
-    // BG-5
-    if (aTP.getPostalTradeAddress () != null)
-      aSeller.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
-    // BG-6
-    if (!aTP.getDefinedTradeContact ().isEmpty ())
-      aSeller.setContact (_readContact (aTP.getDefinedTradeContact ().get (0)));
-  }
-
-  private static void _readBuyer (@NonNull final TradePartyType aTP, @NonNull final PhloxBuyer aBuyer)
-  {
-    aBuyer.setName (_text (aTP.getName ())); // BT-44
-    final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
-    if (aLO != null)
-    {
-      aBuyer.setTradingName (_text (aLO.getTradingBusinessName ()));
-      if (aLO.getID () != null)
-        aBuyer.setLegalRegistration (_identifier (aLO.getID ()));
-    }
-    _readPartyIdentifiers (aTP, aBuyer.identifiers ());
-    for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
-      if (aTR.getID () != null && "VA".equalsIgnoreCase (str (aTR.getID ().getSchemeID ())))
-        aBuyer.setVatIdentifier (str (aTR.getID ().getValue ()));
-    for (final UniversalCommunicationType aUC : aTP.getURIUniversalCommunication ())
-      if (aUC.getURIID () != null)
-      {
-        aBuyer.setElectronicAddress (_identifier (aUC.getURIID ()));
-        break;
-      }
-    if (aTP.getPostalTradeAddress () != null)
-      aBuyer.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
-    if (!aTP.getDefinedTradeContact ().isEmpty ())
-      aBuyer.setContact (_readContact (aTP.getDefinedTradeContact ().get (0)));
-  }
-
-  @NonNull
-  private static PhloxDocumentAllowance _readDocAllowance (@NonNull final TradeAllowanceChargeType aAC)
-  {
-    final PhloxDocumentAllowance aOut = new PhloxDocumentAllowance ();
-    if (!aAC.getActualAmount ().isEmpty ())
-      aOut.setAmount (aAC.getActualAmount ().get (0).getValue ());
-    if (aAC.getBasisAmount () != null)
-      aOut.setBaseAmount (aAC.getBasisAmount ().getValue ());
-    if (aAC.getCalculationPercent () != null)
-      aOut.setPercentage (aAC.getCalculationPercent ().getValue ());
-    aOut.setReason (_text (aAC.getReason ()));
-    aOut.setReasonCode (_codeValue (aAC.getReasonCode ()));
-    if (!aAC.getCategoryTradeTax ().isEmpty ())
-    {
-      final TradeTaxType aTT = aAC.getCategoryTradeTax ().get (0);
-      aOut.setVatCategoryCode (_codeValue (aTT.getCategoryCode ()));
-      if (aTT.getRateApplicablePercent () != null)
-        aOut.setVatRate (aTT.getRateApplicablePercent ().getValue ());
-      aOut.setExemptionReasonText (_text (aTT.getExemptionReason ())); // BT-173
-      aOut.setExemptionReasonCode (_codeValue (aTT.getExemptionReasonCode ())); // BT-174
-      aOut.setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ())); // BT-213
-    }
-    return aOut;
-  }
-
-  @NonNull
-  private static PhloxDocumentCharge _readDocCharge (@NonNull final TradeAllowanceChargeType aAC)
-  {
-    final PhloxDocumentCharge aOut = new PhloxDocumentCharge ();
-    if (!aAC.getActualAmount ().isEmpty ())
-      aOut.setAmount (aAC.getActualAmount ().get (0).getValue ());
-    if (aAC.getBasisAmount () != null)
-      aOut.setBaseAmount (aAC.getBasisAmount ().getValue ());
-    if (aAC.getCalculationPercent () != null)
-      aOut.setPercentage (aAC.getCalculationPercent ().getValue ());
-    aOut.setReason (_text (aAC.getReason ()));
-    // BT-105 and BT-177 share ram:ReasonCode and are told apart by @listID
-    final String sReasonCode = _codeValue (aAC.getReasonCode ());
-    if (_isNonVatTaxCodeList (aAC.getReasonCode ()))
-    {
-      aOut.setNonVatTaxCode (sReasonCode);
-      aOut.setNonVatTaxCodeListID (aAC.getReasonCode ().getListID ());
-    }
-    else
-      aOut.setReasonCode (sReasonCode);
-    if (!aAC.getCategoryTradeTax ().isEmpty ())
-    {
-      final TradeTaxType aTT = aAC.getCategoryTradeTax ().get (0);
-      aOut.setVatCategoryCode (_codeValue (aTT.getCategoryCode ()));
-      if (aTT.getRateApplicablePercent () != null)
-        aOut.setVatRate (aTT.getRateApplicablePercent ().getValue ());
-      aOut.setExemptionReasonText (_text (aTT.getExemptionReason ())); // BT-175
-      aOut.setExemptionReasonCode (_codeValue (aTT.getExemptionReasonCode ())); // BT-176
-      aOut.setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ())); // BT-214
-    }
-    return aOut;
-  }
-
-  @NonNull
-  private static PhloxSupportingDocument _readSupportingDocument (@NonNull final ReferencedDocumentType aRD)
-  {
-    final PhloxSupportingDocument aOut = new PhloxSupportingDocument ();
-    aOut.setReference (_idValue (aRD.getIssuerAssignedID ()));
-    if (!aRD.getName ().isEmpty ())
-      aOut.setDescription (_text (aRD.getName ().get (0)));
-    if (aRD.getURIID () != null)
-      aOut.setExternalLocation (str (aRD.getURIID ().getValue ()));
-    if (!aRD.getAttachmentBinaryObject ().isEmpty ())
-    {
-      final PhloxAttachment aBin = new PhloxAttachment ();
-      aBin.setBinary (aRD.getAttachmentBinaryObject ().get (0).getValue ());
-      aBin.setMimeCode (str (aRD.getAttachmentBinaryObject ().get (0).getMimeCode ()));
-      aBin.setFilename (str (aRD.getAttachmentBinaryObject ().get (0).getFilename ()));
-      aOut.setAttachment (aBin);
-    }
-    return aOut;
-  }
-
-  /**
-   * Parse a CII {@code DateTimeType} into a {@link LocalDate}. Reads the {@code @format} attribute
-   * on the inner {@code DateTimeString} and dispatches to the right pattern; missing format
-   * defaults to "102" (yyyyMMdd) per EN 16931.
-   */
-  @Nullable
-  private static LocalDate _dateTime (@Nullable final DateTimeType aDT, @NonNull final ErrorList aErrors)
-  {
-    if (aDT == null || aDT.getDateTimeString () == null)
-      return null;
-
-    return parseFormattedDate (aDT.getDateTimeString ().getValue (), aDT.getDateTimeString ().getFormat (), aErrors);
-  }
-
-  @NonNull
-  private static PhloxInvoicingPeriod _readPeriod (@NonNull final SpecifiedPeriodType aSP,
-                                                   @NonNull final ErrorList aErrors)
-  {
-    final PhloxInvoicingPeriod aOut = new PhloxInvoicingPeriod ();
-    aOut.setStartDate (_dateTime (aSP.getStartDateTime (), aErrors));
-    aOut.setEndDate (_dateTime (aSP.getEndDateTime (), aErrors));
-    return aOut;
-  }
-
-  @NonNull
-  private static PhloxLineDelivery _readLineDelivery (@NonNull final LineTradeDeliveryType aLTD,
-                                                      @NonNull final ErrorList aErrors)
-  {
-    final PhloxLineDelivery aOut = new PhloxLineDelivery ();
-    final TradePartyType aShipTo = aLTD.getShipToTradeParty ();
-    if (aShipTo != null)
-    {
-      aOut.setPartyName (_text (aShipTo.getName ())); // BT-185
-      final ICommonsList <PhloxIdentifier> aIDs = new CommonsArrayList <> ();
-      _readPartyIdentifiers (aShipTo, aIDs);
-      if (!aIDs.isEmpty ())
-        aOut.setLocationIdentifier (aIDs.getFirstOrNull ()); // BT-186 / BT-186-1
-      if (aShipTo.getPostalTradeAddress () != null)
-        aOut.setPostalAddress (_readAddress (aShipTo.getPostalTradeAddress ())); // BG-38
-    }
-    // BT-187
-    if (aLTD.getActualDeliverySupplyChainEvent () != null)
-      aOut.setActualDeliveryDate (_dateTime (aLTD.getActualDeliverySupplyChainEvent ().getOccurrenceDateTime (), aErrors));
-    return aOut;
-  }
-
-  /**
-   * Parse a CII {@code DateType} into a {@link LocalDate}. Honours the {@code @format} attribute on
-   * the inner {@code DateString}; if {@code DateString} is absent the {@code DateLocal} value is
-   * used.
-   */
-  @Nullable
-  private static LocalDate _dateOnly (@Nullable final DateType aDT, @NonNull final ErrorList aErrors)
-  {
-    if (aDT == null)
-      return null;
-
-    if (aDT.getDateString () != null)
-      return parseFormattedDate (aDT.getDateString ().getValue (), aDT.getDateString ().getFormat (), aErrors);
-    return aDT.getDateLocal ();
-  }
-
-  /**
-   * Parse a CII {@code FormattedDateTimeType} (qualified namespace) into a {@link LocalDate}.
-   * Format codes follow the same UN/EDIFACT 2379 dispatch as {@link #_dateTime(DateTimeType, ErrorList)}.
-   */
-  @Nullable
-  private static LocalDate _formattedDateTime (@Nullable final FormattedDateTimeType aFDT,
-                                               @NonNull final ErrorList aErrors)
-  {
-    if (aFDT == null || aFDT.getDateTimeString () == null)
-      return null;
-
-    return parseFormattedDate (aFDT.getDateTimeString ().getValue (), aFDT.getDateTimeString ().getFormat (), aErrors);
-  }
-
-  /**
-   * Read the combined BT-2 issue date and BT-166 issue time. Format code 208 carries date, time and
-   * offset; every other format code only carries the date.
-   */
-  private static void _readIssueDateTime (@Nullable final DateTimeType aDT,
-                                          @NonNull final PhloxInvoice aModel,
-                                          @NonNull final ErrorList aErrors)
-  {
-    if (aDT == null || aDT.getDateTimeString () == null)
-      return;
-
-    final DateTimeType.DateTimeString aDTS = aDT.getDateTimeString ();
-    if (FORMAT_CODE_DATE_TIME.equals (str (aDTS.getFormat ())))
-    {
-      final XMLOffsetDateTime aIssueDateTime = EEN16931DateFormatCode.CCYYMMDDHHMMSSZHHMM.parseDateTime (str (aDTS.getValue ()));
-      if (aIssueDateTime == null)
-      {
-        aErrors.add (SingleError.builderWarn ()
-                                .errorText ("Could not parse the invoice issue date and time '" +
-                                            PhloxLogHelper.sanitise (aDTS.getValue ()) +
-                                            "' (BT-2 / BT-166) with format code 208")
-                                .build ());
-        return;
-      }
-      aModel.setIssueDate (aIssueDateTime.toLocalDate ());
-      aModel.setIssueTime (aIssueDateTime.toOffsetTime ());
-    }
-    else
-      aModel.setIssueDate (parseFormattedDate (aDTS.getValue (), aDTS.getFormat (), aErrors));
   }
 
   /**
@@ -647,6 +374,406 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     return aSB.length () == 0 ? null : aSB.toString ();
   }
 
+  /** Get the VAT identifiers of a party (BT-31, BT-48, BT-63). */
+  @NonNull
+  private static ICommonsList <String> _getVatIdentifiers (@NonNull final TradePartyType aTP)
+  {
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
+    for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
+      if (aTR.getID () != null && TAX_SCHEME_VAT.equalsIgnoreCase (str (aTR.getID ().getSchemeID ())))
+        ret.add (_idValue (aTR.getID ()));
+    return ret;
+  }
+
+  /**
+   * Get the tax registrations of a party that are no VAT identifiers (BT-32 for the seller). The
+   * scheme "FC" is the default, special schemes from ISO/IEC 6523 may be used as well.
+   */
+  @NonNull
+  private static ICommonsList <PhloxIdentifier> _getTaxRegistrations (@NonNull final TradePartyType aTP)
+  {
+    final ICommonsList <PhloxIdentifier> ret = new CommonsArrayList <> ();
+    for (final TaxRegistrationType aTR : aTP.getSpecifiedTaxRegistration ())
+      if (aTR.getID () != null && !TAX_SCHEME_VAT.equalsIgnoreCase (str (aTR.getID ().getSchemeID ())))
+        _addIdentifier (aTR.getID (), ret);
+    return ret;
+  }
+
+  @NonNull
+  private static PhloxPayee _readPayee (@NonNull final TradePartyType aTP, @NonNull final PhloxInvoice aModel)
+  {
+    final PhloxPayee aOut = new PhloxPayee ();
+    aOut.setName (_text (aTP.getName ()));
+    final ICommonsList <PhloxIdentifier> aIDs = new CommonsArrayList <> ();
+    _readPartyIdentifiers (aTP, aIDs);
+    PhloxReaderHelper.setAndAddRepeated (aIDs, "BT-60", aOut::setIdentifier, aModel.additionalTerms ());
+    final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
+    if (aLO != null)
+    {
+      if (aLO.getID () != null)
+        aOut.setLegalRegistration (_identifier (aLO.getID ()));
+      // EN 16931 has no trading name of the payee, but it must not get lost
+      PhloxReaderHelper.addIfPresent ("BT-59", _text (aLO.getTradingBusinessName ()), aModel.additionalTerms ());
+    }
+    return aOut;
+  }
+
+  @NonNull
+  private static PhloxPostalAddress _readAddress (@NonNull final TradeAddressType aAddr)
+  {
+    final PhloxPostalAddress aOut = new PhloxPostalAddress ();
+    aOut.setLine1 (_text (aAddr.getLineOne ()));
+    aOut.setLine2 (_text (aAddr.getLineTwo ()));
+    aOut.setLine3 (_text (aAddr.getLineThree ()));
+    aOut.setCity (_text (aAddr.getCityName ()));
+    aOut.setPostCode (_codeValue (aAddr.getPostcodeCode ()));
+    if (aAddr.getCountryID () != null)
+      aOut.setCountryCode (str (aAddr.getCountryID ().getValue ()));
+    aOut.setCountrySubdivision (_joinTexts (aAddr.getCountrySubDivisionName ()));
+    return aOut;
+  }
+
+  @NonNull
+  private static PhloxSellerTaxRepresentative _readTaxRep (@NonNull final TradePartyType aTP,
+                                                           @NonNull final PhloxInvoice aModel)
+  {
+    final PhloxSellerTaxRepresentative aOut = new PhloxSellerTaxRepresentative ();
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aModel.additionalTerms ();
+    aOut.setName (_text (aTP.getName ()));
+    PhloxReaderHelper.setAndAddRepeated (_getVatIdentifiers (aTP), "BT-63", aOut::setVatIdentifier, aTerms);
+    for (final PhloxIdentifier aID : _getTaxRegistrations (aTP))
+      aTerms.add (new PhloxAdditionalTerm (TERM_TAX_REGISTRATION, aID));
+    if (aTP.getPostalTradeAddress () != null)
+      aOut.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
+    return aOut;
+  }
+
+  @NonNull
+  private static PhloxContact _readContact (@NonNull final TradeContactType aTC)
+  {
+    final PhloxContact aOut = new PhloxContact ();
+    // BT-41 / BT-56 — PersonName and DepartmentName (CII-SR-502 / CII-SR-503)
+    final String sPersonName = _text (aTC.getPersonName ());
+    final String sDepartmentName = _text (aTC.getDepartmentName ());
+    aOut.setName (sPersonName == null ? sDepartmentName
+                                      : sDepartmentName == null ? sPersonName : sPersonName + ", " + sDepartmentName);
+    if (aTC.getTelephoneUniversalCommunication () != null)
+      aOut.setTelephone (_text (aTC.getTelephoneUniversalCommunication ().getCompleteNumber ()));
+    if (aTC.getEmailURIUniversalCommunication () != null &&
+        aTC.getEmailURIUniversalCommunication ().getURIID () != null)
+      aOut.setEmail (str (aTC.getEmailURIUniversalCommunication ().getURIID ().getValue ()));
+    return aOut;
+  }
+
+  /**
+   * Get the electronic addresses of a party (BT-34, BT-49 with the scheme identifiers).
+   */
+  @NonNull
+  private static ICommonsList <PhloxIdentifier> _getElectronicAddresses (@NonNull final TradePartyType aTP)
+  {
+    final ICommonsList <PhloxIdentifier> ret = new CommonsArrayList <> ();
+    for (final UniversalCommunicationType aUC : aTP.getURIUniversalCommunication ())
+      if (aUC.getURIID () != null)
+        ret.add (_identifier (aUC.getURIID ()));
+    return ret;
+  }
+
+  private static void _readContacts (@NonNull final TradePartyType aTP,
+                                     @NonNull final Consumer <PhloxContact> aSetter,
+                                     @NonNull final String sNameTerm,
+                                     @NonNull final String sTelephoneTerm,
+                                     @NonNull final String sEmailTerm,
+                                     @NonNull final List <PhloxAdditionalTerm> aTerms)
+  {
+    boolean bFirst = true;
+    for (final TradeContactType aTC : aTP.getDefinedTradeContact ())
+    {
+      final PhloxContact aContact = _readContact (aTC);
+      if (bFirst)
+        aSetter.accept (aContact);
+      else
+        PhloxReaderHelper.addContact (aContact, sNameTerm, sTelephoneTerm, sEmailTerm, aTerms);
+      bFirst = false;
+    }
+  }
+
+  private static void _readSeller (@NonNull final TradePartyType aTP, @NonNull final PhloxSeller aSeller)
+  {
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aSeller.additionalTerms ();
+    aSeller.setName (_text (aTP.getName ())); // BT-27
+    final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
+    if (aLO != null)
+    {
+      aSeller.setTradingName (_text (aLO.getTradingBusinessName ())); // BT-28
+      if (aLO.getID () != null)
+        aSeller.setLegalRegistration (_identifier (aLO.getID ()));
+    }
+    // BT-29 / BT-29-1
+    _readPartyIdentifiers (aTP, aSeller.identifiers ());
+    // BT-31 / BT-32 / BT-32-1 via SpecifiedTaxRegistration schemeID
+    PhloxReaderHelper.setAndAddRepeated (_getVatIdentifiers (aTP), "BT-31", aSeller::setVatIdentifier, aTerms);
+    PhloxReaderHelper.setAndAddRepeated (_getTaxRegistrations (aTP),
+                                         "BT-32",
+                                         aID -> aSeller.setTaxRegistration (aID.getValue ())
+                                                       .setTaxRegistrationSchemeID (aID.getSchemeID ()),
+                                         aTerms);
+    // BT-33
+    aSeller.setAdditionalLegalInfo (_joinTexts (aTP.getDescription ()));
+    // BT-34 / BT-34-1
+    PhloxReaderHelper.setAndAddRepeated (_getElectronicAddresses (aTP),
+                                         "BT-34",
+                                         aSeller::setElectronicAddress,
+                                         aTerms);
+    // BG-5
+    if (aTP.getPostalTradeAddress () != null)
+      aSeller.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
+    // BG-6
+    _readContacts (aTP, aSeller::setContact, "BT-41", "BT-42", "BT-43", aTerms);
+  }
+
+  private static void _readBuyer (@NonNull final TradePartyType aTP, @NonNull final PhloxBuyer aBuyer)
+  {
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aBuyer.additionalTerms ();
+    aBuyer.setName (_text (aTP.getName ())); // BT-44
+    final LegalOrganizationType aLO = aTP.getSpecifiedLegalOrganization ();
+    if (aLO != null)
+    {
+      aBuyer.setTradingName (_text (aLO.getTradingBusinessName ()));
+      if (aLO.getID () != null)
+        aBuyer.setLegalRegistration (_identifier (aLO.getID ()));
+    }
+    _readPartyIdentifiers (aTP, aBuyer.identifiers ());
+    PhloxReaderHelper.setAndAddRepeated (_getVatIdentifiers (aTP), "BT-48", aBuyer::setVatIdentifier, aTerms);
+    // EN 16931 has no other tax registration of the buyer, but it must not get lost
+    for (final PhloxIdentifier aID : _getTaxRegistrations (aTP))
+      aTerms.add (new PhloxAdditionalTerm (TERM_TAX_REGISTRATION, aID));
+    PhloxReaderHelper.setAndAddRepeated (_getElectronicAddresses (aTP),
+                                         "BT-49",
+                                         aBuyer::setElectronicAddress,
+                                         aTerms);
+    if (aTP.getPostalTradeAddress () != null)
+      aBuyer.setPostalAddress (_readAddress (aTP.getPostalTradeAddress ()));
+    _readContacts (aTP, aBuyer::setContact, "BT-56", "BT-57", "BT-58", aTerms);
+  }
+
+  /** BT-95 / BT-102 and their rates are 0..1, the other tax categories are shown as well. */
+  private static void _addFurtherTaxCategories (@NonNull final List <TradeTaxType> aTTs,
+                                                @NonNull final String sCategoryTerm,
+                                                @NonNull final String sRateTerm,
+                                                @NonNull final List <PhloxAdditionalTerm> aTerms)
+  {
+    for (int i = 1; i < aTTs.size (); ++i)
+    {
+      final TradeTaxType aTT = aTTs.get (i);
+      PhloxReaderHelper.addIfPresent (sCategoryTerm, _codeValue (aTT.getCategoryCode ()), aTerms);
+      if (aTT.getRateApplicablePercent () != null)
+        aTerms.add (new PhloxAdditionalTerm (sRateTerm, aTT.getRateApplicablePercent ().getValue ().toPlainString ()));
+    }
+  }
+
+  @NonNull
+  private static PhloxDocumentAllowance _readDocAllowance (@NonNull final TradeAllowanceChargeType aAC,
+                                                           @NonNull final List <PhloxAdditionalTerm> aTerms)
+  {
+    final PhloxDocumentAllowance aOut = new PhloxDocumentAllowance ();
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aAC.getActualAmount ()), "BT-92", aOut::setAmount, aTerms);
+    if (aAC.getBasisAmount () != null)
+      aOut.setBaseAmount (aAC.getBasisAmount ().getValue ());
+    if (aAC.getCalculationPercent () != null)
+      aOut.setPercentage (aAC.getCalculationPercent ().getValue ());
+    aOut.setReason (_text (aAC.getReason ()));
+    aOut.setReasonCode (_codeValue (aAC.getReasonCode ()));
+    if (!aAC.getCategoryTradeTax ().isEmpty ())
+    {
+      final TradeTaxType aTT = aAC.getCategoryTradeTax ().get (0);
+      aOut.setVatCategoryCode (_codeValue (aTT.getCategoryCode ()));
+      if (aTT.getRateApplicablePercent () != null)
+        aOut.setVatRate (aTT.getRateApplicablePercent ().getValue ());
+      aOut.setExemptionReasonText (_text (aTT.getExemptionReason ())); // BT-173
+      aOut.setExemptionReasonCode (_codeValue (aTT.getExemptionReasonCode ())); // BT-174
+      aOut.setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ())); // BT-213
+    }
+    _addFurtherTaxCategories (aAC.getCategoryTradeTax (), "BT-95", "BT-96", aTerms);
+    return aOut;
+  }
+
+  @NonNull
+  private static PhloxDocumentCharge _readDocCharge (@NonNull final TradeAllowanceChargeType aAC,
+                                                     @NonNull final List <PhloxAdditionalTerm> aTerms)
+  {
+    final PhloxDocumentCharge aOut = new PhloxDocumentCharge ();
+    PhloxReaderHelper.setAndAddRepeated (_getAmounts (aAC.getActualAmount ()), "BT-99", aOut::setAmount, aTerms);
+    if (aAC.getBasisAmount () != null)
+      aOut.setBaseAmount (aAC.getBasisAmount ().getValue ());
+    if (aAC.getCalculationPercent () != null)
+      aOut.setPercentage (aAC.getCalculationPercent ().getValue ());
+    aOut.setReason (_text (aAC.getReason ()));
+    // BT-105 and BT-177 share ram:ReasonCode and are told apart by @listID
+    final String sReasonCode = _codeValue (aAC.getReasonCode ());
+    if (_isNonVatTaxCodeList (aAC.getReasonCode ()))
+    {
+      aOut.setNonVatTaxCode (sReasonCode);
+      aOut.setNonVatTaxCodeListID (aAC.getReasonCode ().getListID ());
+    }
+    else
+      aOut.setReasonCode (sReasonCode);
+    if (!aAC.getCategoryTradeTax ().isEmpty ())
+    {
+      final TradeTaxType aTT = aAC.getCategoryTradeTax ().get (0);
+      aOut.setVatCategoryCode (_codeValue (aTT.getCategoryCode ()));
+      if (aTT.getRateApplicablePercent () != null)
+        aOut.setVatRate (aTT.getRateApplicablePercent ().getValue ());
+      aOut.setExemptionReasonText (_text (aTT.getExemptionReason ())); // BT-175
+      aOut.setExemptionReasonCode (_codeValue (aTT.getExemptionReasonCode ())); // BT-176
+      aOut.setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ())); // BT-214
+    }
+    _addFurtherTaxCategories (aAC.getCategoryTradeTax (), "BT-102", "BT-103", aTerms);
+    return aOut;
+  }
+
+  @NonNull
+  private static PhloxSupportingDocument _readSupportingDocument (@NonNull final ReferencedDocumentType aRD,
+                                                                  @NonNull final List <PhloxAdditionalTerm> aTerms)
+  {
+    final PhloxSupportingDocument aOut = new PhloxSupportingDocument ();
+    aOut.setReference (_idValue (aRD.getIssuerAssignedID ()));
+    // BT-122-1 — the binding only knows the fixed value 916
+    final String sTypeCode = _codeValue (aRD.getTypeCode ());
+    if (!EN16931CodeLists.DOCUMENT_TYPE_CODE_SUPPORTING_DOCUMENT.equals (sTypeCode))
+      aOut.setDocumentTypeCode (sTypeCode);
+    aOut.setDescription (_joinTexts (aRD.getName ()));
+    if (aRD.getURIID () != null)
+      aOut.setExternalLocation (str (aRD.getURIID ().getValue ()));
+    boolean bFirst = true;
+    for (final BinaryObjectType aBinary : aRD.getAttachmentBinaryObject ())
+    {
+      final PhloxAttachment aBin = new PhloxAttachment ();
+      aBin.setBinary (aBinary.getValue ());
+      aBin.setMimeCode (str (aBinary.getMimeCode ()));
+      aBin.setFilename (str (aBinary.getFilename ()));
+      if (bFirst)
+        aOut.setAttachment (aBin);
+      else
+      {
+        // BT-125 is 0..1: the content of a further attachment cannot be embedded
+        PhloxReaderHelper.addIfPresent ("BT-125-2", aBin.getFilename (), aTerms);
+        PhloxReaderHelper.addIfPresent ("BT-125-1", aBin.getMimeCode (), aTerms);
+      }
+      bFirst = false;
+    }
+    return aOut;
+  }
+
+  /**
+   * Parse a CII {@code DateTimeType} into a {@link LocalDate}. Reads the {@code @format} attribute
+   * on the inner {@code DateTimeString} and dispatches to the right pattern; missing format
+   * defaults to "102" (yyyyMMdd) per EN 16931.
+   */
+  @Nullable
+  private static LocalDate _dateTime (@Nullable final DateTimeType aDT,
+                                      @NonNull final String sTerm,
+                                      @NonNull final List <PhloxAdditionalTerm> aTerms,
+                                      @NonNull final ErrorList aErrors)
+  {
+    if (aDT == null || aDT.getDateTimeString () == null)
+      return null;
+
+    return parseFormattedDate (aDT.getDateTimeString ().getValue (),
+                               aDT.getDateTimeString ().getFormat (),
+                               sTerm,
+                               aTerms,
+                               aErrors);
+  }
+
+  @NonNull
+  private static PhloxInvoicingPeriod _readPeriod (@NonNull final SpecifiedPeriodType aSP,
+                                                   @NonNull final String sStartTerm,
+                                                   @NonNull final String sEndTerm,
+                                                   @NonNull final List <PhloxAdditionalTerm> aTerms,
+                                                   @NonNull final ErrorList aErrors)
+  {
+    final PhloxInvoicingPeriod aOut = new PhloxInvoicingPeriod ();
+    aOut.setStartDate (_dateTime (aSP.getStartDateTime (), sStartTerm, aTerms, aErrors));
+    aOut.setEndDate (_dateTime (aSP.getEndDateTime (), sEndTerm, aTerms, aErrors));
+    return aOut;
+  }
+
+  /**
+   * Parse a CII {@code DateType} into a {@link LocalDate}. Honours the {@code @format} attribute on
+   * the inner {@code DateString}; if {@code DateString} is absent the {@code DateLocal} value is
+   * used.
+   */
+  @Nullable
+  private static LocalDate _dateOnly (@Nullable final DateType aDT,
+                                      @NonNull final String sTerm,
+                                      @NonNull final List <PhloxAdditionalTerm> aTerms,
+                                      @NonNull final ErrorList aErrors)
+  {
+    if (aDT == null)
+      return null;
+
+    if (aDT.getDateString () != null)
+      return parseFormattedDate (aDT.getDateString ().getValue (), aDT.getDateString ().getFormat (), sTerm, aTerms, aErrors);
+    return aDT.getDateLocal ();
+  }
+
+  /**
+   * Parse a CII {@code FormattedDateTimeType} (qualified namespace) into a {@link LocalDate}.
+   * Format codes follow the same UN/EDIFACT 2379 dispatch as {@code _dateTime}.
+   */
+  @Nullable
+  private static LocalDate _formattedDateTime (@Nullable final FormattedDateTimeType aFDT,
+                                               @NonNull final String sTerm,
+                                               @NonNull final List <PhloxAdditionalTerm> aTerms,
+                                               @NonNull final ErrorList aErrors)
+  {
+    if (aFDT == null || aFDT.getDateTimeString () == null)
+      return null;
+
+    return parseFormattedDate (aFDT.getDateTimeString ().getValue (),
+                               aFDT.getDateTimeString ().getFormat (),
+                               sTerm,
+                               aTerms,
+                               aErrors);
+  }
+
+  /**
+   * Read the combined BT-2 issue date and BT-166 issue time. Format code 208 carries date, time and
+   * offset; every other format code only carries the date.
+   */
+  private static void _readIssueDateTime (@Nullable final DateTimeType aDT,
+                                          @NonNull final PhloxInvoice aModel,
+                                          @NonNull final ErrorList aErrors)
+  {
+    if (aDT == null || aDT.getDateTimeString () == null)
+      return;
+
+    final DateTimeType.DateTimeString aDTS = aDT.getDateTimeString ();
+    if (FORMAT_CODE_DATE_TIME.equals (str (aDTS.getFormat ())))
+    {
+      final XMLOffsetDateTime aIssueDateTime = EEN16931DateFormatCode.CCYYMMDDHHMMSSZHHMM.parseDateTime (str (aDTS.getValue ()));
+      if (aIssueDateTime == null)
+      {
+        aErrors.add (SingleError.builderWarn ()
+                                .errorText ("Could not parse the invoice issue date and time '" +
+                                            PhloxLogHelper.sanitise (aDTS.getValue ()) +
+                                            "' (BT-2 / BT-166) with format code 208")
+                                .build ());
+        // A value that cannot be read is shown as it is
+        PhloxReaderHelper.addIfPresent ("BT-2", str (aDTS.getValue ()), aModel.additionalTerms ());
+        return;
+      }
+      aModel.setIssueDate (aIssueDateTime.toLocalDate ());
+      aModel.setIssueTime (aIssueDateTime.toOffsetTime ());
+    }
+    else
+      aModel.setIssueDate (parseFormattedDate (aDTS.getValue (),
+                                               aDTS.getFormat (),
+                                               "BT-2",
+                                               aModel.additionalTerms (),
+                                               aErrors));
+  }
+
   /**
    * Read the BG-33 payment terms (BT-20) with the nested BG-35 early payment discount and BG-36
    * late payment penalty. One {@link PhloxPaymentTerms} is created per CII {@code
@@ -665,7 +792,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       if (aDiscount != null)
       {
         final PhloxEarlyPaymentDiscount aED = new PhloxEarlyPaymentDiscount ();
-        aED.setEndDate (_dateTime (aDiscount.getBasisDateTime (), aErrors)); // BT-170
+        aED.setEndDate (_dateTime (aDiscount.getBasisDateTime (), "BT-170", aModel.additionalTerms (), aErrors)); // BT-170
         if (aDiscount.getCalculationPercent () != null)
           aED.setPercentage (aDiscount.getCalculationPercent ().getValue ()); // BT-171
         if (aDiscount.getActualDiscountAmount () != null)
@@ -678,7 +805,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       if (aPenalty != null)
       {
         final PhloxLatePaymentPenalty aLP = new PhloxLatePaymentPenalty ();
-        aLP.setStartDate (_dateTime (aPenalty.getBasisDateTime (), aErrors)); // BT-181
+        aLP.setStartDate (_dateTime (aPenalty.getBasisDateTime (), "BT-181", aModel.additionalTerms (), aErrors)); // BT-181
         if (aPenalty.getCalculationPercent () != null)
           aLP.setYearlyInterestPercentage (aPenalty.getCalculationPercent ().getValue ()); // BT-182
         if (aPenalty.getActualPenaltyAmount () != null)
@@ -690,6 +817,16 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       if (aOut.getText () != null || !aOut.earlyDiscounts ().isEmpty () || !aOut.latePenalties ().isEmpty ())
         aModel.paymentTerms ().add (aOut);
     }
+  }
+
+  /** Get the identifiers of an account: IBANID if applicable and ProprietaryID, each 0..1 */
+  @NonNull
+  private static ICommonsList <String> _getAccountIDs (@Nullable final IDType aIBANID, @Nullable final IDType aProprietaryID)
+  {
+    final ICommonsList <String> ret = new CommonsArrayList <> ();
+    ret.add (_idValue (aIBANID));
+    ret.add (_idValue (aProprietaryID));
+    return ret;
   }
 
   private static void _readPaymentInstructions (@NonNull final HeaderTradeSettlementType aHTS,
@@ -706,55 +843,76 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     for (final TradePaymentTermsType aPT : aTerms)
       if (aPT.getDueDateDateTime () != null)
       {
-        aModel.setPaymentDueDate (_dateTime (aPT.getDueDateDateTime (), aErrors));
-        break;
+        final LocalDate aDueDate = _dateTime (aPT.getDueDateDateTime (), "BT-9", aModel.additionalTerms (), aErrors);
+        if (aDueDate != null)
+          if (aModel.getPaymentDueDate () == null)
+            aModel.setPaymentDueDate (aDueDate);
+          else
+            if (!aDueDate.equals (aModel.getPaymentDueDate ()))
+              aModel.additionalTerms ().add (new PhloxAdditionalTerm ("BT-9", aDueDate));
       }
 
-    if (aMeans.isEmpty () && aTerms.isEmpty () && aHTS.getPaymentReference ().isEmpty ())
+    final String sCreditorID = _idValue (aHTS.getCreditorReferenceID ());
+    if (aMeans.isEmpty () && aTerms.isEmpty () && aHTS.getPaymentReference ().isEmpty () && sCreditorID == null)
       return;
 
     final PhloxPaymentInstructions aPI = new PhloxPaymentInstructions ();
+    final ICommonsList <PhloxAdditionalTerm> aPITerms = aPI.additionalTerms ();
     // BT-83 — remittance information lives on the parent. Multiple references are joined
     // with newlines so multi-part instructions (e.g. invoice number + PO reference) survive.
     aPI.setRemittanceInformation (_joinTexts (aHTS.getPaymentReference ()));
-    if (!aMeans.isEmpty ())
+
+    // BG-17 / BG-18 may sit in any of the payment means, not only in the first one
+    boolean bDirectDebitMeans = false;
+    boolean bFirst = true;
+    for (final TradeSettlementPaymentMeansType aM : aMeans)
     {
-      final TradeSettlementPaymentMeansType aM = aMeans.get (0);
-      aPI.setPaymentMeansCode (_codeValue (aM.getTypeCode ()));
-      if (!aM.getInformation ().isEmpty ())
-        aPI.setPaymentMeansText (_text (aM.getInformation ().get (0)));
+      final String sCode = _codeValue (aM.getTypeCode ());
+      final String sText = _joinTexts (aM.getInformation ());
+      if (bFirst)
+      {
+        aPI.setPaymentMeansCode (sCode);
+        aPI.setPaymentMeansText (sText);
+      }
+      else
+      {
+        // BT-81 and BT-82 are 0..1, but each payment means of the document has them
+        if (sCode != null)
+          aPITerms.add (new PhloxAdditionalTerm ("BT-81", sCode, "paymentmeans"));
+        PhloxReaderHelper.addIfPresent ("BT-82", sText, aPITerms);
+      }
+      bFirst = false;
+      if (EN16931CodeLists.isPaymentMeansCodeDirectDebit (sCode))
+        bDirectDebitMeans = true;
 
       // BG-17 credit transfers across all payment means
-      for (final TradeSettlementPaymentMeansType aOne : aMeans)
-        for (final CreditorFinancialAccountType aFA : aOne.getPayeePartyCreditorFinancialAccount ())
+        for (final CreditorFinancialAccountType aFA : aM.getPayeePartyCreditorFinancialAccount ())
         {
           final PhloxCreditTransfer aCT = new PhloxCreditTransfer ();
-          aCT.setPaymentMeansCode (_codeValue (aOne.getTypeCode ()));
+          aCT.setPaymentMeansCode (sCode);
           // BT-84 — IBANID if applicable, ProprietaryID else
-          aCT.setAccountIdentifier (aFA.getIBANID () != null ? _idValue (aFA.getIBANID ())
-                                                             : _idValue (aFA.getProprietaryID ()));
+          PhloxReaderHelper.setAndAddRepeated (_getAccountIDs (aFA.getIBANID (), aFA.getProprietaryID ()),
+                                               "BT-84",
+                                               aCT::setAccountIdentifier,
+                                               aPITerms);
           aCT.setAccountName (_text (aFA.getAccountName ()));
-          final CreditorFinancialInstitutionType aFI = aOne.getPayeeSpecifiedCreditorFinancialInstitution ();
+          final CreditorFinancialInstitutionType aFI = aM.getPayeeSpecifiedCreditorFinancialInstitution ();
           if (aFI != null)
             aCT.setServiceProviderID (_idValue (aFI.getBICID ()));
           if (!aCT.isEmpty ())
             aPI.creditTransfers ().add (aCT);
         }
-    }
 
-    // BG-18 — card, in any of the payment means, not only in the first one
-    boolean bDirectDebitMeans = false;
-    for (final TradeSettlementPaymentMeansType aOne : aMeans)
-    {
-      if (EN16931CodeLists.isPaymentMeansCodeDirectDebit (_codeValue (aOne.getTypeCode ())))
-        bDirectDebitMeans = true;
-
-      if (aPI.getPaymentCard () == null && aOne.getApplicableTradeSettlementFinancialCard () != null)
+      // BG-18 — card
+      if (aM.getApplicableTradeSettlementFinancialCard () != null)
       {
         final PhloxPaymentCard aPC = new PhloxPaymentCard ();
-        aPC.setPan (_idValue (aOne.getApplicableTradeSettlementFinancialCard ().getID ()));
-        aPC.setHolderName (_text (aOne.getApplicableTradeSettlementFinancialCard ().getCardholderName ()));
-        aPI.setPaymentCard (aPC);
+        aPC.setPan (_idValue (aM.getApplicableTradeSettlementFinancialCard ().getID ()));
+        aPC.setHolderName (_text (aM.getApplicableTradeSettlementFinancialCard ().getCardholderName ()));
+        if (aPI.getPaymentCard () == null)
+          aPI.setPaymentCard (aPC);
+        else
+          PhloxReaderHelper.addPaymentCard (aPC, aPITerms);
       }
     }
 
@@ -763,46 +921,52 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     // means
     final PhloxDirectDebit aDD = new PhloxDirectDebit ();
     boolean bDirectDebit = false;
+    final ICommonsList <String> aMandateIDs = new CommonsArrayList <> ();
     for (final TradePaymentTermsType aPT : aTerms)
-      if (!aPT.getDirectDebitMandateID ().isEmpty ())
+      for (final IDType aMandateID : aPT.getDirectDebitMandateID ())
       {
-        aDD.setMandateReferenceID (_idValue (aPT.getDirectDebitMandateID ().get (0)));
+        aMandateIDs.add (_idValue (aMandateID));
         bDirectDebit = true;
-        break;
       }
+    PhloxReaderHelper.setAndAddRepeated (aMandateIDs, "BT-89", aDD::setMandateReferenceID, aPITerms);
     // BT-91 / BT-216 from the payer financial account, BT-215 from the payer institution
+    boolean bFirstPayer = true;
     for (final TradeSettlementPaymentMeansType aM : aMeans)
     {
       final DebtorFinancialAccountType aFA = aM.getPayerPartyDebtorFinancialAccount ();
-      if (aFA != null)
-      {
-        aDD.setDebitedAccountID (aFA.getIBANID () != null ? _idValue (aFA.getIBANID ())
-                                                          : _idValue (aFA.getProprietaryID ()));
-        aDD.setDebitedAccountName (_text (aFA.getAccountName ()));
-      }
       final DebtorFinancialInstitutionType aFI = aM.getPayerSpecifiedDebtorFinancialInstitution ();
-      if (aFI != null)
-        aDD.setDebitedAccountProviderID (_idValue (aFI.getBICID ()));
       if (aFA != null || aFI != null)
       {
+        final PhloxDirectDebit aPayer = bFirstPayer ? aDD : new PhloxDirectDebit ();
+        if (aFA != null)
+        {
+          // IBANID if applicable, ProprietaryID else
+          PhloxReaderHelper.setAndAddRepeated (_getAccountIDs (aFA.getIBANID (), aFA.getProprietaryID ()),
+                                               "BT-91",
+                                               aPayer::setDebitedAccountID,
+                                               aPITerms);
+          aPayer.setDebitedAccountName (_text (aFA.getAccountName ()));
+        }
+        if (aFI != null)
+          aPayer.setDebitedAccountProviderID (_idValue (aFI.getBICID ()));
+        if (!bFirstPayer)
+          PhloxReaderHelper.addDirectDebit (aPayer, aPITerms);
+        bFirstPayer = false;
         bDirectDebit = true;
-        break;
       }
-    }
-    // BT-90 — creditor reference id
-    final String sCreditorID = _idValue (aHTS.getCreditorReferenceID ());
-    if (sCreditorID != null && (bDirectDebit || bDirectDebitMeans))
-    {
-      aDD.setBankAssignedCreditorID (sCreditorID);
-      bDirectDebit = true;
     }
     if (bDirectDebit)
       aPI.setDirectDebit (aDD);
+    // BT-90 — creditor reference id
+    PhloxReaderHelper.addCreditorIDs (new CommonsArrayList <> (sCreditorID), bDirectDebitMeans, aPI);
 
     if (aPI.getPaymentMeansCode () != null ||
+        aPI.getPaymentMeansText () != null ||
         aPI.getRemittanceInformation () != null ||
         !aPI.creditTransfers ().isEmpty () ||
-        aPI.getDirectDebit () != null)
+        aPI.getPaymentCard () != null ||
+        aPI.getDirectDebit () != null ||
+        !aPITerms.isEmpty ())
       aModel.setPaymentInstructions (aPI);
   }
 
@@ -810,8 +974,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
   private static PhloxItem _readItem (@NonNull final TradeProductType aP)
   {
     final PhloxItem aOut = new PhloxItem ();
-    if (!aP.getName ().isEmpty ())
-      aOut.setName (_text (aP.getName ().get (0)));
+    aOut.setName (_joinTexts (aP.getName ()));
     aOut.setDescription (_joinTexts (aP.getDescription ()));
     if (aP.getSellerAssignedID () != null)
       aOut.setSellerItemID (str (aP.getSellerAssignedID ().getValue ()));
@@ -833,16 +996,18 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     for (final ProductCharacteristicType aPC : aP.getApplicableProductCharacteristic ())
     {
       final PhloxItemAttribute aAttr = new PhloxItemAttribute ();
-      aAttr.setName (aPC.getDescription ().isEmpty () ? null : _text (aPC.getDescription ().get (0))); // BT-160
+      aAttr.setName (_joinTexts (aPC.getDescription ())); // BT-160
       aAttr.setCode (_codeValue (aPC.getTypeCode ())); // BT-211
-      // BT-161a text or BT-161b numeric value with BT-212 as its unit (CII-SR-504)
+      // BT-161a text and BT-161b numeric value with BT-212 as its unit (CII-SR-504)
+      final String sText = _joinTexts (aPC.getValue ());
       if (aPC.getValueMeasure () != null && aPC.getValueMeasure ().getValue () != null)
       {
-        aAttr.setValue (aPC.getValueMeasure ().getValue ().toPlainString ());
+        final String sNumber = aPC.getValueMeasure ().getValue ().toPlainString ();
+        aAttr.setValue (sText == null ? sNumber : sText + " / " + sNumber);
         aAttr.setValueUnit (str (aPC.getValueMeasure ().getUnitCode ()));
       }
       else
-        aAttr.setValue (aPC.getValue ().isEmpty () ? null : _text (aPC.getValue ().get (0)));
+        aAttr.setValue (sText);
       if (aAttr.getName () != null || aAttr.getCode () != null || aAttr.getValue () != null)
         aOut.attributes ().add (aAttr);
     }
@@ -850,16 +1015,111 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
   }
 
   @NonNull
+  private static PhloxLineDelivery _readLineDelivery (@NonNull final LineTradeDeliveryType aLTD,
+                                                      @NonNull final PhloxInvoiceLine aLine,
+                                                      @NonNull final ErrorList aErrors)
+  {
+    final PhloxLineDelivery aOut = new PhloxLineDelivery ();
+    final TradePartyType aShipTo = aLTD.getShipToTradeParty ();
+    if (aShipTo != null)
+    {
+      aOut.setPartyName (_text (aShipTo.getName ())); // BT-185
+      final ICommonsList <PhloxIdentifier> aIDs = new CommonsArrayList <> ();
+      _readPartyIdentifiers (aShipTo, aIDs);
+      // BT-186 / BT-186-1
+      PhloxReaderHelper.setAndAddRepeated (aIDs, "BT-186", aOut::setLocationIdentifier, aLine.additionalTerms ());
+      if (aShipTo.getPostalTradeAddress () != null)
+        aOut.setPostalAddress (_readAddress (aShipTo.getPostalTradeAddress ())); // BG-38
+    }
+    // BT-187
+    if (aLTD.getActualDeliverySupplyChainEvent () != null)
+      aOut.setActualDeliveryDate (_dateTime (aLTD.getActualDeliverySupplyChainEvent ().getOccurrenceDateTime (),
+                                             "BT-187",
+                                             aLine.additionalTerms (),
+                                             aErrors));
+    return aOut;
+  }
+
+  private static void _readLineVat (@NonNull final List <TradeTaxType> aTTs, @NonNull final PhloxInvoiceLine aOut)
+  {
+    // BG-30 — line VAT. BT-151 and the following are 0..1, the other taxes are shown as well
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aOut.additionalTerms ();
+    for (final TradeTaxType aTT : aTTs)
+    {
+      final PhloxLineVat aVat = new PhloxLineVat ();
+      aVat.setCategoryCode (_codeValue (aTT.getCategoryCode ()));
+      if (aTT.getRateApplicablePercent () != null)
+        aVat.setRate (aTT.getRateApplicablePercent ().getValue ());
+      aVat.setExemptionReasonText (_text (aTT.getExemptionReason ())); // BT-194
+      aVat.setExemptionReasonCode (_codeValue (aTT.getExemptionReasonCode ())); // BT-195
+      if (aOut.getLineVat () == null)
+      {
+        // BT-196 belongs to the item information (BG-31)
+        if (aOut.getItem () != null)
+          aOut.getItem ().setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ()));
+        aOut.setLineVat (aVat);
+      }
+      else
+      {
+        PhloxReaderHelper.addIfPresent ("BT-151", aVat.getCategoryCode (), aTerms);
+        PhloxReaderHelper.addIfPresent ("BT-152", aVat.getRate () == null ? null : aVat.getRate ().toPlainString (), aTerms);
+        PhloxReaderHelper.addIfPresent ("BT-194", aVat.getExemptionReasonText (), aTerms);
+        PhloxReaderHelper.addIfPresent ("BT-195", aVat.getExemptionReasonCode (), aTerms);
+      }
+    }
+  }
+
+  /** A document reference of a line that is no BT-128: the identifier, its scheme and the type code. */
+  @NonNull
+  private static String _getLineDocumentText (@NonNull final IDType aID, @Nullable final String sTypeCode)
+  {
+    final String sScheme = str (aID.getSchemeID ());
+    return (sScheme == null ? "" : sScheme + ":") +
+           StringHelper.getNotNull (_idValue (aID)) +
+           (sTypeCode == null ? "" : " (" + sTypeCode + ")");
+  }
+
+  private static void _readLineDocumentReferences (@NonNull final List <ReferencedDocumentType> aRDs,
+                                                   @NonNull final PhloxInvoiceLine aOut)
+  {
+    // BT-128 — line object identifier. The other documents have no term, and show their identifier
+    // and their type code
+    final ICommonsList <PhloxIdentifier> aObjectIDs = new CommonsArrayList <> ();
+    for (final ReferencedDocumentType aRD : aRDs)
+      if (aRD.getIssuerAssignedID () != null)
+      {
+        final String sTypeCode = _codeValue (aRD.getTypeCode ());
+        final String sScheme = _codeValue (aRD.getReferenceTypeCode ());
+        if ("130".equals (sTypeCode))
+          aObjectIDs.add (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()),
+                                               sScheme != null ? sScheme : str (aRD.getIssuerAssignedID ().getSchemeID ())));
+        else
+          aOut.additionalTerms ()
+              .add (new PhloxAdditionalTerm (TERM_LINE_DOCUMENT,
+                                             _getLineDocumentText (aRD.getIssuerAssignedID (), sTypeCode)));
+      }
+    PhloxReaderHelper.setAndAddRepeated (aObjectIDs, "BT-128", aOut::setObjectIdentifier, aOut.additionalTerms ());
+  }
+
+  @NonNull
   private static PhloxInvoiceLine _readLine (@NonNull final SupplyChainTradeLineItemType aLine,
                                              @NonNull final ErrorList aErrors)
   {
     final PhloxInvoiceLine aOut = new PhloxInvoiceLine ();
+    final ICommonsList <PhloxAdditionalTerm> aTerms = aOut.additionalTerms ();
     final DocumentLineDocumentType aLD = aLine.getAssociatedDocumentLineDocument ();
     if (aLD != null)
     {
       aOut.setID (_idValue (aLD.getLineID ()));
-      if (!aLD.getIncludedNote ().isEmpty () && !aLD.getIncludedNote ().get (0).getContent ().isEmpty ())
-        aOut.setNote (_text (aLD.getIncludedNote ().get (0).getContent ().get (0)));
+      // BT-127 — all notes with all their content
+      final StringBuilder aNote = new StringBuilder ();
+      for (final NoteType aLineNote : aLD.getIncludedNote ())
+      {
+        final String sContent = _joinTexts (aLineNote.getContent ());
+        if (sContent != null)
+          aNote.append (aNote.length () > 0 ? "\n" : "").append (sContent);
+      }
+      aOut.setNote (str (aNote.toString ()));
     }
     final TradeProductType aTPr = aLine.getSpecifiedTradeProduct ();
     if (aTPr != null)
@@ -867,7 +1127,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     final LineTradeAgreementType aLTA = aLine.getSpecifiedLineTradeAgreement ();
     if (aLTA != null)
     {
-      aOut.setPrice (_readPrice (aLTA));
+      aOut.setPrice (_readPrice (aLTA, aOut));
       final ReferencedDocumentType aBuyerOrder = aLTA.getBuyerOrderReferencedDocument ();
       if (aBuyerOrder != null)
       {
@@ -912,7 +1172,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       // BG-37 / BG-38
       if (aLTD.getShipToTradeParty () != null || aLTD.getActualDeliverySupplyChainEvent () != null)
       {
-        final PhloxLineDelivery aLineDelivery = _readLineDelivery (aLTD, aErrors);
+        final PhloxLineDelivery aLineDelivery = _readLineDelivery (aLTD, aOut, aErrors);
         if (!aLineDelivery.isEmpty ())
           aOut.setDelivery (aLineDelivery);
       }
@@ -920,18 +1180,29 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     final LineTradeSettlementType aLTS = aLine.getSpecifiedLineTradeSettlement ();
     if (aLTS != null)
     {
-      if (aLTS.getSpecifiedTradeSettlementLineMonetarySummation () != null &&
-          !aLTS.getSpecifiedTradeSettlementLineMonetarySummation ().getLineTotalAmount ().isEmpty ())
-        aOut.setNetAmount (aLTS.getSpecifiedTradeSettlementLineMonetarySummation ()
-                               .getLineTotalAmount ()
-                               .get (0)
-                               .getValue ());
-      if (aLTS.getReceivableSpecifiedTradeAccountingAccount () != null &&
-          !aLTS.getReceivableSpecifiedTradeAccountingAccount ().isEmpty ())
-        aOut.setAccountingCost (_idValue (aLTS.getReceivableSpecifiedTradeAccountingAccount ().get (0).getID ()));
+      if (aLTS.getSpecifiedTradeSettlementLineMonetarySummation () != null)
+      {
+        PhloxReaderHelper.setAndAddRepeated (_getAmounts (aLTS.getSpecifiedTradeSettlementLineMonetarySummation ()
+                                                              .getLineTotalAmount ()),
+                                             "BT-131",
+                                             aOut::setNetAmount,
+                                             aTerms);
+        for (final BigDecimal aAmount : _getAmounts (aLTS.getSpecifiedTradeSettlementLineMonetarySummation ()
+                                                         .getTotalAllowanceChargeAmount ()))
+          aTerms.add (new PhloxAdditionalTerm (TERM_LINE_ALLOWANCE_CHARGE_TOTAL, aAmount));
+      }
+      PhloxReaderHelper.setAndAddRepeated (new CommonsArrayList <> (aLTS.getReceivableSpecifiedTradeAccountingAccount (),
+                                                                    aAccount -> _idValue (aAccount.getID ())),
+                                           "BT-133",
+                                           aOut::setAccountingCost,
+                                           aTerms);
       if (aLTS.getBillingSpecifiedPeriod () != null)
       {
-        final PhloxInvoicingPeriod aP = _readPeriod (aLTS.getBillingSpecifiedPeriod (), aErrors);
+        final PhloxInvoicingPeriod aP = _readPeriod (aLTS.getBillingSpecifiedPeriod (),
+                                                     "BT-134",
+                                                     "BT-135",
+                                                     aTerms,
+                                                     aErrors);
         if (!aP.isEmpty ())
           aOut.setPeriod (aP);
       }
@@ -940,42 +1211,23 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       {
         final PhloxLinePrecedingInvoiceRef aRef = new PhloxLinePrecedingInvoiceRef ();
         aRef.setNumber (_idValue (aRD.getIssuerAssignedID ())); // BT-217
-        aRef.setIssueDate (_formattedDateTime (aRD.getFormattedIssueDateTime (), aErrors)); // BT-218
+        aRef.setIssueDate (_formattedDateTime (aRD.getFormattedIssueDateTime (), "BT-218", aTerms, aErrors)); // BT-218
         aRef.setTypeCode (_codeValue (aRD.getTypeCode ())); // BT-219
         aRef.setLineReference (_idValue (aRD.getLineID ())); // BT-220
-        if (aRef.getNumber () != null)
+        if (aRef.getNumber () != null ||
+            aRef.getIssueDate () != null ||
+            aRef.getTypeCode () != null ||
+            aRef.getLineReference () != null)
           aOut.precedingInvoiceRefs ().add (aRef);
       }
-      // BT-128 — line object identifier
-      for (final ReferencedDocumentType aRD : aLTS.getAdditionalReferencedDocument ())
-        if ("130".equals (_codeValue (aRD.getTypeCode ())) && aRD.getIssuerAssignedID () != null)
-        {
-          final String sScheme = _codeValue (aRD.getReferenceTypeCode ());
-          aOut.setObjectIdentifier (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()), sScheme));
-          break;
-        }
-      // BG-30 — line VAT
-      for (final TradeTaxType aTT : aLTS.getApplicableTradeTax ())
-      {
-        final PhloxLineVat aVat = new PhloxLineVat ();
-        aVat.setCategoryCode (_codeValue (aTT.getCategoryCode ()));
-        if (aTT.getRateApplicablePercent () != null)
-          aVat.setRate (aTT.getRateApplicablePercent ().getValue ());
-        aVat.setExemptionReasonText (_text (aTT.getExemptionReason ())); // BT-194
-        aVat.setExemptionReasonCode (_codeValue (aTT.getExemptionReasonCode ())); // BT-195
-        // BT-196 belongs to the item information (BG-31)
-        if (aOut.getItem () != null)
-          aOut.getItem ().setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ()));
-        aOut.setLineVat (aVat);
-        break;
-      }
+      _readLineDocumentReferences (aLTS.getAdditionalReferencedDocument (), aOut);
+      _readLineVat (aLTS.getApplicableTradeTax (), aOut);
       // BG-27 / BG-28 — line allowances / charges
       for (final TradeAllowanceChargeType aAC : aLTS.getSpecifiedTradeAllowanceCharge ())
         if (aAC.getChargeIndicator () != null && Boolean.TRUE.equals (aAC.getChargeIndicator ().isIndicator ()))
         {
           final PhloxLineCharge aC = new PhloxLineCharge ();
-          if (!aAC.getActualAmount ().isEmpty ())
-            aC.setAmount (aAC.getActualAmount ().get (0).getValue ());
+          PhloxReaderHelper.setAndAddRepeated (_getAmounts (aAC.getActualAmount ()), "BT-141", aC::setAmount, aTerms);
           if (aAC.getBasisAmount () != null)
             aC.setBaseAmount (aAC.getBasisAmount ().getValue ());
           if (aAC.getCalculationPercent () != null)
@@ -995,8 +1247,7 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
         else
         {
           final PhloxLineAllowance aA = new PhloxLineAllowance ();
-          if (!aAC.getActualAmount ().isEmpty ())
-            aA.setAmount (aAC.getActualAmount ().get (0).getValue ());
+          PhloxReaderHelper.setAndAddRepeated (_getAmounts (aAC.getActualAmount ()), "BT-136", aA::setAmount, aTerms);
           if (aAC.getBasisAmount () != null)
             aA.setBaseAmount (aAC.getBasisAmount ().getValue ());
           if (aAC.getCalculationPercent () != null)
@@ -1044,10 +1295,16 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
     {
       final var aBP = aCii.getExchangedDocumentContext ().getBusinessProcessSpecifiedDocumentContextParameter ();
       if (aBP != null && !aBP.isEmpty ())
-        aModel.getProcessControl ().setBusinessProcessType (_idValue (aBP.get (0).getID ()));
+        PhloxReaderHelper.setAndAddRepeated (new CommonsArrayList <> (aBP, aParam -> _idValue (aParam.getID ())),
+                                             "BT-23",
+                                             aModel.getProcessControl ()::setBusinessProcessType,
+                                             aModel.additionalTerms ());
       final var aGL = aCii.getExchangedDocumentContext ().getGuidelineSpecifiedDocumentContextParameter ();
       if (aGL != null && !aGL.isEmpty ())
-        aModel.getProcessControl ().setSpecificationIdentifier (_idValue (aGL.get (0).getID ()));
+        PhloxReaderHelper.setAndAddRepeated (new CommonsArrayList <> (aGL, aParam -> _idValue (aParam.getID ())),
+                                             "BT-24",
+                                             aModel.getProcessControl ()::setSpecificationIdentifier,
+                                             aModel.additionalTerms ());
     }
 
     // BG-1 + header BTs
@@ -1066,9 +1323,12 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       for (final NoteType aNote : aED.getIncludedNote ())
       {
         final PhloxInvoiceNote aOut = new PhloxInvoiceNote ();
-        aOut.setSubjectCode (aNote.getSubjectCode ().isEmpty () ? null : _codeValue (aNote.getSubjectCode ().get (0)));
+        PhloxReaderHelper.setAndAddRepeated (new CommonsArrayList <> (aNote.getSubjectCode (), aCode -> _codeValue (aCode)),
+                                             "BT-21",
+                                             aOut::setSubjectCode,
+                                             aModel.additionalTerms ());
         aOut.setContent (_joinTexts (aNote.getContent ()));
-        if (aOut.getContent () != null)
+        if (aOut.getContent () != null || aOut.getSubjectCode () != null)
           aModel.invoiceNotes ().add (aOut);
       }
     }
@@ -1088,12 +1348,10 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
           aModel.buyerReferences ().add (new PhloxIdentifier (sBuyerReference, str (aID.getSchemeID ())));
       }
       // ram:BuyerReference of the 2017 binding, for documents that still follow it
-      if (aModel.buyerReferences ().isEmpty ())
-      {
-        final String sLegacyBuyerReference = _text (aHTA.getBuyerReference ());
-        if (sLegacyBuyerReference != null)
-          aModel.buyerReferences ().add (new PhloxIdentifier (sLegacyBuyerReference, null));
-      }
+      final String sLegacyBuyerReference = _text (aHTA.getBuyerReference ());
+      if (sLegacyBuyerReference != null &&
+          aModel.buyerReferences ().containsNone (aID -> sLegacyBuyerReference.equals (aID.getValue ())))
+        aModel.buyerReferences ().add (new PhloxIdentifier (sLegacyBuyerReference, null));
       // BT-12 — contract
       if (aHTA.getContractReferencedDocument () != null)
         aModel.setContractReference (_idValue (aHTA.getContractReferencedDocument ().getIssuerAssignedID ()));
@@ -1106,7 +1364,15 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       // BT-11 — project reference
       final ProcuringProjectType aProj = aHTA.getSpecifiedProcuringProject ();
       if (aProj != null)
+      {
         aModel.setProjectReference (_idValue (aProj.getID ()));
+        // BT-11-1 — mandatory in CII, so it repeats BT-11 or is the filler of the binding
+        final String sProjectName = _text (aProj.getName ());
+        if (sProjectName != null &&
+            !sProjectName.equals (aModel.getProjectReference ()) &&
+            !EN16931CodeLists.MISSING_VALUE_PLACEHOLDER.equals (sProjectName))
+          aModel.setProjectName (sProjectName);
+      }
 
       // BG-4 + BG-5 + BG-6
       if (aHTA.getSellerTradeParty () != null)
@@ -1116,29 +1382,39 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
         _readBuyer (aHTA.getBuyerTradeParty (), aModel.getBuyer ());
       // BG-11 + BG-12
       if (aHTA.getSellerTaxRepresentativeTradeParty () != null)
-        aModel.setSellerTaxRepresentative (_readTaxRep (aHTA.getSellerTaxRepresentativeTradeParty ()));
+        aModel.setSellerTaxRepresentative (_readTaxRep (aHTA.getSellerTaxRepresentativeTradeParty (), aModel));
 
       // BT-17 (TypeCode="50") / BT-18 (TypeCode="130") / BG-24 (TypeCode="916")
+      final ICommonsList <String> aTenderIDs = new CommonsArrayList <> ();
+      final ICommonsList <PhloxIdentifier> aObjectIDs = new CommonsArrayList <> ();
       for (final ReferencedDocumentType aRD : aHTA.getAdditionalReferencedDocument ())
       {
         final String sTypeCode = _codeValue (aRD.getTypeCode ());
-        if ("50".equals (sTypeCode))
-          aModel.setTenderOrLotReference (_idValue (aRD.getIssuerAssignedID ()));
+        if (EN16931CodeLists.DOCUMENT_TYPE_CODE_ORIGINATOR_DOCUMENT.equals (sTypeCode))
+          aTenderIDs.add (_idValue (aRD.getIssuerAssignedID ()));
         else
-          if ("130".equals (sTypeCode))
+          if (EN16931CodeLists.DOCUMENT_TYPE_CODE_OBJECT_DOCUMENT.equals (sTypeCode))
           {
             final String sScheme = _codeValue (aRD.getReferenceTypeCode ());
             if (_idValue (aRD.getIssuerAssignedID ()) != null)
-              aModel.setInvoicedObjectIdentifier (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()), sScheme));
+              aObjectIDs.add (new PhloxIdentifier (_idValue (aRD.getIssuerAssignedID ()), sScheme));
           }
           else
           {
             // BG-24 — the binding has type code 916, UBL takes everything that is not BT-18
-            final PhloxSupportingDocument aDoc = _readSupportingDocument (aRD);
+            final PhloxSupportingDocument aDoc = _readSupportingDocument (aRD, aModel.additionalTerms ());
             if (!aDoc.isEmpty ())
               aModel.supportingDocuments ().add (aDoc);
           }
       }
+      PhloxReaderHelper.setAndAddRepeated (aTenderIDs,
+                                           "BT-17",
+                                           aModel::setTenderOrLotReference,
+                                           aModel.additionalTerms ());
+      PhloxReaderHelper.setAndAddRepeated (aObjectIDs,
+                                           "BT-18",
+                                           aModel::setInvoicedObjectIdentifier,
+                                           aModel.additionalTerms ());
     }
 
     final HeaderTradeDeliveryType aHTD = aSCTT.getApplicableHeaderTradeDelivery ();
@@ -1163,23 +1439,18 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
         if (aShipTo != null)
         {
           aDI.setPartyName (_text (aShipTo.getName ()));
-          if (!aShipTo.getGlobalID ().isEmpty ())
-          {
-            final IDType aGID = aShipTo.getGlobalID ().get (0);
-            aDI.setLocationIdentifier (_identifier (aGID));
-          }
-          else
-            if (!aShipTo.getID ().isEmpty ())
-            {
-              final IDType aID = aShipTo.getID ().get (0);
-              aDI.setLocationIdentifier (_identifier (aID));
-            }
+          final ICommonsList <PhloxIdentifier> aLocationIDs = new CommonsArrayList <> ();
+          _readPartyIdentifiers (aShipTo, aLocationIDs);
+          PhloxReaderHelper.setAndAddRepeated (aLocationIDs,
+                                               "BT-71",
+                                               aDI::setLocationIdentifier,
+                                               aModel.additionalTerms ());
           if (aShipTo.getPostalTradeAddress () != null)
             aDI.setPostalAddress (_readAddress (aShipTo.getPostalTradeAddress ()));
         }
         final SupplyChainEventType aEvent = aHTD.getActualDeliverySupplyChainEvent ();
         if (aEvent != null)
-          aDI.setActualDeliveryDate (_dateTime (aEvent.getOccurrenceDateTime (), aErrors));
+          aDI.setActualDeliveryDate (_dateTime (aEvent.getOccurrenceDateTime (), "BT-72", aModel.additionalTerms (), aErrors));
         if (!aDI.isEmpty ())
           aModel.setDeliveryInformation (aDI);
       }
@@ -1195,30 +1466,36 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
         aModel.setVatAccountingCurrency (str (aHTS.getTaxCurrencyCode ().getValue ()));
 
       // BT-19 — buyer accounting reference
-      final var aAcctList = aHTS.getReceivableSpecifiedTradeAccountingAccount ();
-      if (aAcctList != null && !aAcctList.isEmpty ())
-        aModel.setBuyerAccountingReference (_idValue (aAcctList.get (0).getID ()));
+      PhloxReaderHelper.setAndAddRepeated (new CommonsArrayList <> (aHTS.getReceivableSpecifiedTradeAccountingAccount (),
+                                                                    aAccount -> _idValue (aAccount.getID ())),
+                                           "BT-19",
+                                           aModel::setBuyerAccountingReference,
+                                           aModel.additionalTerms ());
 
       // BG-10 — Payee
       if (aHTS.getPayeeTradeParty () != null)
-        aModel.setPayee (_readPayee (aHTS.getPayeeTradeParty ()));
+        aModel.setPayee (_readPayee (aHTS.getPayeeTradeParty (), aModel));
 
       // BG-3 — preceding invoice references (repeatable since CII D22B)
       for (final ReferencedDocumentType aRD : aHTS.getInvoiceReferencedDocument ())
       {
         final PhloxPrecedingInvoiceRef aRef = new PhloxPrecedingInvoiceRef ();
         aRef.setNumber (_idValue (aRD.getIssuerAssignedID ()));
-        aRef.setIssueDate (_formattedDateTime (aRD.getFormattedIssueDateTime (), aErrors));
+        aRef.setIssueDate (_formattedDateTime (aRD.getFormattedIssueDateTime (),
+                                               "BT-26",
+                                               aModel.additionalTerms (),
+                                               aErrors));
         aRef.setTypeCode (_codeValue (aRD.getTypeCode ())); // BT-202
-        if (aRef.getNumber () != null)
+        if (aRef.getNumber () != null || aRef.getIssueDate () != null || aRef.getTypeCode () != null)
           aModel.precedingInvoiceRefs ().add (aRef);
       }
 
       // BT-167 / BT-167-1 / BT-167-2 — VAT accounting currency exchange rate
       final TradeCurrencyExchangeType aExchange = aHTS.getInvoiceApplicableTradeCurrencyExchange ();
-      if (aExchange != null && aExchange.getConversionRate () != null)
+      if (aExchange != null)
       {
-        aModel.setVatExchangeRate (aExchange.getConversionRate ().getValue ());
+        if (aExchange.getConversionRate () != null)
+          aModel.setVatExchangeRate (aExchange.getConversionRate ().getValue ());
         aModel.setVatExchangeRateTargetCurrency (_codeValue (aExchange.getTargetCurrencyCode ()));
         aModel.setVatExchangeRateSourceCurrency (_codeValue (aExchange.getSourceCurrencyCode ()));
       }
@@ -1226,7 +1503,11 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       // BG-14 — invoicing period
       if (aHTS.getBillingSpecifiedPeriod () != null)
       {
-        final PhloxInvoicingPeriod aP = _readPeriod (aHTS.getBillingSpecifiedPeriod (), aErrors);
+        final PhloxInvoicingPeriod aP = _readPeriod (aHTS.getBillingSpecifiedPeriod (),
+                                                     "BT-73",
+                                                     "BT-74",
+                                                     aModel.additionalTerms (),
+                                                     aErrors);
         if (!aP.isEmpty ())
           aModel.setInvoicingPeriod (aP);
       }
@@ -1235,10 +1516,14 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       for (final TradeTaxType aTT : aHTS.getApplicableTradeTax ())
       {
         final PhloxVatBreakdown aBD = new PhloxVatBreakdown ();
-        if (aTT.getBasisAmount () != null && !aTT.getBasisAmount ().isEmpty ())
-          aBD.setTaxableAmount (aTT.getBasisAmount ().get (0).getValue ());
-        if (aTT.getCalculatedAmount () != null && !aTT.getCalculatedAmount ().isEmpty ())
-          aBD.setTaxAmount (aTT.getCalculatedAmount ().get (0).getValue ());
+        PhloxReaderHelper.setAndAddRepeated (_getAmounts (aTT.getBasisAmount ()),
+                                             "BT-116",
+                                             aBD::setTaxableAmount,
+                                             aModel.additionalTerms ());
+        PhloxReaderHelper.setAndAddRepeated (_getAmounts (aTT.getCalculatedAmount ()),
+                                             "BT-117",
+                                             aBD::setTaxAmount,
+                                             aModel.additionalTerms ());
         aBD.setCategoryCode (_codeValue (aTT.getCategoryCode ()));
         if (aTT.getRateApplicablePercent () != null)
           aBD.setRate (aTT.getRateApplicablePercent ().getValue ());
@@ -1251,20 +1536,35 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
         aBD.setGoodsServicesCode (_codeValue (aTT.getSupplyTypeCode ())); // BT-210
         aModel.vatBreakdowns ().add (aBD);
 
-        // BT-7 / BT-8 (carried on the first applicable trade tax)
-        if (aModel.getVatPointDate () == null)
-          aModel.setVatPointDate (_dateOnly (aTT.getTaxPointDate (), aErrors));
-        if (aModel.getVatPointDateCode () == null)
-          aModel.setVatPointDateCode (EN16931CodeLists.mapDueDateTypeCodeCIIToUBL (_codeValue (aTT.getDueDateTypeCode ())));
+        // BT-7 / BT-8 (carried on the first applicable trade tax, another value is shown as well)
+        final LocalDate aVatPointDate = _dateOnly (aTT.getTaxPointDate (), "BT-7", aModel.additionalTerms (), aErrors);
+        if (aVatPointDate != null)
+          if (aModel.getVatPointDate () == null)
+            aModel.setVatPointDate (aVatPointDate);
+          else
+            if (!aVatPointDate.equals (aModel.getVatPointDate ()))
+              aModel.additionalTerms ().add (new PhloxAdditionalTerm ("BT-7", aVatPointDate));
+        final String sDueDateTypeCode = _codeValue (aTT.getDueDateTypeCode ());
+        if (sDueDateTypeCode != null)
+        {
+          // A code that the list does not know stays as it is
+          final String sMappedCode = EN16931CodeLists.mapDueDateTypeCodeCIIToUBL (sDueDateTypeCode);
+          final String sVatPointDateCode = sMappedCode != null ? sMappedCode : sDueDateTypeCode;
+          if (aModel.getVatPointDateCode () == null)
+            aModel.setVatPointDateCode (sVatPointDateCode);
+          else
+            if (!sVatPointDateCode.equals (aModel.getVatPointDateCode ()))
+              aModel.additionalTerms ().add (new PhloxAdditionalTerm ("BT-8", sVatPointDateCode, "vatpointdate"));
+        }
       }
 
       // BG-20 + BG-21 — document-level allowances/charges
       for (final TradeAllowanceChargeType aAC : aHTS.getSpecifiedTradeAllowanceCharge ())
       {
         if (aAC.getChargeIndicator () != null && Boolean.TRUE.equals (aAC.getChargeIndicator ().isIndicator ()))
-          aModel.documentCharges ().add (_readDocCharge (aAC));
+          aModel.documentCharges ().add (_readDocCharge (aAC, aModel.additionalTerms ()));
         else
-          aModel.documentAllowances ().add (_readDocAllowance (aAC));
+          aModel.documentAllowances ().add (_readDocAllowance (aAC, aModel.additionalTerms ()));
       }
 
       // BG-16/17/18/19 + BT-9 + BG-33/35/36 — payment instructions and terms
@@ -1274,8 +1574,10 @@ final class CiiD25AInvoiceReader extends AbstractCiiInvoiceReader
       for (final FinancialAdjustmentType aFA : aHTS.getSpecifiedFinancialAdjustment ())
       {
         final PhloxThirdPartyCharge aTPC = new PhloxThirdPartyCharge ();
-        if (!aFA.getActualAmount ().isEmpty ())
-          aTPC.setAmount (aFA.getActualAmount ().get (0).getValue ()); // BT-179
+        PhloxReaderHelper.setAndAddRepeated (_getAmounts (aFA.getActualAmount ()), // BT-179
+                                             "BT-179",
+                                             aTPC::setAmount,
+                                             aModel.additionalTerms ());
         aTPC.setSpecification (_joinTexts (aFA.getReason ())); // BT-180
         if (aTPC.getAmount () != null || aTPC.getSpecification () != null)
           aModel.getDocumentTotals ().thirdPartyCharges ().add (aTPC);

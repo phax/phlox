@@ -76,6 +76,7 @@ Referenzen
 ----------
 
 - Projektreferenz: PROJECT-7
+- Projektname: Test project
 - Vertragsreferenz: CONTRACT-42
 - Bestellreferenz: PO-2026-0001
 - Auftragsreferenz: SO-2026-9
@@ -100,7 +101,7 @@ Nr.  Beschreibung                                                               
   1  Widget                                                                       4 Eins                        25,00 €  Regelsteuersatz 20,00 %     100,00 €
      A round widget                                                                          Bruttoeinzelpreis: 30,00 €
      Artikel-ID Verkäufer: SELLER-ART-1                                                   Artikel-Preisnachlass: 5,00 €
-     Artikel-ID Käufer: BUYER-ART-1
+     Artikel-ID Käufer: BUYER-ART-1                                                                  Basismenge: 1 Eins
      Standardartikelkennung: 0160:1234567890128
      Klassifikationskennung: TST:CLASS-1 (Version Klassifikationsliste: TST:1.0)
      Ursprungsland des Artikels: Österreich
@@ -164,6 +165,7 @@ Zahlung
 Zahlungsart: SEPA-Überweisung
 SEPA credit transfer
 Verwendungszweck: REMIT-1
+Gläubiger-ID: SEPA-CRED-1
 
 Überweisung
 

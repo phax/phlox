@@ -108,6 +108,7 @@ Zahlung
 
 Zahlungsart: Überweisung
 Verwendungszweck: Deb. 10202 / Fact. 12115118
+Zahlungsart: Überweisung
 
 Überweisung
 

@@ -58,6 +58,7 @@ import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
+import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
 
 /**
@@ -435,6 +436,14 @@ public final class TextTemplateEmitter extends AbstractPhloxAstVisitor <TextBloc
                                      @NonNull final StringBuilder aTarget)
   {
     visitInlineChildren (aAst, aStrikethrough, aTarget);
+  }
+
+  @Override
+  protected void visitSpan (@NonNull final PhloxTemplateAst aAst,
+                            @NonNull final PhloxSpanNode aSpan,
+                            @NonNull final StringBuilder aTarget)
+  {
+    visitInlineChildren (aAst, aSpan, aTarget);
   }
 
   @Override

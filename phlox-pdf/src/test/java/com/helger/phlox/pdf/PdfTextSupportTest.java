@@ -54,6 +54,14 @@ public final class PdfTextSupportTest
   }
 
   @Test
+  public void testEscapeMarkup ()
+  {
+    assertEquals ("\\{a\\}", PdfTextSupport.escapeMarkup ("{a}"));
+    assertEquals ("\\\\\\{", PdfTextSupport.escapeMarkup ("\\{"));
+    assertEquals ("\\*\\_\\`\\~~ ~ a", PdfTextSupport.escapeMarkup ("*_`~~ ~ a"));
+  }
+
+  @Test
   public void testGetSafeFileName ()
   {
     assertEquals ("invoice.pdf", PdfTextSupport.getSafeFileName ("invoice.pdf", "x"));

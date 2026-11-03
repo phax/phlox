@@ -30,6 +30,13 @@ import com.helger.en16931.basics.codelist.EEN16931InvoiceTypeCodeRole;
 import com.helger.phlox.api.PhloxLogHelper;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
 import com.helger.phlox.api.model.PhloxAdditionalTerm;
+import com.helger.phlox.api.model.PhloxContact;
+import com.helger.phlox.api.model.PhloxDeliveryInformation;
+import com.helger.phlox.api.model.PhloxDirectDebit;
+import com.helger.phlox.api.model.PhloxInvoicingPeriod;
+import com.helger.phlox.api.model.PhloxLineDelivery;
+import com.helger.phlox.api.model.PhloxPaymentCard;
+import com.helger.phlox.api.model.PhloxPaymentInstructions;
 
 /**
  * Helpers that all {@link IInvoiceReader} implementations share, so that the same value leads to
@@ -72,6 +79,169 @@ public final class PhloxReaderHelper
           aSetter.accept (aValue);
         else
           aAdditionalTerms.add (new PhloxAdditionalTerm (sTerm, aValue));
+        bFirst = false;
+      }
+  }
+
+  /**
+   * Add a value as additional term if it is present.
+   *
+   * @param sTerm
+   *        The key of the label. Never {@code null}.
+   * @param aValue
+   *        The value. May be {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addIfPresent (@NonNull final String sTerm,
+                                   @Nullable final Object aValue,
+                                   @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    if (aValue != null)
+      aAdditionalTerms.add (new PhloxAdditionalTerm (sTerm, aValue));
+  }
+
+  /**
+   * Add an invoicing period that does not fit into the model, because there is one already.
+   *
+   * @param aPeriod
+   *        The period. Never {@code null}.
+   * @param sStartTerm
+   *        The key of the label of the start date. Never {@code null}.
+   * @param sEndTerm
+   *        The key of the label of the end date. Never {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addPeriod (@NonNull final PhloxInvoicingPeriod aPeriod,
+                                @NonNull final String sStartTerm,
+                                @NonNull final String sEndTerm,
+                                @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    addIfPresent (sStartTerm, aPeriod.getStartDate (), aAdditionalTerms);
+    addIfPresent (sEndTerm, aPeriod.getEndDate (), aAdditionalTerms);
+  }
+
+  /**
+   * Add a delivery that does not fit into the model, because there is one already.
+   *
+   * @param aDelivery
+   *        The delivery. Never {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addDelivery (@NonNull final PhloxDeliveryInformation aDelivery,
+                                  @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    addIfPresent ("BT-70", aDelivery.getPartyName (), aAdditionalTerms);
+    addIfPresent ("BT-71", aDelivery.getLocationIdentifier (), aAdditionalTerms);
+    addIfPresent ("BT-72", aDelivery.getActualDeliveryDate (), aAdditionalTerms);
+    addIfPresent ("BG-15", aDelivery.getPostalAddress (), aAdditionalTerms);
+  }
+
+  /**
+   * Add a line delivery that does not fit into the model, because there is one already.
+   *
+   * @param aDelivery
+   *        The delivery. Never {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addLineDelivery (@NonNull final PhloxLineDelivery aDelivery,
+                                      @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    addIfPresent ("BT-185", aDelivery.getPartyName (), aAdditionalTerms);
+    addIfPresent ("BT-186", aDelivery.getLocationIdentifier (), aAdditionalTerms);
+    addIfPresent ("BT-187", aDelivery.getActualDeliveryDate (), aAdditionalTerms);
+    addIfPresent ("BG-38", aDelivery.getPostalAddress (), aAdditionalTerms);
+  }
+
+  /**
+   * Add a contact that does not fit into the model, because there is one already.
+   *
+   * @param aContact
+   *        The contact. Never {@code null}.
+   * @param sNameTerm
+   *        The key of the label of the name. Never {@code null}.
+   * @param sTelephoneTerm
+   *        The key of the label of the telephone number. Never {@code null}.
+   * @param sEmailTerm
+   *        The key of the label of the email address. Never {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addContact (@NonNull final PhloxContact aContact,
+                                 @NonNull final String sNameTerm,
+                                 @NonNull final String sTelephoneTerm,
+                                 @NonNull final String sEmailTerm,
+                                 @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    addIfPresent (sNameTerm, aContact.getName (), aAdditionalTerms);
+    addIfPresent (sTelephoneTerm, aContact.getTelephone (), aAdditionalTerms);
+    addIfPresent (sEmailTerm, aContact.getEmail (), aAdditionalTerms);
+  }
+
+  /**
+   * Add a payment card that does not fit into the model, because there is one already.
+   *
+   * @param aCard
+   *        The payment card. Never {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addPaymentCard (@NonNull final PhloxPaymentCard aCard,
+                                     @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    addIfPresent ("BT-87", aCard.getPan (), aAdditionalTerms);
+    addIfPresent ("BT-88", aCard.getHolderName (), aAdditionalTerms);
+  }
+
+  /**
+   * Add a direct debit that does not fit into the model, because there is one already.
+   *
+   * @param aDirectDebit
+   *        The direct debit. Never {@code null}.
+   * @param aAdditionalTerms
+   *        The list to add to. Never {@code null}.
+   */
+  public static void addDirectDebit (@NonNull final PhloxDirectDebit aDirectDebit,
+                                     @NonNull final List <PhloxAdditionalTerm> aAdditionalTerms)
+  {
+    addIfPresent ("BT-89", aDirectDebit.getMandateReferenceID (), aAdditionalTerms);
+    addIfPresent ("BT-91", aDirectDebit.getDebitedAccountID (), aAdditionalTerms);
+    addIfPresent ("BT-215", aDirectDebit.getDebitedAccountProviderID (), aAdditionalTerms);
+    addIfPresent ("BT-216", aDirectDebit.getDebitedAccountName (), aAdditionalTerms);
+  }
+
+  /**
+   * Take over the bank assigned creditor identifiers (BT-90). The first one belongs to the direct
+   * debit if there is one, or if a payment means asks for it. Otherwise, as on a credit transfer
+   * invoice, BT-90 alone does not make a direct debit, so it is an additional term of the payment.
+   *
+   * @param aCreditorIDs
+   *        All creditor identifiers of the document. A {@code null} value is skipped. Never
+   *        {@code null}.
+   * @param bDirectDebitMeans
+   *        {@code true} if a payment means is a direct debit.
+   * @param aPayment
+   *        The payment instructions to fill. Never {@code null}.
+   */
+  public static void addCreditorIDs (@NonNull final Iterable <String> aCreditorIDs,
+                                     final boolean bDirectDebitMeans,
+                                     @NonNull final PhloxPaymentInstructions aPayment)
+  {
+    boolean bFirst = true;
+    for (final String sCreditorID : aCreditorIDs)
+      if (sCreditorID != null)
+      {
+        if (bFirst && (bDirectDebitMeans || aPayment.getDirectDebit () != null))
+        {
+          if (aPayment.getDirectDebit () == null)
+            aPayment.setDirectDebit (new PhloxDirectDebit ());
+          aPayment.getDirectDebit ().setBankAssignedCreditorID (sCreditorID);
+        }
+        else
+          aPayment.additionalTerms ().add (new PhloxAdditionalTerm ("BT-90", sCreditorID));
         bFirst = false;
       }
   }

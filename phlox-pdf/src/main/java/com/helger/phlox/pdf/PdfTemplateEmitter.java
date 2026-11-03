@@ -81,6 +81,7 @@ import com.helger.phlox.template.PhloxTemplatePostParser;
 import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
+import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
 
@@ -97,11 +98,11 @@ import com.helger.phlox.template.ast.PhloxTemplateAst;
  * colour, the font size and the bold of a group, row, table, list or block quote apply to the text
  * inside it, unless that has an own value; a heading and a table header row keep their font size.
  * <p>
- * Only a page break at the top level of the template, or directly in a group at the top level, can
- * work, because ph-pdf-layout handles page breaks only as direct children of a page set. Such a
- * group is split in two groups of the same style at the page break. A page break in any other place
- * is ignored with a warning. A page break at the start or at the end of the document never gets here,
- * see {@link PhloxTemplatePostParser}.
+ * Only a page break at the top level of the template, or in stacked groups below the top level, can
+ * work, because ph-pdf-layout handles page breaks only as direct children of a page set. Such groups
+ * are split at the page break into two groups of the same style each, at every level. A page break
+ * in any other place, like a row, is ignored with a warning. A page break at the start or at the end
+ * of the document never gets here, see {@link PhloxTemplatePostParser}.
  *
  * @author Philip Helger
  */
@@ -145,6 +146,12 @@ public final class PdfTemplateEmitter extends
 
   /** The consumer of the content of the page set: only there a page break works. */
   private Consumer <IPLRenderableObject <?>> m_aPageSink;
+
+  /** The text colour at the current position of a block of text, as six hex digits. */
+  private String m_sTextColor;
+
+  /** The background at the current position of a block of text, as six hex digits, if any. */
+  private String m_sBackgroundColor;
 
   /**
    * Create a new emitter.
@@ -269,6 +276,13 @@ public final class PdfTemplateEmitter extends
   }
 
   @NonNull
+  private static String _getHexColor (@NonNull final PLColor aColor)
+  {
+    final int nRGB = aColor.getRed () << 16 | aColor.getGreen () << 8 | aColor.getBlue ();
+    return StringHelper.getLeadingZero (Integer.toHexString (nRGB), 6);
+  }
+
+  @NonNull
   private static StringBuilder _getLastLine (@NonNull final List <StringBuilder> aLines)
   {
     return aLines.get (aLines.size () - 1);
@@ -313,6 +327,8 @@ public final class PdfTemplateEmitter extends
   {
     final ICommonsList <StringBuilder> aLines = new CommonsArrayList <> ();
     aLines.add (new StringBuilder ());
+    m_sTextColor = _getHexColor (aBase.getColor ());
+    m_sBackgroundColor = null;
     visitInlineChildren (aAst, aParent, aLines);
 
     final ICommonsList <String> aNonBlank = new CommonsArrayList <> ();
@@ -781,35 +797,84 @@ public final class PdfTemplateEmitter extends
                                                       : new PLVBox ();
   }
 
+  /** Check for a page break directly in a stacked group or in the stacked groups below it. */
+  private static boolean _hasPageBreakRecursive (@NonNull final PhloxGroupNode aGroup)
+  {
+    for (Node aChild = aGroup.getFirstChild (); aChild != null; aChild = aChild.getNext ())
+      if (aChild instanceof PhloxPageBreakNode ||
+          (aChild instanceof final PhloxGroupNode aChildGroup &&
+           !aChildGroup.isRow () &&
+           _hasPageBreakRecursive (aChildGroup)))
+        return true;
+    return false;
+  }
+
   /**
-   * Add the blocks of a group below each other. A page break directly in a group of the top level
-   * splits the group, because a page break only works as a direct child of the page set.
+   * Get the content of a stacked group, one part per page. A nested stacked group with a page break
+   * continues in the next part of its parent, with a box of its own style in every part.
+   */
+  @NonNull
+  private ICommonsList <PLVBox> _getStackedPartsRecursive (@NonNull final PhloxTemplateAst aAst,
+                                                           @NonNull final PhloxGroupNode aGroup,
+                                                           @Nullable final PdfBlockStyle aStyle)
+  {
+    final ICommonsList <PLVBox> ret = new CommonsArrayList <> ();
+    ret.add (_createGroupContent (aStyle));
+    for (Node aChild = aGroup.getFirstChild (); aChild != null; aChild = aChild.getNext ())
+    {
+      if (aChild instanceof PhloxPageBreakNode)
+        ret.add (_createGroupContent (aStyle));
+      else
+        if (aChild instanceof final PhloxGroupNode aChildGroup &&
+            !aChildGroup.isRow () &&
+            _hasPageBreakRecursive (aChildGroup))
+        {
+          final PdfBlockStyle aChildStyle = _getStyle (aAst, aChildGroup);
+          _withInheritedStyle (aChildStyle, () -> {
+            boolean bFirstPart = true;
+            for (final PLVBox aPart : _getStackedPartsRecursive (aAst, aChildGroup, aChildStyle))
+            {
+              if (!bFirstPart)
+                ret.add (_createGroupContent (aStyle));
+              bFirstPart = false;
+              if (aPart.getRowCount () > 0)
+                ret.getLastOrNull ().addRow (_createGroupBox (aPart, aChildStyle));
+            }
+          });
+        }
+        else
+          visitBlock (aAst, aChild, ret.getLastOrNull ()::addRow);
+    }
+    return ret;
+  }
+
+  /**
+   * Add the blocks of a group below each other. A page break in a group below the page set splits
+   * the group, because a page break only works as a direct child of the page set.
    */
   private void _addStackedGroup (@NonNull final PhloxTemplateAst aAst,
                                  @NonNull final PhloxGroupNode aGroup,
                                  @Nullable final PdfBlockStyle aStyle,
                                  @NonNull final Consumer <IPLRenderableObject <?>> aSink)
   {
-    PLVBox aBlocks = _createGroupContent (aStyle);
-    boolean bSplit = false;
-    for (Node aChild = aGroup.getFirstChild (); aChild != null; aChild = aChild.getNext ())
+    if (aSink == m_aPageSink && _hasPageBreakRecursive (aGroup))
     {
-      if (aChild instanceof PhloxPageBreakNode && aSink == m_aPageSink)
+      boolean bFirstPart = true;
+      for (final PLVBox aPart : _getStackedPartsRecursive (aAst, aGroup, aStyle))
       {
-        if (aBlocks.getRowCount () > 0)
-          aSink.accept (_createGroupBox (aBlocks, aStyle));
-        aSink.accept (new PLPageBreak (true));
-        aBlocks = _createGroupContent (aStyle);
-        bSplit = true;
-      }
-      else
-      {
-        final PLVBox aChildTarget = aBlocks;
-        visitBlock (aAst, aChild, aChildTarget::addRow);
+        if (!bFirstPart)
+          aSink.accept (new PLPageBreak (true));
+        bFirstPart = false;
+        if (aPart.getRowCount () > 0)
+          aSink.accept (_createGroupBox (aPart, aStyle));
       }
     }
-    if (!bSplit || aBlocks.getRowCount () > 0)
+    else
+    {
+      final PLVBox aBlocks = _createGroupContent (aStyle);
+      visitBlockChildren (aAst, aGroup, aBlocks::addRow);
       aSink.accept (_createGroupBox (aBlocks, aStyle));
+    }
   }
 
   /**
@@ -955,6 +1020,34 @@ public final class PdfTemplateEmitter extends
   }
 
   @Override
+  protected void visitSpan (@NonNull final PhloxTemplateAst aAst,
+                            @NonNull final PhloxSpanNode aSpan,
+                            @NonNull final List <StringBuilder> aLines)
+  {
+    final String sOldTextColor = m_sTextColor;
+    final String sOldBackgroundColor = m_sBackgroundColor;
+    String sOpen = "";
+    String sClose = "";
+    if (aSpan.getBackgroundColor () != null)
+    {
+      // A background is no toggle that nests: the outer one ends here and starts again afterwards
+      m_sBackgroundColor = aSpan.getBackgroundColor ();
+      sOpen = (sOldBackgroundColor != null ? "{bg}" : "") + "{bg:#" + m_sBackgroundColor + "}";
+      sClose = "{bg}" + (sOldBackgroundColor != null ? "{bg:#" + sOldBackgroundColor + "}" : "");
+    }
+    if (aSpan.getTextColor () != null)
+    {
+      // A colour stays until the next one
+      m_sTextColor = aSpan.getTextColor ();
+      sOpen += "{color:#" + m_sTextColor + "}";
+      sClose = "{color:#" + sOldTextColor + "}" + sClose;
+    }
+    _appendWrappedRecursive (aAst, aSpan, aLines, sOpen, sClose);
+    m_sTextColor = sOldTextColor;
+    m_sBackgroundColor = sOldBackgroundColor;
+  }
+
+  @Override
   protected void visitInlineImage (@NonNull final PhloxTemplateAst aAst,
                                    @NonNull final Image aImage,
                                    @NonNull final List <StringBuilder> aLines)
@@ -1094,7 +1187,7 @@ public final class PdfTemplateEmitter extends
     if (aSink == m_aPageSink)
       aSink.accept (new PLPageBreak (true));
     else
-      LOGGER.warn ("A page break inside a row, list, block quote or nested group is not possible in PDF - ignoring it");
+      LOGGER.warn ("A page break inside a row, list or block quote is not possible in PDF - ignoring it");
   }
 
   /**

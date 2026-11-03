@@ -96,6 +96,7 @@ public final class TextTemplateEmitterTest
   public void testInlineStylingIsStripped ()
   {
     assertEquals ("Bold em strike code 12115118", _render ("**Bold** *em* ~~strike~~ `code` {{BT-1}}"));
+    assertEquals ("a red high b", _render ("a {{color:#cc0000}}red{{endcolor}} {{bg:#ffee00}}high{{endbg}} b"));
   }
 
   @Test

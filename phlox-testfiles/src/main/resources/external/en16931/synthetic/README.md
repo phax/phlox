@@ -32,3 +32,20 @@ values with surrounding spaces.
 | `ubl/creditnote/phlox-reader-ubl25-creditnote.xml` | The same for a UBL 2.5 `CreditNote` |
 | `cii/phlox-reader-d16b.xml` | CII D16B with BT-3 = 503, BT-8 = 5, dates that cannot be read, BT-90 and BT-91 without BT-89 |
 | `cii/phlox-reader-d25a.xml` | The same for CII D25A, with `ram:BuyerReference` of the 2017 binding and BT-184 |
+
+## Repeated elements
+
+These files were generated once and are not regenerated. Each one holds every element twice that
+EN 16931 has only once but the syntax allows repeatedly, and every value is unique, so that the
+regression test `PdfAllDataShownTest` of `phlox-pdf` can tell them apart. The readers show the first
+occurrence in its term and every other one as an additional term. They are valid against the XSD,
+but deliberately not valid EN 16931 documents.
+
+| File | Purpose |
+|------|---------|
+| `ubl/invoice/phlox-repeated-ubl21-invoice.xml` | UBL 2.1 `Invoice` |
+| `ubl/creditnote/phlox-repeated-ubl21-creditnote.xml` | UBL 2.1 `CreditNote` |
+| `ubl/invoice/phlox-repeated-ubl25-invoice.xml` | UBL 2.5 `Invoice` |
+| `ubl/creditnote/phlox-repeated-ubl25-creditnote.xml` | UBL 2.5 `CreditNote` |
+| `cii/phlox-repeated-d16b.xml` | CII D16B, with unreadable dates, a date with a time and a long token in a table cell |
+| `cii/phlox-repeated-d25a.xml` | The same for CII D25A |

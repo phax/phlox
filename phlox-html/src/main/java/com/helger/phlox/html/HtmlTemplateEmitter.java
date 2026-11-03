@@ -60,6 +60,7 @@ import com.helger.html.hc.html.textlevel.HCBR;
 import com.helger.html.hc.html.textlevel.HCCode;
 import com.helger.html.hc.html.textlevel.HCEM;
 import com.helger.html.hc.html.textlevel.HCS;
+import com.helger.html.hc.html.textlevel.HCSpan;
 import com.helger.html.hc.html.textlevel.HCStrong;
 import com.helger.html.hc.impl.HCTextNode;
 import com.helger.phlox.api.PhloxLogHelper;
@@ -69,6 +70,7 @@ import com.helger.phlox.template.ast.AbstractPhloxAstVisitor;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
+import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
 import com.helger.url.SimpleURL;
 
@@ -321,6 +323,20 @@ public final class HtmlTemplateEmitter extends
   {
     final HCS aElement = new HCS ();
     visitInlineChildren (aAst, aStrikethrough, aElement);
+    aTarget.addChild (aElement);
+  }
+
+  @Override
+  protected void visitSpan (@NonNull final PhloxTemplateAst aAst,
+                            @NonNull final PhloxSpanNode aSpan,
+                            @NonNull final IHCNodeWithChildren <?> aTarget)
+  {
+    final HCSpan aElement = new HCSpan ();
+    if (aSpan.getTextColor () != null)
+      aElement.addStyle (CCSSProperties.COLOR.newValue ("#" + aSpan.getTextColor ()));
+    if (aSpan.getBackgroundColor () != null)
+      aElement.addStyle (CCSSProperties.BACKGROUND_COLOR.newValue ("#" + aSpan.getBackgroundColor ()));
+    visitInlineChildren (aAst, aSpan, aElement);
     aTarget.addChild (aElement);
   }
 

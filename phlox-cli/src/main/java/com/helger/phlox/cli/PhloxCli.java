@@ -214,13 +214,13 @@ public class PhloxCli implements Callable <Integer>
            description = "Style of formatted dates: SHORT, MEDIUM, LONG or FULL. Default: the theme or LONG.")
   FormatStyle m_eDateStyle;
 
-  @Option (names = "--amount-fraction-digits",
-           description = "Number of fraction digits of amounts. Default: the theme or the digits of the currency.")
-  Integer m_aAmountFractionDigits;
+  @Option (names = "--amount-min-fraction-digits",
+           description = "Minimum number of fraction digits of amounts. Default: the theme or the digits of the currency.")
+  Integer m_aAmountMinFractionDigits;
 
-  @Option (names = "--percent-fraction-digits",
-           description = "Number of fraction digits of percentages. Default: the theme or 2.")
-  Integer m_aPercentFractionDigits;
+  @Option (names = "--percent-min-fraction-digits",
+           description = "Minimum number of fraction digits of percentages. Default: the theme or 2.")
+  Integer m_aPercentMinFractionDigits;
 
   @Option (names = "--negative-style",
            description = "Representation of negative amounts: MINUS_SIGN or PARENTHESES. Default: the theme or MINUS_SIGN.")
@@ -375,10 +375,10 @@ public class PhloxCli implements Callable <Integer>
       final PhloxFormatOptions aOptions = aCtx.getFormatOptions ();
       if (m_eDateStyle != null)
         aOptions.setDateStyle (m_eDateStyle);
-      if (m_aAmountFractionDigits != null)
-        aOptions.setAmountFractionDigits (m_aAmountFractionDigits);
-      if (m_aPercentFractionDigits != null)
-        aOptions.setPercentFractionDigits (m_aPercentFractionDigits.intValue ());
+      if (m_aAmountMinFractionDigits != null)
+        aOptions.setAmountMinFractionDigits (m_aAmountMinFractionDigits);
+      if (m_aPercentMinFractionDigits != null)
+        aOptions.setPercentMinFractionDigits (m_aPercentMinFractionDigits.intValue ());
       if (m_eNegativeStyle != null)
         aOptions.setNegativeStyle (m_eNegativeStyle);
       aCtx.setFormatOptions (aOptions);
@@ -549,10 +549,10 @@ public class PhloxCli implements Callable <Integer>
       System.err.println ("--pdfa, --pdfua, --embed-source, --embed-attachments, --zugferd, --zugferd-profile and --creation-date-time require --format PDF");
       return Integer.valueOf (2);
     }
-    if ((m_aAmountFractionDigits != null && m_aAmountFractionDigits.intValue () < 0) ||
-        (m_aPercentFractionDigits != null && m_aPercentFractionDigits.intValue () < 0))
+    if ((m_aAmountMinFractionDigits != null && m_aAmountMinFractionDigits.intValue () < 0) ||
+        (m_aPercentMinFractionDigits != null && m_aPercentMinFractionDigits.intValue () < 0))
     {
-      System.err.println ("--amount-fraction-digits and --percent-fraction-digits must not be negative");
+      System.err.println ("--amount-min-fraction-digits and --percent-min-fraction-digits must not be negative");
       return Integer.valueOf (2);
     }
     if (m_aLineWidth != null && m_eFormat != EOutputFormat.TEXT)

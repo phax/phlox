@@ -20,6 +20,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
@@ -31,6 +32,7 @@ import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Image;
 import org.commonmark.node.Node;
 import org.commonmark.node.Paragraph;
+import org.commonmark.node.StrongEmphasis;
 import org.commonmark.node.Text;
 import org.jspecify.annotations.NonNull;
 import org.junit.Test;
@@ -44,6 +46,7 @@ import com.helger.phlox.template.adapter.PhloxInvoiceMustacheContext;
 import com.helger.phlox.template.ast.PhloxGroupNode;
 import com.helger.phlox.template.ast.PhloxPageBreakNode;
 import com.helger.phlox.template.ast.PhloxResolvedImage;
+import com.helger.phlox.template.ast.PhloxSpanNode;
 import com.helger.phlox.template.ast.PhloxTemplateAst;
 
 /**
@@ -85,6 +88,70 @@ public final class PhloxTemplatePostParserTest
   private static int _countPageBreaks (@NonNull final String sTemplate)
   {
     return _countPageBreaks (_ast (sTemplate).getRoot ());
+  }
+
+  @NonNull
+  private static PhloxSpanNode _firstSpan (@NonNull final String sTemplate)
+  {
+    Node aNode = _ast (sTemplate).getRoot ().getFirstChild ().getFirstChild ();
+    while (aNode != null && !(aNode instanceof PhloxSpanNode))
+      aNode = aNode.getNext ();
+    assertNotNull (aNode);
+    return (PhloxSpanNode) aNode;
+  }
+
+  @Test
+  public void testColorSpans ()
+  {
+    final PhloxSpanNode aColor = _firstSpan ("a {{color:#cc0000}}b **c**{{endcolor}} d");
+    assertEquals ("cc0000", aColor.getTextColor ());
+    assertNull (aColor.getBackgroundColor ());
+    assertEquals ("b ", ((Text) aColor.getFirstChild ()).getLiteral ());
+    assertTrue (aColor.getLastChild () instanceof StrongEmphasis);
+    assertEquals (" d", ((Text) aColor.getNext ()).getLiteral ());
+
+    final PhloxSpanNode aOuter = _firstSpan ("{{bg:#ffee00}}a{{color:#cc0000}}b{{endcolor}}c{{endbg}}");
+    assertEquals ("ffee00", aOuter.getBackgroundColor ());
+    assertNull (aOuter.getTextColor ());
+    assertEquals ("cc0000", ((PhloxSpanNode) aOuter.getFirstChild ().getNext ()).getTextColor ());
+    assertEquals ("c", ((Text) aOuter.getLastChild ()).getLiteral ());
+
+    // A span without an end ends with its block and keeps the content
+    assertEquals ("a", ((Text) _firstSpan ("{{color:#cc0000}}a\n\nb").getFirstChild ()).getLiteral ());
+
+    // An end without a start and an image text have no effect, and leave no sentinel behind
+    final Node aParagraph = _ast ("a{{endcolor}}b").getRoot ().getFirstChild ();
+    assertEquals ("a", ((Text) aParagraph.getFirstChild ()).getLiteral ());
+    assertEquals ("b", ((Text) aParagraph.getLastChild ()).getLiteral ());
+    final Wrapper <String> aAlt = new Wrapper <> ("");
+    _ast ("![{{color:#cc0000}}x{{endcolor}}](qrcode:x)").getRoot ().accept (new AbstractVisitor ()
+    {
+      @Override
+      public void visit (final Text aText)
+      {
+        aAlt.set (aAlt.get () + aText.getLiteral ());
+      }
+    });
+    assertEquals ("x", aAlt.get ());
+  }
+
+  @Test
+  public void testColorMustBeValid ()
+  {
+    for (final String sTag : new String [] { "{{color:red}}", "{{color:#ccc}}", "{{bg:#gg0000}}", "{{bg:}}" })
+      assertEquals (sTag,
+                    EStage.LOAD,
+                    assertThrows (sTag, PhloxTemplateException.class, () -> PhloxTemplate.fromString (sTag)).getStage ());
+  }
+
+  @Test
+  public void testInvoiceValueCannotOpenASpan ()
+  {
+    final PhloxInvoice aInvoice = _invoice ();
+    aInvoice.setNumber (PhloxInvoiceMustacheContext.SENTINEL_COLOR_PREFIX + "cc0000" + PhloxInvoiceMustacheContext.SENTINEL_CLASS_SUFFIX + "x");
+    final Node aParagraph = PhloxTemplate.fromString ("{{BT-1}}").renderAst (aInvoice, new TestCtx ()).getRoot ().getFirstChild ();
+    assertTrue (aParagraph.getFirstChild () instanceof Text);
+    assertNull (aParagraph.getFirstChild ().getNext ());
   }
 
   @Test

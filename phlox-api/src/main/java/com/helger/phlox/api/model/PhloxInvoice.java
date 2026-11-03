@@ -36,6 +36,9 @@ import com.helger.en16931.basics.EEN16931Edition;
  * <p>
  * Header-level BTs sit directly on this class (BT-1 through BT-19, BT-166, BT-167, BT-197). Each
  * business group (BG-1 through BG-25 and BG-33) is exposed as either a single nested object or a mutable list of nested objects.
+ * <p>
+ * A field holds the first occurrence of a term. Every other value of the source, for which the model
+ * has no place, is in {@link #additionalTerms()}, so that no value of the invoice gets lost.
  *
  * @author Philip Helger
  */

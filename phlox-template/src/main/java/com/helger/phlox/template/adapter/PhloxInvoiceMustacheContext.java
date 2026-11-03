@@ -48,9 +48,11 @@ import com.helger.datetime.format.PDTFormatter;
 import com.helger.phlox.api.AbstractRenderContext;
 import com.helger.phlox.api.i18n.IPhloxLabelResolver;
 import com.helger.phlox.api.i18n.PhloxFormat;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
 import com.helger.phlox.api.model.PhloxIdentifier;
 import com.helger.phlox.api.model.PhloxInvoice;
 import com.helger.phlox.api.model.PhloxInvoiceLine;
+import com.helger.phlox.api.model.PhloxPostalAddress;
 import com.helger.phlox.template.PhloxTemplateException;
 import com.helger.phlox.template.PhloxTemplateException.EStage;
 import com.samskivert.mustache.Mustache;
@@ -104,6 +106,18 @@ public final class PhloxInvoiceMustacheContext
   /** The sentinel of <code>{{end}}</code>, which closes the innermost group or row. */
   public static final String SENTINEL_END = SENTINEL_MARKER + "PHLOX:END" + SENTINEL_MARKER;
 
+  /** Prefix of the sentinel of {@code {{color:#rrggbb}}}, followed by the six hex digits. */
+  public static final String SENTINEL_COLOR_PREFIX = SENTINEL_MARKER + "PHLOX:COLOR=";
+
+  /** Prefix of the sentinel of {@code {{bg:#rrggbb}}}, followed by the six hex digits. */
+  public static final String SENTINEL_BG_PREFIX = SENTINEL_MARKER + "PHLOX:BG=";
+
+  /** Literal emitted for {@code {{endcolor}}}. */
+  public static final String SENTINEL_END_COLOR = SENTINEL_MARKER + "PHLOX:ENDCOLOR" + SENTINEL_MARKER;
+
+  /** Literal emitted for {@code {{endbg}}}. */
+  public static final String SENTINEL_END_BG = SENTINEL_MARKER + "PHLOX:ENDBG" + SENTINEL_MARKER;
+
   private static final Logger LOGGER = LoggerFactory.getLogger (PhloxInvoiceMustacheContext.class);
 
   // Replace dots in presence-check paths so JMustache does not split them.
@@ -125,6 +139,7 @@ public final class PhloxInvoiceMustacheContext
   private static final Pattern BLOCK_COMMENT = Pattern.compile ("\\{\\{!.*?\\n[ \\t]*\\}\\}", Pattern.DOTALL);
   private static final Pattern INLINE_COMMENT = Pattern.compile ("\\{\\{!.*?\\}\\}");
   private static final Pattern TAG = Pattern.compile ("\\{\\{(.*?)\\}\\}", Pattern.DOTALL);
+  private static final Pattern HEX_COLOR = Pattern.compile ("#\\p{XDigit}{6}");
 
   // The KEY may itself contain dots ({{label:section.header.title.invoice}}) — we don't care,
   // because the substitution happens before Mustache compile so JMustache never sees a
@@ -150,9 +165,11 @@ public final class PhloxInvoiceMustacheContext
   private static final String MODIFIER_RAW = "raw";
   private static final String MODIFIER_URL = "url";
   private static final String MODIFIER_CODESPAN = "codespan";
+  private static final String MODIFIER_LABEL = "label";
   private static final Set <String> MODIFIERS = Set.of (MODIFIER_RAW,
                                                         MODIFIER_URL,
                                                         MODIFIER_CODESPAN,
+                                                        MODIFIER_LABEL,
                                                         "amount",
                                                         "percent",
                                                         "date",
@@ -467,11 +484,44 @@ public final class PhloxInvoiceMustacheContext
     return aSB.toString ();
   }
 
+  /**
+   * The value of an additional term: an amount in the invoice currency, a code by the name of its
+   * list, and an address with its country.
+   */
+  @NonNull
+  private static String _getAdditionalTermText (@NonNull final PhloxAdditionalTerm aTerm,
+                                                @NonNull final PhloxRenderEnv aEnv)
+  {
+    final Object aValue = aTerm.getValue ();
+    if (aValue instanceof final BigDecimal aAmount)
+      return PhloxFormat.amount (aAmount, aEnv.getInvoice ().getCurrency (), aEnv.getLocale (), aEnv.getFormatOptions ());
+    if (aValue instanceof final PhloxPostalAddress aAddress)
+    {
+      final String sAddress = StringHelper.getNotNull (PhloxModelRegistry.formatAddress (aAddress));
+      final String sCountryCode = aAddress.getCountryCode ();
+      if (sCountryCode == null)
+        return sAddress;
+      final String sCountry = aEnv.getRenderContext ().codeLabel ("country", sCountryCode);
+      return sAddress.isEmpty () ? sCountry : sAddress + ", " + sCountry;
+    }
+    if (aTerm.getCodeList () != null)
+      return aEnv.getRenderContext ().codeLabel (aTerm.getCodeList (), aValue.toString ());
+    return aValue.toString ();
+  }
+
   @NonNull
   private static String _renderLeaf (@NonNull final Object aValue, @NonNull final PhloxRenderEnv aEnv)
   {
     if (aValue instanceof final String sValue)
       return _escapeMarkdown (sValue);
+    if (aValue instanceof final PhloxAdditionalTerm aTerm)
+    {
+      final Object aTermValue = aTerm.getValue ();
+      // A date and an identifier are shown like a term of the model
+      if (aTermValue instanceof LocalDate || aTermValue instanceof PhloxIdentifier)
+        return _renderLeaf (aTermValue, aEnv);
+      return _escapeMarkdown (_getAdditionalTermText (aTerm, aEnv));
+    }
     if (aValue instanceof final PhloxIdentifier aID)
     {
       final String sScheme = aID.getSchemeID ();
@@ -610,6 +660,8 @@ public final class PhloxInvoiceMustacheContext
         return _percentEncode (_removeSentinelMarker (_getUrlText (aValue, aEnv)));
       case MODIFIER_CODESPAN:
         return _getCodeSpan (_removeSentinelMarker (_getUrlText (aValue, aEnv)));
+      case MODIFIER_LABEL:
+        return aEnv.getRenderContext ().label (aValue.toString ());
       case "amount":
       {
         if (!(aValue instanceof final BigDecimal aAmount))
@@ -679,7 +731,9 @@ public final class PhloxInvoiceMustacheContext
         StringHelper.isNotEmpty (aInv.getDespatchAdviceReference ()) ||
         StringHelper.isNotEmpty (aInv.getTenderOrLotReference ()) ||
         StringHelper.isNotEmpty (aInv.getDeliveryNoteReference ()) ||
-        StringHelper.isNotEmpty (aInv.getBuyerAccountingReference ()))
+        StringHelper.isNotEmpty (aInv.getBuyerAccountingReference ()) ||
+        StringHelper.isNotEmpty (aInv.getProjectName ()) ||
+        !aInv.additionalTerms ().isEmpty ())
       return true;
     final PhloxIdentifier aObj = aInv.getInvoicedObjectIdentifier ();
     if (aObj != null && StringHelper.isNotEmpty (aObj.getValue ()))
@@ -710,7 +764,8 @@ public final class PhloxInvoiceMustacheContext
       if (StringHelper.isNotEmpty (aLine.getNote ()) ||
           StringHelper.isNotEmpty (aLine.getPurchaseOrderLineRef ()) ||
           StringHelper.isNotEmpty (aLine.getAccountingCost ()) ||
-          aLine.getPeriod () != null)
+          aLine.getPeriod () != null ||
+          !aLine.additionalTerms ().isEmpty ())
         return true;
       final PhloxIdentifier aObj = aLine.getObjectIdentifier ();
       if (aObj != null && StringHelper.isNotEmpty (aObj.getValue ()))
@@ -924,13 +979,23 @@ public final class PhloxInvoiceMustacheContext
         case '#', '^', '?', '&', '{' -> _checkValueTag (sTag, sTag.substring (1).trim ());
         default ->
         {
-          if (!sTag.startsWith ("label:") &&
-              !sTag.startsWith ("class:") &&
-              !sTag.startsWith ("group:") &&
-              !sTag.startsWith ("row:") &&
-              !"end".equals (sTag) &&
-              !"pagebreak".equals (sTag))
-            _checkValueTag (sTag, sTag);
+          if (sTag.startsWith ("color:") || sTag.startsWith ("bg:"))
+          {
+            if (!HEX_COLOR.matcher (sTag.substring (sTag.indexOf (':') + 1)).matches ())
+              throw new PhloxTemplateException (EStage.LOAD,
+                                                sTag,
+                                                "A colour must have the form #rrggbb: '{{" + sTag + "}}'");
+          }
+          else
+            if (!sTag.startsWith ("label:") &&
+                !sTag.startsWith ("class:") &&
+                !sTag.startsWith ("group:") &&
+                !sTag.startsWith ("row:") &&
+                !"end".equals (sTag) &&
+                !"endcolor".equals (sTag) &&
+                !"endbg".equals (sTag) &&
+                !"pagebreak".equals (sTag))
+              _checkValueTag (sTag, sTag);
         }
       }
     }
@@ -979,8 +1044,16 @@ public final class PhloxInvoiceMustacheContext
       return SENTINEL_GROUP_PREFIX + sHead.substring ("group:".length ()) + SENTINEL_CLASS_SUFFIX;
     if (sHead.startsWith ("row:"))
       return SENTINEL_ROW_PREFIX + sHead.substring ("row:".length ()) + SENTINEL_CLASS_SUFFIX;
+    if (sHead.startsWith ("color:"))
+      return SENTINEL_COLOR_PREFIX + sHead.substring ("color:#".length ()) + SENTINEL_CLASS_SUFFIX;
+    if (sHead.startsWith ("bg:"))
+      return SENTINEL_BG_PREFIX + sHead.substring ("bg:#".length ()) + SENTINEL_CLASS_SUFFIX;
     if ("end".equals (sHead))
       return SENTINEL_END;
+    if ("endcolor".equals (sHead))
+      return SENTINEL_END_COLOR;
+    if ("endbg".equals (sHead))
+      return SENTINEL_END_BG;
     if ("pagebreak".equals (sHead))
       return SENTINEL_PAGEBREAK;
 

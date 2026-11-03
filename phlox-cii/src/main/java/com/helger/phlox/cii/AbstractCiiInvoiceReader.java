@@ -17,6 +17,7 @@
 package com.helger.phlox.cii;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -27,6 +28,7 @@ import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.EEN16931DateFormatCode;
 import com.helger.jaxb.GenericJAXBMarshaller;
 import com.helger.phlox.api.PhloxLogHelper;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
 
 /**
  * Base class of the edition specific CII readers. It only contains helpers that do not depend on
@@ -38,6 +40,21 @@ import com.helger.phlox.api.PhloxLogHelper;
  */
 abstract class AbstractCiiInvoiceReader
 {
+  /** The scheme identifier of a VAT identifier (BT-31, BT-48, BT-63). */
+  protected static final String TAX_SCHEME_VAT = "VA";
+
+  /** The label of a tax registration that EN 16931 has no term for. */
+  protected static final String TERM_TAX_REGISTRATION = "additional.taxregistration";
+
+  /** The label of a charge on the item price, which EN 16931 does not have. */
+  protected static final String TERM_PRICE_CHARGE = "additional.pricecharge";
+
+  /** The label of a document reference of a line that is no object identifier (BT-128). */
+  protected static final String TERM_LINE_DOCUMENT = "additional.linedocument";
+
+  /** The label of the allowances and charges total of a line, which is no term of EN 16931. */
+  protected static final String TERM_LINE_ALLOWANCE_CHARGE_TOTAL = "additional.lineallowancechargetotal";
+
   /**
    * Check if a tax amount is the invoice total VAT amount in the VAT accounting currency (BT-111).
    * An amount in the invoice currency is always BT-110, also if BT-6 names the same currency.
@@ -119,6 +136,37 @@ abstract class AbstractCiiInvoiceReader
                                           eFormat.getID () +
                                           "'")
                               .build ());
+    return ret;
+  }
+
+  /**
+   * Parse a date string, see {@link #parseFormattedDate(String, String, ErrorList)}, and keep what
+   * the {@link LocalDate} cannot hold: a value that cannot be read, and the time of a date with time,
+   * become an additional term with the text of the source.
+   *
+   * @param sValue
+   *        The date string. May be {@code null}.
+   * @param sFormat
+   *        The format code. A missing code means "102" (yyyyMMdd) per EN 16931.
+   * @param sTerm
+   *        The term of the date, the key of the label of the additional term. Never {@code null}.
+   * @param aTerms
+   *        The additional terms to fill. Never {@code null}.
+   * @param aErrors
+   *        The error list to fill with warnings. Never {@code null}.
+   * @return The date or {@code null} if the value is empty or cannot be read.
+   */
+  @Nullable
+  protected static LocalDate parseFormattedDate (@Nullable final String sValue,
+                                                 @Nullable final String sFormat,
+                                                 @NonNull final String sTerm,
+                                                 @NonNull final List <PhloxAdditionalTerm> aTerms,
+                                                 @NonNull final ErrorList aErrors)
+  {
+    final LocalDate ret = parseFormattedDate (sValue, sFormat, aErrors);
+    final String sDate = str (sValue);
+    if (sDate != null && (ret == null || EEN16931DateFormatCode.CCYYMMDDHHMMSSZHHMM.getID ().equals (str (sFormat))))
+      aTerms.add (new PhloxAdditionalTerm (sTerm, sDate));
     return ret;
   }
 

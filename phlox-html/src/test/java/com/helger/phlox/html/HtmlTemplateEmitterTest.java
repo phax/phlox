@@ -140,6 +140,18 @@ public final class HtmlTemplateEmitterTest
   }
 
   @Test
+  public void testInlineColors ()
+  {
+    final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");
+    final String sHtml = _render (aModel,
+                                  PhloxTemplate.fromString ("a {{color:#cc0000}}RED{{endcolor}} {{bg:#ffee00}}**HI**{{endbg}}"),
+                                  Locale.ENGLISH);
+    assertTrue (sHtml, sHtml.contains ("<span style=\"color:#cc0000;\">RED</span>"));
+    assertTrue (sHtml, sHtml.contains ("<span style=\"background-color:#ffee00;\">"));
+    assertTrue (sHtml, sHtml.contains ("<strong>HI</strong>"));
+  }
+
+  @Test
   public void testMarkdownNodes ()
   {
     final PhloxInvoice aModel = _read (UblInvoiceReader.fromUbl21 (), "2017/ubl/invoice/ubl-tc434-example1.xml");

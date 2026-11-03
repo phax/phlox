@@ -170,6 +170,13 @@ public final class AbstractPhloxAstVisitorTest
     }
 
     @Override
+    protected void visitSpan (final PhloxTemplateAst aAst, final PhloxSpanNode aSpan, final ICommonsList <String> aCtx)
+    {
+      aCtx.add ("visitSpan");
+      visitInlineChildren (aAst, aSpan, aCtx);
+    }
+
+    @Override
     protected void visitEmphasis (final PhloxTemplateAst aAst,
                                   final Emphasis aEmphasis,
                                   final ICommonsList <String> aCtx)

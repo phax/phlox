@@ -89,29 +89,29 @@ Ordered in our booth at the convention
 Invoice lines
 -------------
 
-#  Description                                                                      Qty                       Unit price                    VAT    Line total
--  -------------------------------------------------------------------------  ---------  -------------------------------  ---------------------  ------------
-1  Laptop computer                                                               2 each                     NOK 1,273.00   Standard rate 25.00%  NOK 1,273.00
-   Processor: Intel Core 2 Duo SU9400 LV (1.4GHz). RAM: 3MB. Screen 1440x900             Item price discount: NOK 225.00
-   Item seller's identifier: JB007
+#  Description                                                                      Qty                         Unit price                    VAT    Line total
+-  -------------------------------------------------------------------------  ---------  ---------------------------------  ---------------------  ------------
+1  Laptop computer                                                               2 each                       NOK 1,273.00   Standard rate 25.00%  NOK 1,273.00
+   Processor: Intel Core 2 Duo SU9400 LV (1.4GHz). RAM: 3MB. Screen 1440x900               Item price discount: NOK 225.00
+   Item seller's identifier: JB007                                                        Item price base quantity: 1 each
    Item standard identifier: 0088:1234567890128
    Item classification identifier: ZZZ:12344321, STI:65434568
    Item country of origin: Germany
    Color: Black
-2  Returned "Advanced computing" book                                           -1 each                         NOK 3.96   Standard rate 15.00%     -NOK 3.96
-   Item seller's identifier: JB008
+2  Returned "Advanced computing" book                                           -1 each                           NOK 3.96   Standard rate 15.00%     -NOK 3.96
+   Item seller's identifier: JB008                                                        Item price base quantity: 1 each
    Item standard identifier: 0088:1234567890135
    Item classification identifier: ZZZ:32344324, STI:65434567
-3  "Computing for dummies" book                                                  2 each                         NOK 2.48   Standard rate 15.00%      NOK 4.96
-   Item seller's identifier: JB009                                                            Item gross price: NOK 2.70
-   Item standard identifier: 0088:1234567890135                                            Item price discount: NOK 0.27
-   Item classification identifier: ZZZ:32344324, STI:65434567
-4  Returned IBM 5150 desktop                                                    -1 each                        NOK 25.00  Exempt from tax 0.00%    -NOK 25.00
-   Item seller's identifier: JB010
+3  "Computing for dummies" book                                                  2 each                           NOK 2.48   Standard rate 15.00%      NOK 4.96
+   Item seller's identifier: JB009                                                              Item gross price: NOK 2.70
+   Item standard identifier: 0088:1234567890135                                              Item price discount: NOK 0.27
+   Item classification identifier: ZZZ:32344324, STI:65434567                             Item price base quantity: 1 each
+4  Returned IBM 5150 desktop                                                    -1 each                          NOK 25.00  Exempt from tax 0.00%    -NOK 25.00
+   Item seller's identifier: JB010                                                        Item price base quantity: 1 each
    Item standard identifier: 0088:1234567890159
    Item classification identifier: ZZZ:12344322, STI:65434565
-5  Network cable                                                              250 metre                         NOK 0.75   Standard rate 25.00%    NOK 187.50
-   Item seller's identifier: JB011
+5  Network cable                                                              250 metre                           NOK 0.75   Standard rate 25.00%    NOK 187.50
+   Item seller's identifier: JB011                                                       Item price base quantity: 1 metre
    Item standard identifier: 0088:1234567890166
    Item classification identifier: ZZZ:12344325, STI:65434564
    Type: Cat5
@@ -199,7 +199,7 @@ Supporting documents
 --------------------
 
 - Doc1 — Timesheet (http://www.suppliersite.eu/sheet001.html)
-- Doc2 — EHF specification (test.pdf)
+- Doc2 — EHF specification (test.pdf, application/pdf)
 
 Specification identifier: urn:cen.eu:en16931:2017 · Business process type:
 Invoicing on purchase order

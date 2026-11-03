@@ -18,17 +18,26 @@ package com.helger.phlox.api.read;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.junit.Test;
 
+import com.helger.base.wrapper.Wrapper;
+import com.helger.collection.commons.CommonsArrayList;
+import com.helger.collection.commons.ICommonsList;
 import com.helger.diagnostics.error.list.ErrorList;
 import com.helger.en16931.basics.codelist.EEN16931InvoiceTypeCode;
 import com.helger.en16931.basics.codelist.EEN16931InvoiceTypeCodeRole;
 import com.helger.phlox.api.model.EPhloxDocumentKind;
+import com.helger.phlox.api.model.PhloxAdditionalTerm;
+import com.helger.phlox.api.model.PhloxDirectDebit;
+import com.helger.phlox.api.model.PhloxPaymentInstructions;
 
 /**
  * Test class for class {@link PhloxReaderHelper}.
@@ -96,5 +105,41 @@ public final class PhloxReaderHelperTest
     assertFalse (aErrors.containsAtLeastOneError ());
     assertEquals ("Unknown BT-3 invoice type code '99_9' — defaulting to CREDIT_NOTE",
                   aErrors.getFirstOrNull ().getErrorText (Locale.ROOT));
+  }
+
+  @Test
+  public void testSetAndAddRepeated ()
+  {
+    final Wrapper <String> aFirst = new Wrapper <> ();
+    final ICommonsList <PhloxAdditionalTerm> aTerms = new CommonsArrayList <> ();
+    PhloxReaderHelper.setAndAddRepeated (Arrays.asList (null, "a", null, "b", "c"), "BT-12", aFirst::set, aTerms);
+    assertEquals ("a", aFirst.get ());
+    assertEquals (2, aTerms.size ());
+    assertEquals ("BT-12", aTerms.get (0).getTerm ());
+    assertEquals ("b", aTerms.get (0).getValue ());
+    assertEquals ("c", aTerms.get (1).getValue ());
+  }
+
+  @Test
+  public void testAddCreditorIDs ()
+  {
+    // On a credit transfer invoice BT-90 alone is no direct debit
+    final PhloxPaymentInstructions aCreditTransfer = new PhloxPaymentInstructions ();
+    PhloxReaderHelper.addCreditorIDs (Arrays.asList ("CRED-1"), false, aCreditTransfer);
+    assertNull (aCreditTransfer.getDirectDebit ());
+    assertEquals ("BT-90", aCreditTransfer.additionalTerms ().getFirstOrNull ().getTerm ());
+    assertEquals ("CRED-1", aCreditTransfer.additionalTerms ().getFirstOrNull ().getValue ());
+
+    final PhloxPaymentInstructions aMeans = new PhloxPaymentInstructions ();
+    PhloxReaderHelper.addCreditorIDs (Arrays.asList ("CRED-1", "CRED-2"), true, aMeans);
+    assertNotNull (aMeans.getDirectDebit ());
+    assertEquals ("CRED-1", aMeans.getDirectDebit ().getBankAssignedCreditorID ());
+    assertEquals ("CRED-2", aMeans.additionalTerms ().getFirstOrNull ().getValue ());
+
+    final PhloxPaymentInstructions aMandate = new PhloxPaymentInstructions ();
+    aMandate.setDirectDebit (new PhloxDirectDebit ().setMandateReferenceID ("M"));
+    PhloxReaderHelper.addCreditorIDs (Arrays.asList ((String) null), false, aMandate);
+    assertNull (aMandate.getDirectDebit ().getBankAssignedCreditorID ());
+    assertTrue (aMandate.additionalTerms ().isEmpty ());
   }
 }

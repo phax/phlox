@@ -38,6 +38,7 @@ Referenzen
 ----------
 
 - Projektreferenz: Entwicklung System
+- Projektname: Project reference
 - Vertragsreferenz: 0000000752
 - Bestellreferenz: 10520
 
@@ -98,7 +99,7 @@ Unterstützende Dokumente
 ------------------------
 
 - 01_15_Anhang_01.pdf — Aufschlüsselung der einzelnen Leistungspositionen
-  (01_15_Anhang_01.pdf)
+  (01_15_Anhang_01.pdf, application/pdf)
 
 Spezifikationskennung:
 urn:cen.eu:en16931:2017#compliant#urn:xoev-de:kosit:standard:xrechnung_2.0

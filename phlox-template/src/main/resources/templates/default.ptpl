@@ -27,7 +27,7 @@
 {{/BT-7}}{{?BT-8}}| {{label:BT-8}} | {{BT-8 | code:vatpointdate}} |
 {{/BT-8}}{{?BT-5}}| {{label:BT-5}} | {{BT-5}} |
 {{/BT-5}}{{?BT-6}}| {{label:BT-6}} | {{BT-6}} |
-{{/BT-6}}{{?BT-167}}| {{label:BT-167}} | {{BT-167}}{{?BT-167-2}} ({{BT-167-2}} -> {{BT-167-1}}){{/BT-167-2}} |
+{{/BT-6}}{{?BT-167}}| {{label:BT-167}} | {{BT-167}}{{?BT-167-2}} ({{BT-167-2}} -> {{BT-167-1}}){{/BT-167-2}}{{^BT-167-2}}{{?BT-167-1}} (-> {{BT-167-1}}){{/BT-167-1}}{{/BT-167-2}} |
 {{/BT-167}}{{?BT-10}}| {{label:BT-10}} | {{BT-10}} |
 {{/BT-10}}{{?BT-3}}| {{label:BT-3}} | {{BT-3}} — {{BT-3 | code:doctype}} |
 {{/BT-3}}
@@ -75,7 +75,8 @@
 {{/BG-4.BT-31}}{{?BG-4.BT-32}}{{label:BT-32}}: {{BG-4.BT-32}}{{?BG-4.BT-32-1}} ({{BG-4.BT-32-1}}){{/BG-4.BT-32-1}}
 {{/BG-4.BT-32}}{{?BG-4.BT-30}}{{label:BT-30}}: {{BG-4.BT-30}}
 {{/BG-4.BT-30}}{{?BG-4.BT-34}}{{label:BT-34}}: {{BG-4.BT-34}}
-{{/BG-4.BT-34}}{{#BG-4.BG-6}}{{?BT-41}}{{BT-41}}{{?BT-42}} · {{/BT-42}}{{^BT-42}}{{?BT-43}} · {{/BT-43}}{{/BT-42}}{{/BT-41}}{{?BT-42}}{{BT-42}}{{?BT-43}} · {{/BT-43}}{{/BT-42}}{{?BT-43}}[{{BT-43}}](mailto:{{BT-43}}){{/BT-43}}
+{{/BG-4.BT-34}}{{#BG-4.additional_terms}}{{term | label}}: {{value}}
+{{/BG-4.additional_terms}}{{#BG-4.BG-6}}{{?BT-41}}{{BT-41}}{{?BT-42}} · {{/BT-42}}{{^BT-42}}{{?BT-43}} · {{/BT-43}}{{/BT-42}}{{/BT-41}}{{?BT-42}}{{BT-42}}{{?BT-43}} · {{/BT-43}}{{/BT-42}}{{?BT-43}}[{{BT-43}}](mailto:{{BT-43}}){{/BT-43}}
 {{/BG-4.BG-6}}
 {{?BG-4.BT-33}}
 
@@ -109,7 +110,8 @@
 {{/BG-7.BT-46}}{{?BG-7.BT-48}}{{label:BT-48}}: {{BG-7.BT-48}}
 {{/BG-7.BT-48}}{{?BG-7.BT-47}}{{label:BT-47}}: {{BG-7.BT-47}}
 {{/BG-7.BT-47}}{{?BG-7.BT-49}}{{label:BT-49}}: {{BG-7.BT-49}}
-{{/BG-7.BT-49}}{{#BG-7.BG-9}}{{?BT-56}}{{BT-56}}{{?BT-57}} · {{/BT-57}}{{^BT-57}}{{?BT-58}} · {{/BT-58}}{{/BT-57}}{{/BT-56}}{{?BT-57}}{{BT-57}}{{?BT-58}} · {{/BT-58}}{{/BT-57}}{{?BT-58}}[{{BT-58}}](mailto:{{BT-58}}){{/BT-58}}
+{{/BG-7.BT-49}}{{#BG-7.additional_terms}}{{term | label}}: {{value}}
+{{/BG-7.additional_terms}}{{#BG-7.BG-9}}{{?BT-56}}{{BT-56}}{{?BT-57}} · {{/BT-57}}{{^BT-57}}{{?BT-58}} · {{/BT-58}}{{/BT-57}}{{/BT-56}}{{?BT-57}}{{BT-57}}{{?BT-58}} · {{/BT-58}}{{/BT-57}}{{?BT-58}}[{{BT-58}}](mailto:{{BT-58}}){{/BT-58}}
 {{/BG-7.BG-9}}
 
 {{end}}
@@ -196,6 +198,7 @@
 {{!
   References — header-level reference BTs + BG-3
   BT-11  Project reference                    (0..1)
+  BT-11-1 Project name                        (0..1, CII only)
   BT-12  Contract reference                   (0..1)
   BT-13  Purchase order reference             (0..1)
   BT-14  Sales order reference                (0..1)
@@ -210,6 +213,9 @@
     BT-26  Preceding invoice issue date       (0..1)
     BT-202 Preceding invoice type code        (0..1, EN 16931:2026)
 
+  The values that the model has no place for follow: the second occurrence of a term that EN 16931
+  has only once, a date that cannot be read. They show the label of their term.
+
   The "references_present" key is a synthesized boolean exposed by the
   Mustache adapter: true when at least one of the BTs above or BG-3 is set.
 }}
@@ -217,7 +223,8 @@
 ## {{label:section.references.title}}
 
 {{?BT-11}}- **{{label:BT-11}}:** {{BT-11}}
-{{/BT-11}}{{?BT-12}}- **{{label:BT-12}}:** {{BT-12}}
+{{/BT-11}}{{?BT-11-1}}- **{{label:BT-11-1}}:** {{BT-11-1}}
+{{/BT-11-1}}{{?BT-12}}- **{{label:BT-12}}:** {{BT-12}}
 {{/BT-12}}{{?BT-13}}- **{{label:BT-13}}:** {{BT-13}}
 {{/BT-13}}{{?BT-14}}- **{{label:BT-14}}:** {{BT-14}}
 {{/BT-14}}{{?BT-15}}- **{{label:BT-15}}:** {{BT-15}}
@@ -229,6 +236,8 @@
 {{/BT-19}}
 {{#BG-3}}- **{{label:BG-3}}:** {{BT-25}}{{?BT-26}} ({{BT-26 | date}}){{/BT-26}}{{?BT-202}} [{{BT-202}}]{{/BT-202}}
 {{/BG-3}}
+{{#additional_terms}}- **{{term | label}}:** {{value}}
+{{/additional_terms}}
 {{/references_present}}
 
 {{!
@@ -273,7 +282,7 @@
 
 | {{label:section.lines.column.number}} | {{label:section.lines.column.description}} | {{label:section.lines.column.quantity}} | {{label:section.lines.column.unitprice}} | {{label:section.lines.column.vat}} | {{label:section.lines.column.linetotal}} |
 |---:|---|---:|---:|---:|---:|
-{{#BG-25}}| {{BT-126}} | **{{BG-31.BT-153}}**{{?BG-31.BT-154}}<br>{{BG-31.BT-154}}{{/BG-31.BT-154}}{{?BG-31.BT-155}}<br>*{{label:BT-155}}: {{BG-31.BT-155}}*{{/BG-31.BT-155}}{{?BG-31.BT-156}}<br>*{{label:BT-156}}: {{BG-31.BT-156}}*{{/BG-31.BT-156}}{{?BG-31.BT-157}}<br>*{{label:BT-157}}: {{BG-31.BT-157}}*{{/BG-31.BT-157}}{{?BG-31.BT-158}}<br>*{{label:BT-158}}: {{BG-31.BT-158}}{{?BG-31.BT-158-2}} ({{label:BT-158-2}}: {{BG-31.BT-158-2}}){{/BG-31.BT-158-2}}*{{/BG-31.BT-158}}{{?BG-31.BT-159}}<br>*{{label:BT-159}}: {{BG-31.BT-159 | code:country}}*{{/BG-31.BT-159}}{{#BG-31.BG-32}}<br>*{{BT-160}}{{?BT-211}} ({{BT-211}}){{/BT-211}}: {{BT-161}}{{?BT-212}} {{BT-212}}{{/BT-212}}*{{/BG-31.BG-32}} | {{BT-129}} {{BT-130 | code:unit}} | {{BG-29.BT-146 | amount}}{{?BG-29.BT-148}}<br>*{{label:BT-148}}: {{BG-29.BT-148 | amount}}*{{/BG-29.BT-148}}{{?BG-29.BT-147}}<br>*{{label:BT-147}}: {{BG-29.BT-147 | amount}}*{{/BG-29.BT-147}}{{?BG-29.BT-149-if-not-one}}<br>*{{label:BT-149}}: {{BG-29.BT-149-if-not-one}} {{BG-29.BT-150 | code:unit}}*{{/BG-29.BT-149-if-not-one}} | {{BG-30.BT-151 | code:vatcategory}} {{BG-30.BT-152 | percent}} | {{BT-131 | amount}} |
+{{#BG-25}}| {{BT-126}} | **{{BG-31.BT-153}}**{{?BG-31.BT-154}}<br>{{BG-31.BT-154}}{{/BG-31.BT-154}}{{?BG-31.BT-155}}<br>*{{label:BT-155}}: {{BG-31.BT-155}}*{{/BG-31.BT-155}}{{?BG-31.BT-156}}<br>*{{label:BT-156}}: {{BG-31.BT-156}}*{{/BG-31.BT-156}}{{?BG-31.BT-157}}<br>*{{label:BT-157}}: {{BG-31.BT-157}}*{{/BG-31.BT-157}}{{?BG-31.BT-158}}<br>*{{label:BT-158}}: {{BG-31.BT-158}}{{?BG-31.BT-158-2}} ({{label:BT-158-2}}: {{BG-31.BT-158-2}}){{/BG-31.BT-158-2}}*{{/BG-31.BT-158}}{{?BG-31.BT-159}}<br>*{{label:BT-159}}: {{BG-31.BT-159 | code:country}}*{{/BG-31.BT-159}}{{#BG-31.BG-32}}<br>*{{BT-160}}{{?BT-211}} ({{BT-211}}){{/BT-211}}: {{BT-161}}{{?BT-212}} {{BT-212}}{{/BT-212}}*{{/BG-31.BG-32}} | {{BT-129}} {{BT-130 | code:unit}} | {{BG-29.BT-146 | amount}}{{?BG-29.BT-148}}<br>*{{label:BT-148}}: {{BG-29.BT-148 | amount}}*{{/BG-29.BT-148}}{{?BG-29.BT-147}}<br>*{{label:BT-147}}: {{BG-29.BT-147 | amount}}*{{/BG-29.BT-147}}{{?BG-29.BT-149}}<br>*{{label:BT-149}}: {{BG-29.BT-149}} {{BG-29.BT-150 | code:unit}}*{{/BG-29.BT-149}} | {{BG-30.BT-151 | code:vatcategory}} {{BG-30.BT-152 | percent}} | {{BT-131 | amount}} |
 {{/BG-25}}
 
 {{?line_allowances_present}}
@@ -393,6 +402,9 @@
 > {{label:BG-39}} ({{label:BT-126}} {{..BT-126}}): {{BT-217}}{{?BT-218}} ({{BT-218 | date}}){{/BT-218}}{{?BT-219}} [{{BT-219}}]{{/BT-219}}{{?BT-220}}, {{label:BT-220}} {{BT-220}}{{/BT-220}}
 {{/BG-39}}
 {{/BG-39}}
+{{#additional_terms}}
+> **{{label:BT-126}} {{..BT-126}} — {{term | label}}:** {{value}}
+{{/additional_terms}}
 {{/BG-25}}
 {{/line_extras_present}}
 
@@ -451,7 +463,7 @@
 
 | {{label:section.table.column.vatcategory}} | {{label:section.table.column.vattaxable}} | {{label:section.table.column.vatrate}} | {{label:section.table.column.vatamount}} |
 |---|---:|---:|---:|
-{{#BG-23}}| {{BT-118 | code:vatcategory}}{{?BT-121}} *({{BT-121 | code:vatexemption}})*{{/BT-121}}{{?BT-184}} ({{BT-184}}){{/BT-184}}{{?BT-210}} [{{BT-210}}]{{/BT-210}} | {{BT-116 | amount}} | {{BT-119 | percent}} | {{BT-117 | amount}} |
+{{#BG-23}}| {{BT-118 | code:vatcategory}}{{?BT-121}} *({{BT-121 | code:vatexemption}})*{{/BT-121}}{{?BT-184}} ({{BT-184}}){{/BT-184}}{{?BT-210}} [{{BT-210}}]{{/BT-210}} | {{?BT-184}}{{BT-116}} {{BT-184}}{{/BT-184}}{{^BT-184}}{{BT-116 | amount}}{{/BT-184}} | {{BT-119 | percent}} | {{?BT-184}}{{BT-117}} {{BT-184}}{{/BT-184}}{{^BT-184}}{{BT-117 | amount}}{{/BT-184}} |
 {{/BG-23}}
 {{#BG-23}}
 {{?BT-120}}
@@ -471,7 +483,7 @@
 {{?BG-22.BT-106}}| {{label:BT-106}} | {{BG-22.BT-106 | amount}} |
 {{/BG-22.BT-106}}{{?BG-22.BT-107}}| {{label:BT-107}} | -{{BG-22.BT-107 | amount}} |
 {{/BG-22.BT-107}}{{?BG-22.BT-108}}| {{label:BT-108}} | +{{BG-22.BT-108 | amount}} |
-{{/BG-22.BT-108}}{{#BG-22.BG-34}}| {{label:BG-34}}{{?BT-180}}: {{BT-180}}{{/BT-180}} | +{{BT-179 | amount}} |
+{{/BG-22.BT-108}}{{#BG-22.BG-34}}| {{label:BG-34}}{{?BT-179-1}} {{BT-179-1}}{{/BT-179-1}}{{?BT-180}}: {{BT-180}}{{/BT-180}} | +{{BT-179 | amount}} |
 {{/BG-22.BG-34}}| {{label:BT-109}} | {{BG-22.BT-109 | amount}} |
 | {{label:BT-110}} | {{BG-22.BT-110 | amount}} |
 {{?BG-22.BT-111}}| {{label:BT-111}} | {{BG-22.BT-111 | amount:BT-6}} |
@@ -507,6 +519,8 @@
 {{/BG-16.BT-82}}
 {{?BG-16.BT-83}}*{{label:BT-83}}:* {{BG-16.BT-83}}
 {{/BG-16.BT-83}}
+{{#BG-16.additional_terms}}*{{term | label}}:* {{value}}
+{{/BG-16.additional_terms}}
 
 {{?BG-16.BG-17}}
 {{class:label}}
@@ -590,18 +604,20 @@
   BG-24 — Supporting documents
   BG-24  Supporting document                  (0..n)
     BT-122 Reference                          (1..1)
+    BT-122-1 Reference code                   (only a code other than the fixed 916)
     BT-123 Description                        (0..1)
     BT-124 External URL                       (0..1)
     BT-125 Attached document binary           (0..1, inline base64)
 
-  Embedded binaries are accessed via the "attachment:BG-24[i]" image URL
+  The content of BT-125 cannot be printed: the file name and the MIME type stand for it, and
+  --embed-attachments of the CLI embeds it. Embedded binaries are accessed via the "attachment:BG-24[i]" image URL
   scheme — see [[Template Language]] § Images.
 }}
 {{?BG-24}}
 ## {{label:section.supportingdocs.title}}
 
 {{#BG-24}}
-- **{{BT-122}}**{{?BT-123}} — {{BT-123}}{{/BT-123}}{{?BT-124}} ([{{BT-124}}]({{BT-124}})){{/BT-124}}{{?BT-125}} *({{BT-125.filename}})*{{/BT-125}}
+- {{?BT-122}}**{{BT-122}}**{{/BT-122}}{{?BT-122-1}} [{{BT-122-1}}]{{/BT-122-1}}{{?BT-123}} — {{BT-123}}{{/BT-123}}{{?BT-124}} ([{{BT-124}}]({{BT-124}})){{/BT-124}}{{?BT-125}} *({{?BT-125.filename}}{{BT-125.filename}}{{?BT-125.mimeCode}}, {{/BT-125.mimeCode}}{{/BT-125.filename}}{{BT-125.mimeCode}})*{{/BT-125}}
 {{/BG-24}}
 {{/BG-24}}
 

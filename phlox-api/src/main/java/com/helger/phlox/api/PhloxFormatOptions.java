@@ -34,13 +34,13 @@ public class PhloxFormatOptions implements ICloneable <PhloxFormatOptions>
   /** Default style of formatted dates. */
   public static final FormatStyle DEFAULT_DATE_STYLE = FormatStyle.LONG;
   /** Default number of fraction digits of percentages. */
-  public static final int DEFAULT_PERCENT_FRACTION_DIGITS = 2;
+  public static final int DEFAULT_PERCENT_MIN_FRACTION_DIGITS = 2;
   /** Default representation of negative amounts. */
   public static final ENegativeStyle DEFAULT_NEGATIVE_STYLE = ENegativeStyle.MINUS_SIGN;
 
   private FormatStyle m_eDateStyle = DEFAULT_DATE_STYLE;
-  private Integer m_aAmountFractionDigits;
-  private int m_nPercentFractionDigits = DEFAULT_PERCENT_FRACTION_DIGITS;
+  private Integer m_aAmountMinFractionDigits;
+  private int m_nPercentMinFractionDigits = DEFAULT_PERCENT_MIN_FRACTION_DIGITS;
   private ENegativeStyle m_eNegativeStyle = DEFAULT_NEGATIVE_STYLE;
 
   /** Create a new instance with default options. */
@@ -56,8 +56,8 @@ public class PhloxFormatOptions implements ICloneable <PhloxFormatOptions>
   public PhloxFormatOptions (@NonNull final PhloxFormatOptions aOther)
   {
     m_eDateStyle = aOther.m_eDateStyle;
-    m_aAmountFractionDigits = aOther.m_aAmountFractionDigits;
-    m_nPercentFractionDigits = aOther.m_nPercentFractionDigits;
+    m_aAmountMinFractionDigits = aOther.m_aAmountMinFractionDigits;
+    m_nPercentMinFractionDigits = aOther.m_nPercentMinFractionDigits;
     m_eNegativeStyle = aOther.m_eNegativeStyle;
   }
 
@@ -98,52 +98,56 @@ public class PhloxFormatOptions implements ICloneable <PhloxFormatOptions>
   }
 
   /**
-   * Get the override for the number of fraction digits used when formatting amounts.
+   * Get the override for the number of fraction digits used when formatting amounts. An amount that
+   * has more fraction digits shows them, because no value is rounded.
    *
    * @return Override for the number of fraction digits used when formatting amounts. When
    *         {@code null} (the default), the currency's natural fraction-digits count is used.
    */
   @Nullable
-  public Integer getAmountFractionDigits ()
+  public Integer getAmountMinFractionDigits ()
   {
-    return m_aAmountFractionDigits;
+    return m_aAmountMinFractionDigits;
   }
 
   /**
-   * Override the number of fraction digits used when formatting amounts.
+   * Override the number of fraction digits used when formatting amounts. It is a minimum: an amount
+   * that has more fraction digits shows them.
    *
-   * @param aAmountFractionDigits
+   * @param aAmountMinFractionDigits
    *        Digit count or {@code null} to use the currency default.
    * @return this for chaining.
    */
   @NonNull
-  public PhloxFormatOptions setAmountFractionDigits (@Nullable final Integer aAmountFractionDigits)
+  public PhloxFormatOptions setAmountMinFractionDigits (@Nullable final Integer aAmountMinFractionDigits)
   {
-    m_aAmountFractionDigits = aAmountFractionDigits;
+    m_aAmountMinFractionDigits = aAmountMinFractionDigits;
     return this;
   }
 
   /**
-   * Get the fraction digits for percentage values (default {@value #DEFAULT_PERCENT_FRACTION_DIGITS}).
+   * Get the fraction digits for percentage values (default {@value #DEFAULT_PERCENT_MIN_FRACTION_DIGITS}).
+   * A percentage that has more fraction digits shows them, because no value is rounded.
    *
-   * @return Fraction digits for percentage values (default {@value #DEFAULT_PERCENT_FRACTION_DIGITS}).
+   * @return Fraction digits for percentage values (default {@value #DEFAULT_PERCENT_MIN_FRACTION_DIGITS}).
    */
-  public int getPercentFractionDigits ()
+  public int getPercentMinFractionDigits ()
   {
-    return m_nPercentFractionDigits;
+    return m_nPercentMinFractionDigits;
   }
 
   /**
-   * Set the fraction digits for percentage values.
+   * Set the fraction digits for percentage values. It is a minimum: a percentage that has more
+   * fraction digits shows them.
    *
-   * @param nPercentFractionDigits
+   * @param nPercentMinFractionDigits
    *        Digit count (≥ 0).
    * @return this for chaining.
    */
   @NonNull
-  public PhloxFormatOptions setPercentFractionDigits (final int nPercentFractionDigits)
+  public PhloxFormatOptions setPercentMinFractionDigits (final int nPercentMinFractionDigits)
   {
-    m_nPercentFractionDigits = nPercentFractionDigits;
+    m_nPercentMinFractionDigits = nPercentMinFractionDigits;
     return this;
   }
 

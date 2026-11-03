@@ -95,12 +95,12 @@ Notes
 Invoice lines
 -------------
 
-#  Description                                                                                                        Qty                   Unit price                   VAT  Line total
--  ---------------------------------------------------------------------------------------------------------------  -----  ---------------------------  --------------------  ----------
-1  Widget                                                                                                           4 one                      € 25.00  Standard rate 20.00%    € 100.00
-   A round widget                                                                                                            Item gross price: € 30.00
-   Item seller's identifier: SELLER-ART-1                                                                                  Item price discount: € 5.00
-   Item buyer's identifier: BUYER-ART-1
+#  Description                                                                                                        Qty                       Unit price                   VAT  Line total
+-  ---------------------------------------------------------------------------------------------------------------  -----  -------------------------------  --------------------  ----------
+1  Widget                                                                                                           4 one                          € 25.00  Standard rate 20.00%    € 100.00
+   A round widget                                                                                                                Item gross price: € 30.00
+   Item seller's identifier: SELLER-ART-1                                                                                      Item price discount: € 5.00
+   Item buyer's identifier: BUYER-ART-1                                                                                    Item price base quantity: 1 one
    Item standard identifier: 0160:1234567890128
    Item classification identifier: TST:CLASS-1 (Item classification identifier scheme version identifier: TST:1.0)
    Item country of origin: Austria

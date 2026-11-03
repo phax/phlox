@@ -61,7 +61,7 @@ Lastschrift
 Unterstützende Dokumente
 ------------------------
 
-- ATTACH-1 — Timesheet of January 2026 (timesheet.pdf)
+- ATTACH-1 — Timesheet of January 2026 (timesheet.pdf, application/pdf)
 - ATTACH-2 — Terms and conditions (https://www.example.org/terms.pdf)
 
 Spezifikationskennung: urn:cen.eu:en16931:2026 · Geschäftsprozesstyp:

@@ -88,7 +88,7 @@ Nr.  Beschreibung                               Menge                     Einzel
   1  item name                                10 Eins                        410,00 €  Regelsteuersatz 25,00 %   4.000,00 €
      Description of item                                  Bruttoeinzelpreis: 450,00 €
      Artikel-ID Verkäufer: 97iugug876                  Artikel-Preisnachlass: 40,00 €
-     Klassifikationskennung: SRV:09348023
+     Klassifikationskennung: SRV:09348023                          Basismenge: 1 Eins
      Ursprungsland des Artikels: Norwegen
   2  item name                                10 Eins                        200,00 €       USt-befreit 0,00 %   1.000,00 €
      Description of item                                           Basismenge: 2 Eins

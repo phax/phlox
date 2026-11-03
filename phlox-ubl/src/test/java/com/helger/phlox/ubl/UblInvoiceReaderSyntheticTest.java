@@ -408,13 +408,16 @@ public final class UblInvoiceReaderSyntheticTest
   }
 
   @Test
-  public void testLegacyElementsDoNotOverrideTheBinding ()
+  public void testLegacyElementsFollowTheBinding ()
   {
     final String sLegacy = "<cbc:Note>Legacy note</cbc:Note>\n  <cbc:DocumentCurrencyCode>";
     final PhloxInvoice aModel = _read (UBL25_INVOICE,
                                        _load (UBL25_INVOICE, "<cbc:DocumentCurrencyCode>", sLegacy));
-    assertEquals (1, aModel.invoiceNotes ().size ());
-    assertEquals ("Header note", aModel.invoiceNotes ().get (0).getContent ());
+    // Nothing gets lost: the subject code without a content, the note, the legacy note
+    assertEquals (3, aModel.invoiceNotes ().size ());
+    assertEquals ("AAI", aModel.invoiceNotes ().get (0).getSubjectCode ());
+    assertEquals ("Header note", aModel.invoiceNotes ().get (1).getContent ());
+    assertEquals ("Legacy note", aModel.invoiceNotes ().get (2).getContent ());
   }
 
   @Test
@@ -465,7 +468,8 @@ public final class UblInvoiceReaderSyntheticTest
     for (final String sFile : ALL_FILES)
     {
       final PhloxInvoice aModel = _read (sFile);
-      assertEquals (sFile, 1, aModel.invoiceNotes ().size ());
+      // A blank note without a subject code is no row, one with a subject code is
+      assertEquals (sFile, sFile.contains ("ubl25") ? 2 : 1, aModel.invoiceNotes ().size ());
       assertEquals (sFile, 1, aModel.precedingInvoiceRefs ().size ());
       assertEquals (sFile, "PREV-1", aModel.precedingInvoiceRefs ().get (0).getNumber ());
       assertEquals (sFile, 1, aModel.supportingDocuments ().size ());
@@ -489,20 +493,8 @@ public final class UblInvoiceReaderSyntheticTest
   @Test
   public void testSubtotalInOtherCurrency ()
   {
-    // EN 16931:2017 has no BT-184, so a subtotal in the VAT accounting currency has no place
-    for (final String sFile : new String [] { UBL21_INVOICE, UBL21_CREDIT_NOTE })
-    {
-      final ErrorList aErrors = new ErrorList ();
-      final PhloxInvoice aModel = _readXml (_readerOf (sFile), _load (sFile), aErrors);
-      assertNotNull (sFile, aModel);
-      assertEquals (sFile, 1, aModel.vatBreakdowns ().size ());
-      assertEquals (sFile, 0, new BigDecimal ("20").compareTo (aModel.vatBreakdowns ().get (0).getTaxAmount ()));
-      assertEquals (sFile, 0, new BigDecimal ("24").compareTo (aModel.getDocumentTotals ().getTaxTotalAccountingCurrency ()));
-      assertEquals (sFile + ": " + aErrors, 1, aErrors.size ());
-      assertFalse (sFile, aErrors.containsAtLeastOneError ());
-    }
-    // BT-184 carries it in EN 16931:2026
-    for (final String sFile : new String [] { UBL25_INVOICE, UBL25_CREDIT_NOTE })
+    // BT-184 carries it in EN 16931:2026. EN 16931:2017 has no such term, but the value is shown
+    for (final String sFile : ALL_FILES)
     {
       final PhloxInvoice aModel = _read (sFile);
       assertEquals (sFile, 2, aModel.vatBreakdowns ().size ());

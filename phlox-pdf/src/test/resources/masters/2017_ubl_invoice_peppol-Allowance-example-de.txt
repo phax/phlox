@@ -560,6 +560,7 @@ T p2 338.5 96.1 10.0 Helvetica 410,00 €
 T p2 258.5 107.7 10.0 Helvetica-Oblique Bruttoeinzelpreis: 450,00 €
 T p2 281.3 119.2 10.0 Helvetica-Oblique Artikel-Preisnachlass:
 T p2 344.1 130.8 10.0 Helvetica-Oblique 40,00 €
+T p2 289.1 142.3 10.0 Helvetica-Oblique Basismenge: 1 Eins
 T p2 398.6 96.1 10.0 Helvetica Regelsteuersatz
 T p2 434.2 107.7 10.0 Helvetica 25,00 %
 T p2 488.3 96.1 10.0 Helvetica 4.000,00 €

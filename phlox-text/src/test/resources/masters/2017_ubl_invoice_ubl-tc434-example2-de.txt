@@ -93,25 +93,25 @@ Nr.  Beschreibung                                                               
 ---  -------------------------------------------------------------------------  ---------  ---------------------------------  -----------------------  ------------
   1  Laptop computer                                                              2 Stück                       1.273,00 NOK  Regelsteuersatz 25,00 %  1.273,00 NOK
      Processor: Intel Core 2 Duo SU9400 LV (1.4GHz). RAM: 3MB. Screen 1440x900             Artikel-Preisnachlass: 225,00 NOK
-     Artikel-ID Verkäufer: JB007
+     Artikel-ID Verkäufer: JB007                                                                         Basismenge: 1 Stück
      Standardartikelkennung: 0088:1234567890128
      Klassifikationskennung: ZZZ:12344321, STI:65434568
      Ursprungsland des Artikels: Deutschland
      Color: Black
   2  Returned "Advanced computing" book                                          -1 Stück                           3,96 NOK  Regelsteuersatz 15,00 %     -3,96 NOK
-     Artikel-ID Verkäufer: JB008
+     Artikel-ID Verkäufer: JB008                                                                         Basismenge: 1 Stück
      Standardartikelkennung: 0088:1234567890135
      Klassifikationskennung: ZZZ:32344324, STI:65434567
   3  "Computing for dummies" book                                                 2 Stück                           2,48 NOK  Regelsteuersatz 15,00 %      4,96 NOK
      Artikel-ID Verkäufer: JB009                                                                 Bruttoeinzelpreis: 2,70 NOK
      Standardartikelkennung: 0088:1234567890135                                              Artikel-Preisnachlass: 0,27 NOK
-     Klassifikationskennung: ZZZ:32344324, STI:65434567
+     Klassifikationskennung: ZZZ:32344324, STI:65434567                                                  Basismenge: 1 Stück
   4  Returned IBM 5150 desktop                                                   -1 Stück                          25,00 NOK       USt-befreit 0,00 %    -25,00 NOK
-     Artikel-ID Verkäufer: JB010
+     Artikel-ID Verkäufer: JB010                                                                         Basismenge: 1 Stück
      Standardartikelkennung: 0088:1234567890159
      Klassifikationskennung: ZZZ:12344322, STI:65434565
   5  Network cable                                                              250 Meter                           0,75 NOK  Regelsteuersatz 25,00 %    187,50 NOK
-     Artikel-ID Verkäufer: JB011
+     Artikel-ID Verkäufer: JB011                                                                         Basismenge: 1 Meter
      Standardartikelkennung: 0088:1234567890166
      Klassifikationskennung: ZZZ:12344325, STI:65434564
      Type: Cat5
@@ -194,7 +194,7 @@ Unterstützende Dokumente
 ------------------------
 
 - Doc1 — Timesheet (http://www.suppliersite.eu/sheet001.html)
-- Doc2 — EHF specification (test.pdf)
+- Doc2 — EHF specification (test.pdf, application/pdf)
 
 Spezifikationskennung: urn:cen.eu:en16931:2017 · Geschäftsprozesstyp: Invoicing
 on purchase order

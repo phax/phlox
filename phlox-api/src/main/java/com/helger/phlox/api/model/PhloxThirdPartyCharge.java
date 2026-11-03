@@ -24,18 +24,45 @@ import org.jspecify.annotations.Nullable;
 /**
  * BG-34 CHARGES ON BEHALF OF A THIRD PARTY (0..n within BG-22). Charges, e.g. statutory fees,
  * that flow through the invoice but are not part of the seller's own revenue: the collected
- * amount (BT-179) and the specification of the charge (BT-180). Introduced by EN 16931:2026.
+ * amount (BT-179) with the line identifier of UBL (BT-179-1) and the specification of the charge
+ * (BT-180). Introduced by EN 16931:2026.
  *
  * @author Philip Helger
  */
 public class PhloxThirdPartyCharge
 {
+  private String m_sLineID;
   private BigDecimal m_aAmount;
   private String m_sSpecification;
 
   /** Create an empty instance. */
   public PhloxThirdPartyCharge ()
   {}
+
+  /**
+   * Get the line identifier (BT-179-1). Only UBL has it.
+   *
+   * @return Line identifier (BT-179-1). May be {@code null}.
+   */
+  @Nullable
+  public String getLineID ()
+  {
+    return m_sLineID;
+  }
+
+  /**
+   * Set the line identifier (BT-179-1).
+   *
+   * @param sLineID
+   *        The line identifier; may be {@code null}.
+   * @return this for chaining.
+   */
+  @NonNull
+  public PhloxThirdPartyCharge setLineID (@Nullable final String sLineID)
+  {
+    m_sLineID = sLineID;
+    return this;
+  }
 
   /**
    * Get the charge amount collected on behalf of a third party (BT-179).
