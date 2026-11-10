@@ -67,7 +67,7 @@
     <ph-codelists.version>1.0.0</ph-codelists.version>
     <ph-css.version>8.4.0</ph-css.version>
     <ph-oton.version>10.7.0</ph-oton.version>
-    <pdfcompare.version>1.2.11</pdfcompare.version>
+    <pdfcompare.version>1.2.13</pdfcompare.version>
     <ph-pdf-layout.version>8.4.3</ph-pdf-layout.version>
     <kaltblut.version>0.9.6</kaltblut.version>
     <picocli.version>4.7.7</picocli.version>
