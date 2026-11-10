@@ -60,7 +60,7 @@
   <properties>
     <java.version>17</java.version>
 
-    <ph-commons.version>12.5.3</ph-commons.version>
+    <ph-commons.version>12.6.0</ph-commons.version>
     <ph-ubl.version>10.2.1</ph-ubl.version>
     <ph-cii.version>4.1.3</ph-cii.version>
     <en16931-basics.version>1.0.4</en16931-basics.version>
