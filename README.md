@@ -139,6 +139,8 @@ mvn -pl phlox-text test -Dtest=TextMastersTest -Dphlox.updateMasters=true
 
 See the [wiki](https://github.com/phax/phlox/wiki/Home) for the full documentation, including the [domain model](https://github.com/phax/phlox/wiki/Domain-Model), the [template language](https://github.com/phax/phlox/wiki/Template-Language), [themes](https://github.com/phax/phlox/wiki/Themes), [PDF/A and ZUGFeRD](https://github.com/phax/phlox/wiki/PDF-A), the [maven module structure](https://github.com/phax/phlox/wiki/Maven-Module-Structure), the [roadmap](https://github.com/phax/phlox/wiki/Roadmap) and the [news and noteworthy](https://github.com/phax/phlox/wiki/News-and-noteworthy).
 
+[Adding Business Terms](docs/Adding-Business-Terms.md) describes the steps to add a new BT or BG of EN 16931 to the model, the readers, the default template and the labels.
+
 ## License
 
 Apache License 2.0, see [LICENSE](LICENSE). Third-party notes are in [NOTICE](NOTICE).
