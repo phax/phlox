@@ -40,12 +40,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <scm>
-    <connection>scm:git:https://github.com/phax/phlox.git</connection>
-    <developerConnection>scm:git:https://github.com/phax/phlox.git</developerConnection>
-    <url>https://github.com/phax/phlox</url>
-    <tag>HEAD</tag>
-  </scm>
   <developers>
     <developer>
       <id>philip</id>
