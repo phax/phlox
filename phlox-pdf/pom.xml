@@ -55,24 +55,10 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-pdf-layout</artifactId>
-      <exclusions>
-        <!-- Only ph-pdf-layout's own tests use it: not needed at runtime -->
-        <exclusion>
-          <groupId>de.redsix</groupId>
-          <artifactId>pdfcompare</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-pdf-layout-richtext</artifactId>
-      <exclusions>
-        <!-- Only ph-pdf-layout's own tests use it: not needed at runtime -->
-        <exclusion>
-          <groupId>de.redsix</groupId>
-          <artifactId>pdfcompare</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
